@@ -3,19 +3,39 @@
         <link rel="stylesheet" href="styles.css">
         <style>
             #productTitle {
-                height: 200px;
+                height: 100px;
                 position: absolute;
                 left: 0px;
                 right: 0px;
+                top: 75px;
             }
             .sidebar {
                 position: absolute;
                 left: 0px;
-                width: 300px;
-                top: 75px;
+                width: 25%;
+                top: 200px;
             }
             .filter {
                 height: 200px;
+            }
+            #tableDiv {
+                position: absolute;
+                top: 200px;
+                left: 30%;
+                width: 65%;
+                height: 75vw;
+            }
+            table {
+                height: 100%;
+                width: 100%;
+                text-align: center;
+            }
+            .product {
+                height: 90%;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+                border-style: solid;
             }
         </style>
     </head>
@@ -32,7 +52,29 @@
         <div id="productTitle">Products</div>
         <div id="sidebar" class="sidebar">
             <div id="filter1" class="filter">filter 1</div>
-            <div id="filter 2" class="filter">filter 2</div>
+            <div id="filter2" class="filter">filter 2</div>
+            <div id="filter3" class="filter">filter 3</div>
+            <div id="filter4" class="filter">filter 4</div>
+        </div>
+        <div id="tableDiv">
+            <table border="2px">
+                <tr>
+                    <td><div id="product1" class="product">
+                        product 1
+                    </div></td>
+                    <td><div id="product2" class="product">
+                        product 2
+                    </div></td>
+                </tr>
+                <tr>
+                    <td><div id="product3"  class="product">
+                        product 3
+                    </div></td>
+                    <td><div id="product4" class="product">
+                        product 4
+                    </div></td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>
