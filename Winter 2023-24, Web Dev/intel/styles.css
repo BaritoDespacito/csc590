@@ -1,0 +1,62 @@
+div {
+    background-color: rgb(81, 81, 81);
+    /* border-style: solid;
+    border-width: 5px;
+    border-color: rgb(255, 0, 0); */
+}
+/* tr {
+    border-style: solid; 
+    border-width: 5px;
+    border-color: red; 
+} */
+td {
+    /* border-style: solid;
+    border-width: 5px;
+    border-color: red; */
+    background-color: rgb(81, 81, 81);
+}
+.headerBar {
+    position: absolute;
+    height: 75px;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+}
+#headerLogo {
+    width: 75px;
+}
+#header1 {
+    left: 75px;
+}
+#header2 {
+    left: 225px;
+}
+#header3 {
+    left: 375px;
+}
+#header4 {
+    left: 525px;
+}
+#header5 {
+    left: 675px;
+}
+.headerBar input[type=text] {
+    float: right;
+    padding: 6px;
+    border: none;
+    font-size: 17px;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(81, 81, 81);
+    color: white;
+}
+::placeholder {
+    color: white;
+}
+#searchBox {
+    position: absolute;
+    right: 0px;
+    width: 200px;
+    height: 75px;
+    top: 0px;
+}

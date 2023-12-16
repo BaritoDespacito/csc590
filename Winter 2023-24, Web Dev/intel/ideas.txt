@@ -1,0 +1,28 @@
+types of pages:
+- home page
+- product page
+- product
+- blog
+
+home page:
+has link to products page
+a lot of images advertising
+also has a bunch of blog posts listed, all the same though
+
+product page:
+lots of product images, all the same link though
+some sort of sorting bar, doesnt work lol
+search bar, also doesnt work
+
+product:
+image
+product name
+price
+product info
+reviews
+
+blog:
+heading title
+heading image
+lots of text, boxes to break up
+link to other blogs at bottom
