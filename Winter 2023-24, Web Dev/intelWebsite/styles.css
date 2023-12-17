@@ -60,3 +60,7 @@ td {
     height: 75px;
     top: 0px;
 }
+#headerDivider {
+    position: absolute;
+    top: 100px;
+}
