@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <style>
+            #blogTitle {
+                position: absolute;
+                left: 0px;
+                right: 0px;
+                top: 100px;
+                height: 100px;
+            }
+            #tableDiv {
+                position: absolute;
+                top: 225px;
+                left: 5%;
+                right: 5%;
+                width: 90%;
+            }
+            table {
+                height: 100%;
+                width: 100%;
+                text-align: center;
+            }
+            tr {
+                height: 22.5vw;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="header" class="headerBar">
+            <div id="headerLogo" class="headerBar">logo</div>
+            <div id="header1" class="headerBar">link 1</div>
+            <div id="header2" class="headerBar">link 2</div>
+            <div id="header3" class="headerBar">link 3</div>
+            <div id="header4" class="headerBar">link 4</div>
+            <div id="header5" class="headerBar">link 5</div>
+            <div id="searchBox"><input type="text" placeholder="Search.."></div>
+        </div>
+        <div id="blogTitle">title</div>
+        <div id="tableDiv">
+            <table>
+                <tr>
+                    <td colspan="2" id="text1">text 1</td>
+                    <td id="image1">image 1</td>
+                </tr>
+                <tr>
+                    <td colspan="3" id="text2">text 2</td>
+                </tr>
+                <tr>
+                    <td rowspan="2" id="image2">image 2</td>
+                    <td colspan="2" id="text3">text 3</td>
+                </tr>
+                <tr>
+                    <td id="text4">text 4</td>
+                    <td id="image3">image 3</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
