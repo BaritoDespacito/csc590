@@ -15,6 +15,10 @@
     border-color: red;
     background-color: rgb(81, 81, 81);
 } */
+body {
+    @font-face { font-family: IntelOneMonoRegular; src: url('fonts/IntelOneMono-Regular.tff'); } 
+    font-family: IntelOneMonoRegular;
+}
 #header {
     position: absolute;
     left: 0px;
