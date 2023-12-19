@@ -81,6 +81,9 @@ body {
     border-style: solid;
     border-color: rgba(0,114,198,255);
 }
+.headerBar a:hover {
+    background-color: lightgrey;
+}
 ::placeholder {
     color: rgba(0,114,198,255);
     font-family: "Roboto", Verdana, sans-serif;
