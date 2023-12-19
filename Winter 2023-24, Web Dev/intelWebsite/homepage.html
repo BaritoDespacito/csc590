@@ -11,7 +11,7 @@
             }
             #blogTable {
                 position: absolute;
-                top: 525px;
+                top: 575px;
                 z-index: 4;
                 width: 50vw;
                 left: 25vw;
@@ -29,6 +29,9 @@
                 width: 100%;
                 position: relative;
             }
+            .blogLink {
+                font-size: 20px;
+            }
         </style>
     </head>
     <body>
@@ -42,18 +45,19 @@
             <div id="searchBox"><input type="text" placeholder="Search.."></div>
         </div>
         <div id="headerImage"><img src="images/homepageBanner.png" alt="" width="100%"></div>
+        <hr id="headerDivider" style="top:525px" width="98%" size="5" color="#0068B5">
         <table id="blogTable" style="text-align: center; align-items: center;">
             <tr id="row1">
                 <td id="image1"><div class="container"><img src="images/homepageCPUBlog.jpeg" alt="" width="100%"></div></td>
-                <td id="blog1"><div class="container"><a href="blogPageTemp.html">Intel's Latest CPU</a></div></td>
+                <td id="blog1"><div class="container"><a href="blogPageTemp.html" class="blogLink">Intel's Latest CPU</a></div></td>
             </tr>
             <tr id="row2">
-                <td id="blog2"><div class="container"><a href="blogPageTemp.html">Developments in Intel ARC</a></div></td>
+                <td id="blog2"><div class="container"><a href="blogPageTemp.html" class="blogLink">Developments in Intel ARC</a></div></td>
                 <td id="image2"><div class="container"><img src="images/homepageGraphicsBlog.png" alt="" width="100%"></div></td>
             </tr>
             <tr id="row3">
                 <td id="image3"><div class="container"><img src="images/homepageXEONBlog.jpeg" alt="" width="100%"></div></td>
-                <td id="blog3"><div class="container"><a href="blogPageTemp.html">New Server CPUs</a></div></td>
+                <td id="blog3"><div class="container"><a href="blogPageTemp.html" class="blogLink">New Server CPUs</a></div></td>
             </tr>
         </table>
     </body>

@@ -17,21 +17,24 @@
                 position: absolute;
                 left: 0px;
                 width: 25%;
-                top: 275px;
+                top: 250px;
             }
             .filter {
                 height: 200px;
+                margin-top: auto;
+                margin-bottom: auto;
+                margin-left: 25px;
             }
             #tableDiv {
                 position: absolute;
-                top: 275px;
+                top: 250px;
                 left: 30%;
-                width: 65%;
+                width: 65vw;
                 height: 75vw;
             }
             table {
-                height: 100%;
-                width: 100%;
+                height: 65vw;
+                width: 65vw;
                 text-align: center;
             }
             .product {
@@ -40,10 +43,17 @@
                 margin-left: auto;
                 margin-right: auto;
                 border-style: solid;
+                align-items: center;
             }
             .productImg {
-                width: 90%;
-                height: 90%;
+                width: 25vw;
+                height: 25vw;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .productName {
+                margin-top: 1vw;
+                margin-bottom: 1vw;
             }
         </style>
     </head>
@@ -57,33 +67,71 @@
             <a href="productPage.html" id="header5" class="headerBar">CART</a>
             <div id="searchBox"><input type="text" placeholder="Search.."></div>
         </div>
-        <hr id="headerDivider" width="98%" size="5" color="grey">
+        <hr id="headerDivider" width="98%" size="5" color="#0068B5">
         <div id="productTitle">PRODUCTS</div>
         <div id="sidebar" class="sidebar">
-            <div id="filter1" class="filter">filter 1</div>
-            <div id="filter2" class="filter">filter 2</div>
-            <div id="filter3" class="filter">filter 3</div>
-            <div id="filter4" class="filter">filter 4</div>
+            <div id="filter1" class="filter">
+                <div style="padding-bottom: 15px; padding-top:35px; font-size:25px">Product Type</div>
+                <input type="checkbox" id="filterProduct1" name="filterCPU" value="CPU">
+                <label for="filterProduct1"> CPU</label><br>
+                <input type="checkbox" id="filterProduct2" name="filterGPU" value="GPU">
+                <label for="filterProduct2"> GPU</label><br>
+                <input type="checkbox" id="filterProduct3" name="filterLaptop" value="Laptop">
+                <label for="filterProduct3"> Laptop</label><br>
+                <input type="checkbox" id="filterProduct4" name="filterWIFIChip" value="WIFIChip">
+                <label for="filterProduct4"> WIFI Chip</label><br>
+            </div>
+            <div id="filter2" class="filter">
+                <div style="padding-bottom: 15px; padding-top: 20px; font-size: 25px">Price Range</div><br>
+                Min Price
+                <div class="slidecontainer" style="width: 200px">
+                    <input type="range" min="1" max="100" value="50" class="slider" id="myRange" style="width: 100%;">
+                </div><br>
+                Max Price
+                <div class="slidecontainer" style="width: 200px">
+                    <input type="range" min="1" max="100" value="50" class="slider" id="myRange" style="width: 100%;">
+                </div><br>
+            </div>
+            <div id="filter3" class="filter">
+                <div style="padding-bottom: 15px; padding-top:35px; font-size:25px">Color</div>
+                <input type="checkbox" id="filterProduct5" name="filterBlue" value="Blue">
+                <label for="filterProduct5"> Blue</label><br>
+                <input type="checkbox" id="filterProduct6" name="filterBlack" value="Black">
+                <label for="filterProduct6"> Black</label><br>
+                <input type="checkbox" id="filterProduct7" name="filterLightGrey" value="Light Grey">
+                <label for="filterProduct7"> Light Grey</label><br>
+                <input type="checkbox" id="filterProduct8" name="filterDarkGrey" value="Dark Grey">
+                <label for="filterProduct8"> Dark Grey</label><br>
+            </div>
+            <div id="filter4" class="filter">
+                <div style="padding-bottom: 15px; padding-top:45px; font-size:25px">Processor Frequency</div><br>
+                Clock Speed
+                <div class="slidecontainer" style="width: 200px">
+                    <input type="range" min="1" max="100" value="50" class="slider" id="myRange" style="width: 100%;">
+                </div><br>
+            </div>
         </div>
         <div id="tableDiv">
             <table>
                 <tr>
-                    <td><div id="product1" class="product">
+                    <td><a href="productInfoTemp.html"><div id="product1" class="product">
                         <div id="product1Img" class="productImg"><img src="images/product1Image.jpeg" alt="" width="100%" height="100%"></div>
-                        <div id="product2Name" class="productName">product 1 name</div>
-                    </div></td>
-                    <td><div id="product2" class="product">
-                        <div id="product2Img" class="productImg">product 2 image</div>
-                        <div id="product2Name" class="productName">product 2 name</div>
-                    </div></td>
+                        <div id="product2Name" class="productName">i9-14900k</div>
+                    </div></a></td>
+                    <td><a href="productInfoTemp.html"><div id="product2" class="product">
+                        <div id="product2Img" class="productImg"><img src="images/product2Image.jpeg" alt="" width="100%" height="100%"></div>
+                        <div id="product2Name" class="productName">Intel ARC GPU</div>
+                    </div></a></td>
                 </tr>
                 <tr>
-                    <td><div id="product3"  class="product">
-                        product 3
-                    </div></td>
-                    <td><div id="product4" class="product">
-                        product 4
-                    </div></td>
+                    <td><a href="productInfoTemp.html"><div id="product3"  class="product">
+                        <div id="product3Img" class="productImg"><img src="images/product3Image.png" alt="" width="100%" height="100%"></div>
+                        <div id="product3Name" class="productName">Intel EVO</div>
+                    </div></a></td>
+                    <td><a href="productInfoTemp.html"><div id="product4" class="product">
+                        <div id="product4Img" class="productImg"><img src="images/product4Image.jpeg" alt="" width="100%" height="100%"></div>
+                        <div id="product4Name" class="productName">Intel KILLER Chip</div>
+                    </div></a></td>
                 </tr>
             </table>
         </div>
