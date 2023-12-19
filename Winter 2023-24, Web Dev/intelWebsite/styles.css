@@ -96,3 +96,11 @@ body {
     position: absolute;
     top: 100px;
 }
+a {
+    text-decoration: none;
+    color: #0068B5;
+}
+a:visited {
+    text-decoration: none;
+    color: #0068B5;
+}
