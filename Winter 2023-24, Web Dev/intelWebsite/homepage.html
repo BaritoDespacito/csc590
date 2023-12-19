@@ -27,12 +27,26 @@
                 height: 25vw;
                 width: 25vw;
             }
+            #blog2 {
+                height: 25vw;
+                width: 25vw;
+            }
+            #blog3 {
+                height: 25vw;
+                width: 25vw;
+            }
             .container {
                 width: 100%;
                 position: relative;
             }
             .blogLink {
-                font-size: 20px;
+                font-size: 1.5vw;
+                width: 100%;
+                height: 100%;
+                line-height: 25vw;
+            }
+            .blogLink:hover {
+                background-color: lightgrey;
             }
         </style>
     </head>
@@ -40,7 +54,7 @@
         <div id="header" class="headerBar">
             <div id="headerLogo"><a href="homepage.html"><img src="images/intelLogo.png" alt="" height="100%" width="100%"></a></div>
             <a href="productPage.html" id="header1" class="headerBar">PRODUCTS</a>
-            <a href="blogPageTemp.html" id="header2" class="headerBar">BLOG</a>
+            <a href="blogPage.html" id="header2" class="headerBar">BLOG</a>
             <a href="productPage.html" id="header3" class="headerBar">SUPPORT</a>
             <a href="productPage.html" id="header4" class="headerBar">ABOUT</a>
             <a href="productPage.html" id="header5" class="headerBar">CART</a>
@@ -51,15 +65,15 @@
         <table id="blogTable" style="text-align: center; align-items: center;">
             <tr id="row1">
                 <td id="image1"><div class="container"><img src="images/homepageCPUBlog.jpeg" alt="" width="100%"></div></td>
-                <td id="blog1"><div class="container"><a href="blogPageTemp.html" class="blogLink">Intel's Latest CPU</a></div></td>
+                <td id="blog1"><a href="blogPage.html"><div class="blogLink">Intel's Latest CPU</div></a></td>
             </tr>
             <tr id="row2">
-                <td id="blog2"><div class="container"><a href="blogPageTemp.html" class="blogLink">Developments in Intel ARC</a></div></td>
+                <td id="blog2"><a href="blogPage.html"><div class="blogLink">Developments in Intel ARC</div></a></td>
                 <td id="image2"><div class="container"><img src="images/homepageGraphicsBlog.png" alt="" width="100%"></div></td>
             </tr>
             <tr id="row3">
                 <td id="image3"><div class="container"><img src="images/homepageXEONBlog.jpeg" alt="" width="100%"></div></td>
-                <td id="blog3"><div class="container"><a href="blogPageTemp.html" class="blogLink">New Server CPUs</a></div></td>
+                <td id="blog3"><a href="blogPage.html"><div class="blogLink">New Server CPUs</div></a></td>
             </tr>
         </table>
     </body>
