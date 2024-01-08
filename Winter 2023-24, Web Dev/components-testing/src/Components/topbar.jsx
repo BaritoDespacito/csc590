@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 
 class Topbar extends React.Component {
     render() {
-        return (<h1>hello i am topbar</h1>);
+        return (<div class='topbar'><center><h1>PANINI</h1></center></div>);
     };
 }
+
+export default Topbar;
