@@ -5,8 +5,12 @@ class MathStuff extends React.Component {
     constructor(){
         super();
         this.state = {
-            c: 'n/a',
-            f: 'n/a',
+            flourC: 'n/a',
+            flourT: 'n/a',
+            eggsC: 'n/a',
+            eggsT: 'n/a',
+            sugarC: 'n/a',
+            sugarT: 'n/a',
         }
     }
 
@@ -15,34 +19,44 @@ class MathStuff extends React.Component {
             <center>
                 <table border='2px'>
                     <tr>
+                        <td>Ingredients</td>
                         <td>
                             <button 
                                 onClick={() => {this.setState(() => {
                                     return { 
-                                        c: Math.floor(Math.random()*100) 
+                                        flourC: Math.floor(Math.random()*100), 
+                                        eggsC: Math.floor(Math.random()*100),
+                                        sugarC: Math.floor(Math.random()*100),
                                     };
-                                },  ); }} >Generate Celsius
+                                },  ); }} >Generate Values
                             </button>
                         </td>
                         <td>
-                            <div>
-                                {this.state.c} C
-                            </div>
-                        </td>
-                        <td>
                             <button 
                                 onClick={() => {this.setState(() => {
                                     return { 
-                                        f: (this.state.c*9/5)+32
+                                        flourT: this.state.flourC*16,
+                                        eggsT: this.state.eggsC*16,
+                                        sugarT: this.state.sugarC*16,
                                     };
                                 },  ); }} >Convert
                             </button>
                         </td>
-                        <td>
-                            <div>
-                                {this.state.f} F
-                            </div>
-                        </td>
+                    </tr>
+                    <tr>
+                        <td>Flour</td>
+                        <td>{this.state.flourC} Cups</td>
+                        <td>{this.state.flourT} Tablespoons</td>
+                    </tr>
+                    <tr>
+                        <td>Eggs</td>
+                        <td>{this.state.eggsC} Cups</td>
+                        <td>{this.state.eggsT} Tablespoons</td>
+                    </tr>
+                    <tr>
+                        <td>Sugar</td>
+                        <td>{this.state.sugarC} Cups</td>
+                        <td>{this.state.sugarT} Tablespoons</td>
                     </tr>
                 </table>
             </center>

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 
 class Description extends React.Component {
     render() {
-        return (<div><center><p>A celsius temperature will be randomly generated when you click the 'Generate Celsius' button. The shown Celsius value will be converted to Fahrenheit when you click the 'Convert' button.</p></center></div>);
+        return (<div><center><p>Click the generate button to generate random values in cups for all the cake ingredients. Then click the convert button to show the values in tablespoons.</p></center></div>);
     };
 }
 
