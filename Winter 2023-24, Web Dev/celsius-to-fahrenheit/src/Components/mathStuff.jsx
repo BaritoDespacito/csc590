@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Instructions from './instructions';
+import InstructionsFunction from './instructionsFunction';
+import ConvertButton from './convertButton';
 
 class MathStuff extends React.Component {
     constructor(){
@@ -12,9 +14,6 @@ class MathStuff extends React.Component {
             eggsT: 'n/a',
             sugarC: 'n/a',
             sugarT: 'n/a',
-            data: {
-                flour: 'n/a',
-            },
         }
     }
 
@@ -63,9 +62,16 @@ class MathStuff extends React.Component {
                         <td>{this.state.sugarT} Tablespoons</td>
                     </tr>
                 </table>
-                <Instructions 
+                {/* <Instructions 
                     flour='hello'
                     data = {this.state.data}
+                /> */}
+                <ConvertButton />
+                <InstructionsFunction 
+                    flour={this.state.flourC}
+                    eggs={this.state.eggsC}
+                    sugar={this.state.sugarC}
+                    unit='cups'
                 />
             </center>
             </div>);

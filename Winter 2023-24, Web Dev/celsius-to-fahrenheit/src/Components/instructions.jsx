@@ -5,7 +5,7 @@ class Instructions extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            flour: props.data[flour],
+            // flour: props.data[flour],
         }
     }
 
