@@ -1,12 +1,14 @@
 import React from 'react';
 
-function WeatherColumn({number, day, weather, temp}) {
+function WeatherColumn({number, day, date, image, temp, description}) {
     return (
         <div class='columnDiv'>
             <center>
-                <h2>{day}</h2>
-                <img src={require(weather)} class='weatherImage'/>
-                {/* <img src={require('./Images/sunny.png')} alt="" class='weatherImage'/> */}
+                <h1>{day}</h1>
+                <h3>{date}</h3>
+                <img src={image} class='weatherImage'/>
+                <h1>{temp}</h1>
+                <h2>{description}</h2>
             </center>
         </div>
     );

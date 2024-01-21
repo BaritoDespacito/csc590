@@ -15,6 +15,7 @@ code {
 .columnDiv {
   height: 500px;
   width: 200px;
+  padding: 20px;
 }
 
 .weatherImage {

@@ -10,7 +10,6 @@ root.render(
   <div>
     hello!
     <center><WeatherTable /></center>
-    <img src={require('./Components/Images/sunny.png')} class='weatherImage'></img>
   </div>
 );
 
