@@ -8,8 +8,7 @@ import sunny from './Components/Images/sunny.png';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <div>
-    hello!
-    <center><WeatherTable /></center>
+    <WeatherTable />
   </div>
 );
 
