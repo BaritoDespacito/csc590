@@ -9,7 +9,8 @@ import {
 } from "firebase/firestore";
 import {db} from './firebase.js';
 
-// const testCollectionRef = db.collection('testCollection');
+
+const testCollectionRef = collection(db, "testCollection");
 class DatabaseService {
 
   dbTestAdd = async (e) => {
@@ -21,9 +22,13 @@ class DatabaseService {
     };
     
     // Add a new document in collection "cities" with ID 'LA'
-    const res = await db.collection('testCollection').doc('LA').set(data);
+    const res = await addDoc(testCollectionRef, data)
     console.log('data added')
   }
+
+  // dbTestAdd2 = () => {
+  //   return addDoc(testCollectionRef, 'testing testing 1 2 1 2');
+  // };
 
 }
    
