@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { dbTestAdd } from './../database.js';
+import DatabaseService from '../database.js';
 
 function TestDBApp ({}) {
 
     useEffect(() => {
         console.log('hello this is useeffect');
-        
     });
 
-    dbTestAdd();
+    DatabaseService.dbTestAdd();
 
     return (
         <div>testdbapp</div>
