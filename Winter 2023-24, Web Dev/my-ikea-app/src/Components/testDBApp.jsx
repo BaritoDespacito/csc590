@@ -5,10 +5,10 @@ function TestDBApp ({}) {
 
     useEffect(() => {
         console.log('hello this is useeffect');
-        DatabaseService.dbTestAdd();
     });
 
-    
+    DatabaseService.TestAdd();
+    DatabaseService.TestRead();
 
     return (
         <div>testdbapp</div>

@@ -9,12 +9,15 @@ import {
 } from "firebase/firestore";
 import {db} from './firebase.js';
 
-
 const testCollectionRef = collection(db, "testCollection");
+const productCollectionRef = collection(db, "productCollection");
+const productTypeCollectionRef = collection(db, "productTypeCollection");
+const productOrdersCollectionRef = collection(db, "productOrdersCollection");
+const customerOrdersCollectionRef = collection(db, "customerOrdersCollection");
 class DatabaseService {
 
-  dbTestAdd = async (e) => {
-    console.log('hi this is dbtestadd function')
+  TestAdd = async () => {
+    console.log('hi this is testadd function')
     const data = {
       name: 'Los Angeles',
       state: 'CA',
@@ -24,11 +27,16 @@ class DatabaseService {
     // Add a new document in collection "cities" with ID 'LA'
     const res = await addDoc(testCollectionRef, data)
     console.log('data added')
+
+    return res;
   }
 
-  // dbTestAdd2 = () => {
-  //   return addDoc(testCollectionRef, 'testing testing 1 2 1 2');
-  // };
+  TestRead = async () => {
+    console.log('hi this is testread function')
+    const sampleDoc = doc(productCollectionRef, '0');
+    const snapshot = await getDoc(sampleDoc);
+    console.log(snapshot.data());
+  }
 
 }
    
