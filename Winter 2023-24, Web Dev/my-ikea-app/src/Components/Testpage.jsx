@@ -13,12 +13,12 @@ function Testpage() {
     return (
         // <div style = {{position: "absolute", left: "50%"}}>
         <div>
-            <center>
+            {/* <center> */}
                 <InvTable />
                 <iframe 
                     src="https://www.dhs.gov/ntas/" name="National Terrorism Advisory System" title="National Terrorism Advisory System" width="20%" height="200px" frameborder="0" seamless border="0"
                 ></iframe>
-            </center>
+            {/* </center> */}
         </div>
     )
 }

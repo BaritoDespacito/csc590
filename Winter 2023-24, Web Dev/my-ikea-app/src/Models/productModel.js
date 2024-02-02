@@ -1,3 +1,12 @@
-class Product = (name, price, id) => {
-    Product.name = name;
+class Product {
+
+    constructor() {
+        id,
+        productName,
+        type,
+        category,
+        sold;
+    }
 }
+
+export default Product;
