@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.Testpage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100%;
+}
+
+.InvTable {
+  position: absolute;
+  background: red;
+  width: 90vw;
+  left: 5vw;
+  top: 0px;
+  margin-top: 20px;
+}

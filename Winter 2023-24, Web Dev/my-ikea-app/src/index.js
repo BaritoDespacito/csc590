@@ -2,16 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import TestDBApp from './Components/testDBApp';
 import Testpage from './Components/Testpage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <div>
-    <center>
-      <TestDBApp />
-      {/* <Testpage /> */}
-    </center>
+      <Testpage />
   </div>
 );
 

@@ -11,13 +11,52 @@ function InvTable() {
 
     // integration of product model object to contain attributes i haven't thought of yet
 
+    // productID: unique product id
+    // name: product name
+    // productTypeID: product type id
+    // productCategoryID: product category id
+    // sold: boolean of sale, 0 is not sold 1 is sold
+
+    // let attributes = {
+    //     productIDs,
+    //     names,
+    //     productTypeIDs,
+    //     productCategoryIDs,
+    //     solds,
+    // }
+
+    // let productIDs = {
+    //     productID1: "1",
+    //     productID2: "2",
+    //     productID3: "33",
+    // }
+
     let names = {
         name1: "blinken",
         name2: "blahaj",
         name3: "asdf;lkj"
     }
+
+    // let productTypeIDs = {
+    //     productTypeID1: "45",
+    //     productTypeID2: "2",
+    //     productTypeID3: "2"
+    // }
+
+    // let productCategoryIDs = {
+    //     productCategoryID1: "2",
+    //     productCategoryID2: "1",
+    //     productCategoryID3: "1"
+    // }
+
+    // let solds = {
+    //     sold1: false,
+    //     sold2: false,
+    //     sold3: false
+    // }
+
     return (
-        <div>
+        <div className = "InvTable">
             <table>
                 <InvRow name = {names.name1} />
                 <InvRow name = {names.name2} />
