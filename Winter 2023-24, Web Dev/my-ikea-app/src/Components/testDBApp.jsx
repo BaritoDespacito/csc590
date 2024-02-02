@@ -11,13 +11,7 @@ function TestDBApp ({}) {
     DatabaseService.TestAdd();
     DatabaseService.TestRead();
 
-    const testProduct = Product(
-        id = 0,
-        productName = 'sampleProduct',
-        type = 0,
-        category = 0,
-        sold = false,
-    );
+    const testProduct = new Product(0, 'sampleName', 0, 0, false);
 
     return (
         <div>
