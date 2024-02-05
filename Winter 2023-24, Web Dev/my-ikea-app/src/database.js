@@ -47,6 +47,21 @@ class DatabaseService {
     return res;
   }
 
+  ReadAllProductTypes = async () => {
+    const snapshot = await getDocs(productTypeCollectionRef);
+    const res = [];
+    snapshot.forEach(doc => {
+      res.push(new ProductType(
+        doc.data().productTypeID,
+        doc.data().productName,
+        doc.data().productCategoryID,
+        doc.data().price,
+        doc.data().productArray,
+      ))
+    });
+    return res;
+  }
+
 }
    
 export default new DatabaseService();
