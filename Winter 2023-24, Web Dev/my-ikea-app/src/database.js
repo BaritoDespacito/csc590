@@ -34,7 +34,7 @@ class DatabaseService {
 
   TestReadProductType = async () => {
     console.log('hi this is testread function')
-    const sampleDoc = doc(productTypeCollectionRef, '0');
+    const sampleDoc = doc(productTypeCollectionRef, '1');
     const snapshot = await getDoc(sampleDoc);
     console.log(snapshot.data());
     const res = new ProductType(
