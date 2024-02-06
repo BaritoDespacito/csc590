@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DatabaseService from '../database.js';
 import Product from '../Models/productModel.js';
 import ProductType from '../Models/productTypeModel.js';
+import { Link } from "react-router-dom";
 
 function TestDBApp() {
     const [loading, setLoading] = useState(false)
@@ -36,27 +37,29 @@ function TestDBApp() {
 
     return (
         <div>
-
-            <h1>testdbapp</h1>
-
-            { loading && 
-                <h2>loading...</h2>
-            }
-            
-            { !loading &&
-                <div>
-                    <h2>{result.productTypeID}</h2>
-                    <h2>{result.productName}</h2>
-                    <h2>{result.productCategoryID}</h2>
-                    <h2>{result.price}</h2>
-                    <h2>{result.productArray}</h2>
-                    <br />
-                    {allDocs.map((doc) => (
-                        <h3 key={doc.productTypeID}>{doc.productName}</h3>
-                    ))}
-                </div>
-            }
-
+            <center>
+                <Link
+                    key="linkToProductList"
+                    to="/productList"
+                >Product List</Link>
+                <h1>testdbapp</h1>
+                { loading && 
+                    <h2>loading...</h2>
+                }
+                { !loading &&
+                    <div>
+                        <h2>{result.productTypeID}</h2>
+                        <h2>{result.productName}</h2>
+                        <h2>{result.productCategoryID}</h2>
+                        <h2>{result.price}</h2>
+                        <h2>{result.productArray}</h2>
+                        <br />
+                        {allDocs.map((doc) => (
+                            <h3 key={doc.productTypeID}>{doc.productName}</h3>
+                        ))}
+                    </div>
+                }
+            </center>
         </div>
     );
 }
