@@ -53,6 +53,7 @@ function TestDBApp() {
                         <h2>{result.productCategoryID}</h2>
                         <h2>{result.price}</h2>
                         <h2>{result.productArray}</h2>
+                        <h2>{result.productImage}</h2>
                         <br />
                         {allDocs.map((doc) => (
                             <h3 key={doc.productTypeID}>{doc.productName}</h3>

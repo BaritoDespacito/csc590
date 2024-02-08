@@ -5,6 +5,7 @@ function ProductTypePreview({product}) {
         <div>
             <div>this is a product type preview</div>
             <div>{product.productName}</div>
+            <img src={product.productImage} alt="" />
         </div>
     );
 }

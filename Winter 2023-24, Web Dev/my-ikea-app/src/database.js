@@ -43,6 +43,7 @@ class DatabaseService {
       snapshot.data().productCategoryID,
       snapshot.data().price,
       snapshot.data().productArray,
+      snapshot.data().productImage,
     );
     return res;
   }
@@ -57,6 +58,7 @@ class DatabaseService {
         doc.data().productCategoryID,
         doc.data().price,
         doc.data().productArray,
+        doc.data().productImage,
       ))
     });
     return res;
