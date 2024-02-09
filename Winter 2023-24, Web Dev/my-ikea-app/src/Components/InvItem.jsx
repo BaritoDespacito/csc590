@@ -1,8 +1,8 @@
 function InvItem(props) {
     return (
-        <div>
+        <td>
             this is a {props.name} item
-        </div>
+        </td>
     )
 }
 
