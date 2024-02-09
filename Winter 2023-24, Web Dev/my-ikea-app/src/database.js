@@ -8,6 +8,7 @@ import {
   doc,
 } from "firebase/firestore";
 import {db} from './firebase.js';
+import ProductType from "./Models/productTypeModel.js"
 
 const testCollectionRef = collection(db, "testCollection");
 const productCollectionRef = collection(db, "productCollection");
@@ -31,11 +32,36 @@ class DatabaseService {
     return res;
   }
 
-  TestRead = async () => {
+  TestReadProductType = async () => {
     console.log('hi this is testread function')
-    const sampleDoc = doc(productCollectionRef, '0');
+    const sampleDoc = doc(productTypeCollectionRef, '1');
     const snapshot = await getDoc(sampleDoc);
     console.log(snapshot.data());
+    const res = new ProductType(
+      snapshot.data().productTypeID,
+      snapshot.data().productName,
+      snapshot.data().productCategoryID,
+      snapshot.data().price,
+      snapshot.data().productArray,
+      snapshot.data().productImage,
+    );
+    return res;
+  }
+
+  ReadAllProductTypes = async () => {
+    const snapshot = await getDocs(productTypeCollectionRef);
+    const res = [];
+    snapshot.forEach(doc => {
+      res.push(new ProductType(
+        doc.data().productTypeID,
+        doc.data().productName,
+        doc.data().productCategoryID,
+        doc.data().price,
+        doc.data().productArray,
+        doc.data().productImage,
+      ))
+    });
+    return res;
   }
 
 }
