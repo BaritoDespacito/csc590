@@ -6,6 +6,8 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  where,
+  query,
 } from "firebase/firestore";
 import {db} from './firebase.js';
 import ProductType from "./Models/productTypeModel.js"
@@ -64,6 +66,23 @@ class DatabaseService {
     return res;
   }
 
+  ReadProductTypesWithQuery = async (searchQuery) => {
+    let q = query(productTypeCollectionRef);
+    q = query(q, where("productName", "==", searchQuery))
+    const snapshot = await getDocs(q)
+    const res = []
+    snapshot.forEach(doc => {
+      res.push(new ProductType(
+        doc.data().productTypeID,
+        doc.data().productName,
+        doc.data().productCategoryID,
+        doc.data().price,
+        doc.data().productArray,
+        doc.data().productImage,
+      ))
+    })
+    return res
+  }
 }
    
 export default new DatabaseService();

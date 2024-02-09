@@ -24,18 +24,33 @@ function ProductTypeList() {
     }
 
     useEffect(() => {
-        fetchData()
+        fetchData();
     }, [])
+
+    const handleKeyPress = async (event) => {
+        if(event.key === 'Enter'){
+            console.log('enter pressed, sending search query')
+            setLoading(true)
+            const res = await DatabaseService.ReadProductTypesWithQuery(event.target.value)
+            console.log('result from search', res)
+            setLoading(false)
+            setAllProductTypes(res)
+        }
+      }
 
     return(
         <div>
             <center>
                 <h1>PRODUCTS</h1>
+                <input 
+                    type="text"
+                    onKeyDown={handleKeyPress}
+                />
                 { loading
                     ? <h2>LOADING</h2>
                     : <div>
                         {allProductTypes.map((product) => (
-                            <div>
+                            <div key={product.productID}>
                                 <ProductTypePreview
                                     product={product}
                                 ></ProductTypePreview>
