@@ -29,7 +29,7 @@ function ProductTypeList() {
 
     const handleKeyPress = async (event) => {
         if(event.key === 'Enter'){
-            console.log('enter pressed, sending search query')
+            console.log('enter pressed, sending search query of', event.target.value)
             setLoading(true)
             const res = await DatabaseService.ReadProductTypesWithQuery(event.target.value)
             console.log('result from search', res)
@@ -49,17 +49,21 @@ function ProductTypeList() {
                 { loading
                     ? <h2>LOADING</h2>
                     : <div>
-                        {allProductTypes.map((product) => (
-                            <div key={product.productID}>
-                                <ProductTypePreview
-                                    product={product}
-                                ></ProductTypePreview>
-                                <br />
+                        { allProductTypes.length > 0
+                            ? <div>
+                                {allProductTypes.map((product) => (
+                                    <div key={product.productID}>
+                                        <ProductTypePreview
+                                            product={product}
+                                        ></ProductTypePreview>
+                                        <br />
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                           : <h2>NO PRODUCTS FOUND</h2>
+                        }
                     </div>
                 }
-                
             </center>
         </div>
     );

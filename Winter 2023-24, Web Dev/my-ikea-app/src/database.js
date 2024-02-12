@@ -68,7 +68,7 @@ class DatabaseService {
 
   ReadProductTypesWithQuery = async (searchQuery) => {
     let q = query(productTypeCollectionRef);
-    q = query(q, where("productName", "==", searchQuery))
+    q = query(q, where("productName", "in", [searchQuery.toUpperCase()]))
     const snapshot = await getDocs(q)
     const res = []
     snapshot.forEach(doc => {
@@ -81,6 +81,14 @@ class DatabaseService {
         doc.data().productImage,
       ))
     })
+    if (res.length == 0) {
+      let allProducts = await this.ReadAllProductTypes();
+      allProducts.forEach(product => {
+        if (product.productName.includes(searchQuery.toUpperCase())) {
+          res.push(product);
+        }
+      });
+    }
     return res
   }
 }
