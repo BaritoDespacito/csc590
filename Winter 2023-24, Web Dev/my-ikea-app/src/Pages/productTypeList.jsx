@@ -5,6 +5,7 @@ import ProductTypePreview from "../Components/productTypePreview.jsx";
 function ProductTypeList() {
     const [allProductTypes, setAllProductTypes] = useState([])
     const [loading, setLoading] = useState(false)
+    const [filterValue, setFilterValue] = useState('-1');
 
     const fetchData = async () => {
         // set the data to loading
@@ -30,13 +31,27 @@ function ProductTypeList() {
     const handleKeyPress = async (event) => {
         if(event.key === 'Enter'){
             console.log('enter pressed, sending search query of', event.target.value)
+            console.log(filterValue);
             setLoading(true)
-            const res = await DatabaseService.ReadProductTypesWithQuery(event.target.value)
+            const res = await DatabaseService.ReadProductTypesWithQuery(event.target.value, filterValue)
             console.log('result from search', res)
             setLoading(false)
             setAllProductTypes(res)
         }
-      }
+    }
+
+    const filterOptions = [
+        { label: "No Filter", value: "-1" },
+        { label: 'Chair', value: "1" },
+        { label: 'Table', value: '2' },
+        { label: 'Light Feature', value: '3' },
+        { label: 'Shelves', value: "4" },
+        { label: 'Drawers', value: '5' },
+    ];
+
+    const handleChange = (event) => {
+        setFilterValue(event.target.value);
+    };
 
     return(
         <div>
@@ -46,6 +61,16 @@ function ProductTypeList() {
                     type="text"
                     onKeyDown={handleKeyPress}
                 />
+                <br />
+                <label>
+                    Filter:
+                    <select value={filterValue} onChange={handleChange}>
+                        {filterOptions.map((option) => (
+                            <option key={option.label} value={option.value}>{option.label}</option>
+                        ))}
+                    </select>
+                </label>
+                <br />
                 { loading
                     ? <h2>LOADING</h2>
                     : <div>

@@ -66,29 +66,20 @@ class DatabaseService {
     return res;
   }
 
-  ReadProductTypesWithQuery = async (searchQuery) => {
-    let q = query(productTypeCollectionRef);
-    q = query(q, where("productName", "in", [searchQuery.toUpperCase()]))
-    const snapshot = await getDocs(q)
-    const res = []
-    snapshot.forEach(doc => {
-      res.push(new ProductType(
-        doc.data().productTypeID,
-        doc.data().productName,
-        doc.data().productCategoryID,
-        doc.data().price,
-        doc.data().productArray,
-        doc.data().productImage,
-      ))
-    })
-    if (res.length == 0) {
-      let allProducts = await this.ReadAllProductTypes();
-      allProducts.forEach(product => {
+  ReadProductTypesWithQuery = async (searchQuery, filterBy) => {
+    let res = [];
+    let allProducts = await this.ReadAllProductTypes();
+    allProducts.forEach(product => {
+      if (filterBy == "-1") {
         if (product.productName.includes(searchQuery.toUpperCase())) {
           res.push(product);
         }
-      });
-    }
+      } else {
+        if (product.productName.includes(searchQuery.toUpperCase()) && product.productCategoryID == filterBy)  {
+          res.push(product);
+        }
+      }
+    });
     return res
   }
 }
