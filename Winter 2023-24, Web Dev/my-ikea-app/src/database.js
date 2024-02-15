@@ -63,24 +63,85 @@ class DatabaseService {
         doc.data().productImage,
       ))
     });
-    return res;
+    return res.sort((productA, productB) => {
+      if (productA.productName < productB.productName) {
+        return -1;
+      } else if (productA.productName > productB.productName) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
-  ReadProductTypesWithQuery = async (searchQuery, filterBy) => {
+  ReadProductTypesWithQuery = async (searchQuery, categoryFilter, priceFilter, stockFilter, sortBy) => {
     let res = [];
     let allProducts = await this.ReadAllProductTypes();
-    allProducts.forEach(product => {
-      if (filterBy == "-1") {
-        if (product.productName.includes(searchQuery.toUpperCase())) {
-          res.push(product);
+
+    for (let product of allProducts) {
+      console.log(product.price);
+      if (!product.productName.includes(searchQuery.toUpperCase())) {
+        continue
+      }
+      if (categoryFilter != "-1" && categoryFilter != product.productCategoryID) {
+        continue
+      }
+      if (stockFilter != "-1" && product.productArray.length == 0) {
+        continue
+      }
+      if (priceFilter != "-1") {
+        if (priceFilter == "1" && product.price >= 50.00) {
+          console.log('continuing');
+          continue
+        }
+        else if (priceFilter == "2" && (product.price < 50.00 || product.price > 100.00)) {
+          continue
+        }
+        else if (priceFilter == "3" && (product.price < 100.00 || product.price > 200.00)) {
+          continue
+        }
+        else if (priceFilter == "4" && product.price <= 200.00) {
+          continue
+        }
+      }
+      res.push(product);
+    }
+
+    return res.sort((productA, productB) => {
+      if (sortBy == "1") {
+        if (productA.productName < productB.productName) {
+          return -1;
+        } else if (productA.productName > productB.productName) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (sortBy == "2") {
+        if (productA.price < productB.price) {
+          return -1;
+        } else if (productA.price > productB.price) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (sortBy == "3") {
+        if (productA.price > productB.price) {
+          return -1;
+        } else if (productA.price < productB.price) {
+          return 1;
+        } else {
+          return 0;
         }
       } else {
-        if (product.productName.includes(searchQuery.toUpperCase()) && product.productCategoryID == filterBy)  {
-          res.push(product);
+        if (productA.productCategoryID < productB.productCategoryID) {
+          return -1;
+        } else if (productA.productCategoryID > productB.productCategoryID) {
+          return 1;
+        } else {
+          return 0;
         }
       }
     });
-    return res
   }
 }
    
