@@ -1,8 +1,8 @@
-function InvItem(product) {
+function InvItem(props) {
     return (
         <td>
-            {console.log(product)}
-            <p>this is a {product.product.productName} item</p>
+            {console.log(props)}
+            <p>this is a {props.product.productName} item</p>
             <br></br>
         </td>
     )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DatabaseService from "../database.js";
 import InvRow from "./InvRow.jsx";
+import InvItem from "./InvItem.jsx";
 
 function InvPage() {
     const [allProductTypes, setAllProductTypes] = useState([])
@@ -38,7 +39,13 @@ function InvPage() {
                         <table>
                             <tbody>
                                 {allProductTypes.map((product) => (
-                                    <InvRow key = {product.productTypeID} product = {product} />
+                                    <div>
+                                        <InvRow key = {product.productTypeID} product = {product} />,
+                                        {console.log(product)}
+                                        {/* // <tr className = "InvRow"> */}
+                                            {/* // <InvItem key = {product.productTypeID} product = {product}/> */}
+                                        {/* // </tr> */}
+                                    </div>
                                 ))}
                             </tbody>
                         </table>

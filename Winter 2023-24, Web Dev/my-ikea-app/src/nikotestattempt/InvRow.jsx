@@ -1,11 +1,11 @@
 import InvItem from "./InvItem";
 
-function InvRow (product) {
+function InvRow (props) {
     return (
         // <div>
             <tr className = "InvRow">
                 {/* {console.log(product)} */}
-                <InvItem product = {product}/>
+                <InvItem product = {props.product}/>
             </tr>
         // </div>
     )
