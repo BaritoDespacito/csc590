@@ -5,6 +5,7 @@ import DatabaseService from "../database.js";
 function ProductOrderPage() {
     const [allProductTypes, setAllProductTypes] = useState([])
     const [loading, setLoading] = useState(false)
+    const [selectedProduct, setSelectedProduct] = useState("-1")
 
     const fetchData = async () => {
         // set the data to loading
@@ -38,6 +39,11 @@ function ProductOrderPage() {
         }
     }
 
+    const handleProductSelect = (event) => {
+        console.log(event.target.id);
+        setSelectedProduct(event.target.id);
+    }
+
     return(
         <div>
             <center>
@@ -55,6 +61,7 @@ function ProductOrderPage() {
                                     <div key={product.productID}>
                                         <ProductTypePreviewSmall
                                             product={product}
+                                            handler={handleProductSelect}
                                         ></ProductTypePreviewSmall>
                                         <br />
                                     </div>
