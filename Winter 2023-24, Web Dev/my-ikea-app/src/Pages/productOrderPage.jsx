@@ -5,7 +5,7 @@ import DatabaseService from "../database.js";
 function ProductOrderPage() {
     const [allProductTypes, setAllProductTypes] = useState([])
     const [loading, setLoading] = useState(false)
-    const [selectedProduct, setSelectedProduct] = useState("-1")
+    const [selectedProduct, setSelectedProduct] = useState("NONE")
 
     const fetchData = async () => {
         // set the data to loading
@@ -40,8 +40,9 @@ function ProductOrderPage() {
     }
 
     const handleProductSelect = (event) => {
-        console.log(event.target.id);
-        setSelectedProduct(event.target.id);
+        console.log('parent', event.target);
+        console.log('parent', event.target.id);
+        setSelectedProduct('button has been hit');
     }
 
     return(
@@ -58,14 +59,17 @@ function ProductOrderPage() {
                         { allProductTypes.length > 0
                             ? <div>
                                 {allProductTypes.map((product) => (
-                                    <div key={product.productID}>
+                                    <button key={product.productID} onClick={() => {
+                                        console.log('hello', product.productName)
+                                        setSelectedProduct(product.productName)
+                                    }}>
                                         <ProductTypePreviewSmall
                                             product={product}
-                                            handler={handleProductSelect}
                                         ></ProductTypePreviewSmall>
                                         <br />
-                                    </div>
+                                    </button>
                                 ))}
+                                Selected: {selectedProduct}
                             </div>
                            : <h2>NO PRODUCTS FOUND</h2>
                         }
