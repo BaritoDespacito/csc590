@@ -3,11 +3,13 @@ import {
   getDocs,
   getDoc,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
   where,
   query,
+  serverTimestamp,
 } from "firebase/firestore";
 import {db} from './firebase.js';
 import ProductType from "./Models/productTypeModel.js"
@@ -145,6 +147,75 @@ class DatabaseService {
       }
     });
   }
+
+  CreateProductOrder = async (quantity, productTypeID) => {
+    // search for the product type's document
+    const productTypeDocument = doc(productTypeCollectionRef, productTypeID);
+    const productSnapshot = await getDoc(productTypeDocument);
+    const productType = new ProductType(
+      productSnapshot.data().productTypeID,
+      productSnapshot.data().productName,
+      productSnapshot.data().productCategoryID,
+      productSnapshot.data().price,
+      productSnapshot.data().productArray,
+      productSnapshot.data().productStockArray,
+      productSnapshot.data().productImage,
+    );
+    console.log('got product type data')
+
+    // get the current highest id
+    const idInfo = doc(productCollectionRef, 'collectionInfo');
+    const infoSnapshot = await getDoc(idInfo);
+    const highestID = parseInt(infoSnapshot.data().highestID);
+    console.log('got highest id', highestID.toString())
+
+    // create products for productCollection
+    let productIDs = [];
+    let productData = {
+      productCategoryID: productType.productCategoryID,
+      productID: 0,
+      productName: productType.productName,
+      productTypeID: productTypeID,
+      sold: false,
+    };
+    for (let i = 1; i<= quantity; i++) {
+      console.log(highestID+i);
+      productIDs.push((highestID+i).toString())
+      productData.productID = (highestID+i).toString()
+      const res = await setDoc(doc(productCollectionRef, (highestID+i).toString()), productData)
+      const res2 = await updateDoc(doc(productCollectionRef, 'collectionInfo'), {
+        highestID: (highestID+i).toString()
+      })
+    }
+    console.log('created product doc')
+
+    // update productType doc with new ids (product array and product stock array)
+    const res1 = await updateDoc(doc(productTypeCollectionRef, productTypeID), {
+      productArray: [...productType.productArray, ...productIDs],
+      productStockArray: [...productType.productStockArray, ...productIDs],
+    })
+
+    // create productOrder doc
+    const orderData = {
+      productArray: productIDs,
+      productName: productType.productName,
+      productTypeID: productTypeID,
+      time: serverTimestamp(),
+    };
+    console.log('order data created')
+    const ordersInfo = doc(productOrdersCollectionRef, 'collectionInfo')
+    const orderInfoSnapshot = await getDoc(ordersInfo)
+    const newOrderID = parseInt(orderInfoSnapshot.data().highestID)
+    console.log('got new order id', newOrderID+1)
+    const res4 = await setDoc(doc(productOrdersCollectionRef, (newOrderID+1).toString()), orderData)
+    console.log('made product order')
+
+    // set new orders collection highest
+    const res5 = await updateDoc(doc(productOrdersCollectionRef, 'collectionInfo'), {
+      highestID: (newOrderID+1).toString()
+    })
+  }
+
 }
    
 export default new DatabaseService();

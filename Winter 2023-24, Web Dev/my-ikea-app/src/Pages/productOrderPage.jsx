@@ -6,6 +6,8 @@ function ProductOrderPage() {
     const [allProductTypes, setAllProductTypes] = useState([])
     const [loading, setLoading] = useState(false)
     const [selectedProduct, setSelectedProduct] = useState("NONE")
+    const [selectedProductID, setSelectedProductID] = useState("-1")
+    const [quantity, setQuantity] = useState(0)
 
     const fetchData = async () => {
         // set the data to loading
@@ -59,10 +61,11 @@ function ProductOrderPage() {
                         { allProductTypes.length > 0
                             ? <div>
                                 {allProductTypes.map((product) => (
-                                    <div>
-                                        <button key={product.productID} onClick={() => {
+                                    <div key={product.productName}>
+                                        <button key={product.productName} onClick={() => {
                                             console.log('hello', product.productName)
                                             setSelectedProduct(product.productName)
+                                            setSelectedProductID(product.productTypeID);
                                         }}>
                                             <ProductTypePreviewSmall
                                                 product={product}
@@ -73,9 +76,24 @@ function ProductOrderPage() {
                                 ))}
                                 Selected: {selectedProduct}
                                 <br />
-                                <label>Quantity: <input type="number" id="quantityInput"/></label>
+                                <label>Quantity: <input type="number" id="quantityInput" onChange={(event) => {
+                                    if (!event.target.value) {
+                                        setQuantity(0)
+                                    } else {
+                                        setQuantity(event.target.value)
+                                    }
+                                }}/></label>
                                 <br />
-
+                                <button onClick={() => {
+                                    if (selectedProduct == "NONE") {
+                                        console.log('select smth bozo')
+                                    } else if (quantity == 0) {
+                                        console.log('put a quantity bozo')
+                                    } else {
+                                        console.log('order', quantity, 'of', selectedProduct, 'id type', selectedProductID)
+                                        DatabaseService.CreateProductOrder(quantity, selectedProductID)
+                                    }
+                                }}>ORDER</button>
                             </div>
                            : <h2>NO PRODUCTS FOUND</h2>
                         }
