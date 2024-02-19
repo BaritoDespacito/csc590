@@ -59,17 +59,23 @@ function ProductOrderPage() {
                         { allProductTypes.length > 0
                             ? <div>
                                 {allProductTypes.map((product) => (
-                                    <button key={product.productID} onClick={() => {
-                                        console.log('hello', product.productName)
-                                        setSelectedProduct(product.productName)
-                                    }}>
-                                        <ProductTypePreviewSmall
-                                            product={product}
-                                        ></ProductTypePreviewSmall>
+                                    <div>
+                                        <button key={product.productID} onClick={() => {
+                                            console.log('hello', product.productName)
+                                            setSelectedProduct(product.productName)
+                                        }}>
+                                            <ProductTypePreviewSmall
+                                                product={product}
+                                            ></ProductTypePreviewSmall>
+                                        </button>
                                         <br />
-                                    </button>
+                                    </div>
                                 ))}
                                 Selected: {selectedProduct}
+                                <br />
+                                <label>Quantity: <input type="number" id="quantityInput"/></label>
+                                <br />
+
                             </div>
                            : <h2>NO PRODUCTS FOUND</h2>
                         }
