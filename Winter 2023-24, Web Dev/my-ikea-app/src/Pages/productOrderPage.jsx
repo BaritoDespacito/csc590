@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProductTypePreviewSmall from "../Components/productTypePreviewSmall";
+import { useNavigate } from 'react-router-dom';
 import DatabaseService from "../database.js";
 
 function ProductOrderPage() {
@@ -8,6 +9,8 @@ function ProductOrderPage() {
     const [selectedProduct, setSelectedProduct] = useState("NONE")
     const [selectedProductID, setSelectedProductID] = useState("-1")
     const [quantity, setQuantity] = useState(0)
+
+    const navigate = useNavigate();
 
     const fetchData = async () => {
         // set the data to loading
@@ -47,6 +50,18 @@ function ProductOrderPage() {
         setSelectedProduct('button has been hit');
     }
 
+    const createProductOrder = async () => {
+        if (selectedProduct == "NONE") {
+            console.log('select smth bozo')
+        } else if (quantity == 0) {
+            console.log('put a quantity bozo')
+        } else {
+            console.log('order', quantity, 'of', selectedProduct, 'id type', selectedProductID)
+            await DatabaseService.CreateProductOrder(quantity, selectedProductID)
+            navigate('/productOrderSuccess', {productName: selectedProduct, quantity: quantity})
+        }
+    }
+
     return(
         <div>
             <center>
@@ -84,16 +99,7 @@ function ProductOrderPage() {
                                     }
                                 }}/></label>
                                 <br />
-                                <button onClick={() => {
-                                    if (selectedProduct == "NONE") {
-                                        console.log('select smth bozo')
-                                    } else if (quantity == 0) {
-                                        console.log('put a quantity bozo')
-                                    } else {
-                                        console.log('order', quantity, 'of', selectedProduct, 'id type', selectedProductID)
-                                        DatabaseService.CreateProductOrder(quantity, selectedProductID)
-                                    }
-                                }}>ORDER</button>
+                                <button onClick={createProductOrder}>ORDER</button>
                             </div>
                            : <h2>NO PRODUCTS FOUND</h2>
                         }
