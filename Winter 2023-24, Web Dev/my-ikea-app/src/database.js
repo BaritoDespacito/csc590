@@ -216,6 +216,17 @@ class DatabaseService {
     })
   }
 
+  ReadLastProductOrder = async () => {
+    const collectionInfo = await getDoc(doc(productOrdersCollectionRef, 'collectionInfo'));
+    const lastID = collectionInfo.data().highestID;
+    
+    const lastOrder = await getDoc(doc(productOrdersCollectionRef, lastID))
+    const productName = lastOrder.data().productName;
+    const quantity = lastOrder.data().productArray.length;
+
+    return [productName, quantity];
+  }
+
 }
    
 export default new DatabaseService();

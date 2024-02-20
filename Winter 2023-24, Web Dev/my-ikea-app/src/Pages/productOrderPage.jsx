@@ -58,7 +58,7 @@ function ProductOrderPage() {
         } else {
             console.log('order', quantity, 'of', selectedProduct, 'id type', selectedProductID)
             await DatabaseService.CreateProductOrder(quantity, selectedProductID)
-            navigate('/productOrderSuccess', {productName: selectedProduct, quantity: quantity})
+            navigate('/productOrderSuccess')
         }
     }
 
