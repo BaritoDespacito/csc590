@@ -1,6 +1,6 @@
 import InvRow from "./InvRow";
 
-function InvTable() {
+function InvTable(product) {
     // either create a dictionary for each attribute of an element
     // or
     // create a dictionary containing all the attribute dictionaries
@@ -11,13 +11,16 @@ function InvTable() {
 
     // integration of product model object to contain attributes i haven't thought of yet
 
-    let names = {
-        name1: "blinken",
-        name2: "blahaj",
-        name3: "asdf;lkj"
-    }
+    // productID: unique product id
+    // name: product name
+    // productTypeID: product type id
+    // productCategoryID: product category id
+    // sold: boolean of sale, 0 is not sold 1 is sold
+
+
+
     return (
-        <div>
+        <div className = "InvTable">
             <table>
                 <InvRow name = {names.name1} />
                 <InvRow name = {names.name2} />

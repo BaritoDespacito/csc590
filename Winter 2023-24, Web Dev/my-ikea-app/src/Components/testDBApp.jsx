@@ -42,6 +42,16 @@ function TestDBApp() {
                     key="linkToProductList"
                     to="/productList"
                 >Product List</Link>
+                <br></br>
+                <Link
+                    key = "nikotest"
+                    to = "/nikoattempt"
+                >nikooooooo</Link>
+                <br></br>
+                 <Link
+                    key = "devtestignthinggyyyyy"
+                    to = "/dev"
+                >devtestignthinggyyyyy</Link>
                 <h1>testdbapp</h1>
                 { loading && 
                     <h2>loading...</h2>
