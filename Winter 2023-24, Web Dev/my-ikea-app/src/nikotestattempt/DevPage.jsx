@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import DatabaseService from "../database.js";
-import InvRow from "./InvRow.jsx";
+import ShowProduct from "./ShowProduct.jsx";
 
-function InvPage() {
+function DevPage() {
+    // gets all the product types
+
     const [allProductTypes, setAllProductTypes] = useState([])
     const [loading, setLoading] = useState(false)
 
@@ -28,25 +30,19 @@ function InvPage() {
     }, [])
 
 
-
-    return(
+    return (
         <div>
-            <center>
-                { loading
-                    ? <h2>LOADING</h2>
-                    : <div className = "InvTable">
-                        <table>
-                            <tbody>
-                                {allProductTypes.map((product) => (
-                                        <InvRow key = {product.productTypeID} product = {product} />
-                                ))}
-                            </tbody>
-                        </table>
+            {
+                loading
+                    ? <h1>wait smh</h1>
+                    : <div>
+                        {allProductTypes.map((product) => (
+                            <ShowProduct key = {product.productTypeID} props = {product} />
+                        ))}
                     </div>
-                }
-            </center>
+            }
         </div>
-    );
+    )
 }
 
-export default InvPage;
+export default DevPage
