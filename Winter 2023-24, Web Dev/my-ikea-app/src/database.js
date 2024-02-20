@@ -53,6 +53,22 @@ class DatabaseService {
     return res;
   }
 
+  ReadSpecificProductType = async (productID) => {
+    const typeDoc = doc(productTypeCollectionRef, productID);
+    const snapshot = await getDoc(typeDoc);
+    console.log(snapshot.data());
+    const res = new ProductType(
+      snapshot.data().productTypeID,
+      snapshot.data().productName,
+      snapshot.data().productCategoryID,
+      snapshot.data().price,
+      snapshot.data().productArray,
+      snapshot.data().productStockArray,
+      snapshot.data().productImage,
+    );
+    return res;
+  }
+
   ReadAllProductTypes = async () => {
     const snapshot = await getDocs(productTypeCollectionRef);
     const res = [];
