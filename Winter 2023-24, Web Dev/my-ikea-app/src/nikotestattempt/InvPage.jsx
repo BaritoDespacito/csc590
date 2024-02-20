@@ -39,13 +39,7 @@ function InvPage() {
                         <table>
                             <tbody>
                                 {allProductTypes.map((product) => (
-                                    <div>
-                                        <InvRow key = {product.productTypeID} product = {product} />,
-                                        {console.log(product)}
-                                        {/* // <tr className = "InvRow"> */}
-                                            {/* // <InvItem key = {product.productTypeID} product = {product}/> */}
-                                        {/* // </tr> */}
-                                    </div>
+                                        <InvRow key = {product.productTypeID} product = {product} />
                                 ))}
                             </tbody>
                         </table>
