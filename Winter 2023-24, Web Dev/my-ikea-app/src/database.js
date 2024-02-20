@@ -9,6 +9,8 @@ import {
   doc,
   where,
   query,
+  orderBy,
+  limit,
   serverTimestamp,
 } from "firebase/firestore";
 import {db} from './firebase.js';
@@ -241,6 +243,33 @@ class DatabaseService {
     const quantity = lastOrder.data().productArray.length;
 
     return [productName, quantity];
+  }
+
+  ReadLowestStock = async () => {
+    const productSnapshot = await getDocs(productTypeCollectionRef)
+    let products = []
+    productSnapshot.forEach(doc => {
+      // console.log(doc.data())
+      products.push(new ProductType(
+        doc.data().productTypeID,
+        doc.data().productName,
+        doc.data().productCategoryID,
+        doc.data().price,
+        doc.data().productArray,
+        doc.data().productStockArray,
+        doc.data().productImage,
+      ))
+    })
+    products.sort((a, b) => {
+      if (a.productStockArray.length > b.productStockArray.length) {
+        return 1
+      } else if (a.productStockArray.length < b.productStockArray.length) {
+        return -1
+      } else {
+        return 0
+      }
+    })
+    return products.slice(0, 3)
   }
 
 }
