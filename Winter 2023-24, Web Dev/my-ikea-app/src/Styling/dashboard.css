@@ -1,4 +1,13 @@
+.lowStockTable {
+    width: 225px;
+}
+
 .lowStockTableData {
     border: 2px;
     border-style: solid;
+    width: 225px;
+}
+
+.lowStockButton {
+    width: 200px
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DatabaseService from "../database";
 import '../Styling/dashboard.css'
 
@@ -27,24 +28,39 @@ function Dashboard() {
         fetchData();
     }, [])
 
+    const navigate = useNavigate();
+
     return(
         <center>
             <h1>DASHBOARD</h1>
             { loading 
                 ? <h3>LOADING</h3>
-                : <table className="lowStockTable">
-                    {lowStockArray.map((product) => (
-                        <tbody key={product.productName}>
-                            <tr>
-                                <td className="lowStockTableData">
-                                    <center>
-                                        {product.productName}
-                                    </center>
-                                </td>
-                            </tr>
-                        </tbody>
-                    ))}
-                </table>
+                : <div>
+                    <h4>LOW STOCK: </h4>
+                    <table className="lowStockTable">
+                        {lowStockArray.map((product) => (
+                            <tbody key={product.productName}>
+                                <tr>
+                                    <td className="lowStockTableData">
+                                        <center>
+                                            <button id={product.productTypeID} className="lowStockButton" onClick={(event) => {
+                                                // console.log('hi')
+                                                console.log(event.target.id)
+                                                navigate('/productDetail', { state: { productTypeID:event.target.id } });
+                                            }}>
+                                                Product: {product.productName}
+                                                <br />
+                                                Quantity: {product.productStockArray.length}
+                                            </button>
+                                        </center>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        ))}
+                    </table>
+                    <br />
+
+                </div>
             }
         </center>
     );
