@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import DatabaseService from '../database';
 
 function ProductOrderSuccessPage() {
@@ -39,6 +40,10 @@ function ProductOrderSuccessPage() {
                 : <div>
                     <h3>Product Ordered: {productName}</h3>
                     <h3>Quantity: {quantity}</h3>
+                    <Link
+                        key="linkToDashboard"
+                        to="/"
+                    >Back to Dashboard</Link>
                 </div>
             }
         </center>

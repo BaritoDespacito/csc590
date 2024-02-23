@@ -216,17 +216,18 @@ class DatabaseService {
     })
 
     // create productOrder doc
-    const orderData = {
-      productArray: productIDs,
-      productName: productType.productName,
-      productTypeID: productTypeID,
-      time: serverTimestamp(),
-    };
     console.log('order data created')
     const ordersInfo = doc(productOrdersCollectionRef, 'collectionInfo')
     const orderInfoSnapshot = await getDoc(ordersInfo)
     const newOrderID = parseInt(orderInfoSnapshot.data().highestID)
     console.log('got new order id', newOrderID+1)
+    const orderData = {
+      orderNumber: newOrderID+1,
+      productArray: productIDs,
+      productName: productType.productName,
+      productTypeID: productTypeID,
+      time: serverTimestamp(),
+    };
     const res4 = await setDoc(doc(productOrdersCollectionRef, (newOrderID+1).toString()), orderData)
     console.log('made product order')
 

@@ -75,7 +75,15 @@ function Dashboard() {
                                             <button id={product.productTypeID} className="lowStockButton" onClick={(event) => {
                                                 // console.log('hi')
                                                 console.log(event.target.id)
-                                                navigate('/productDetail', { state: { productTypeID:event.target.id } });
+                                                navigate('/productDetail', { state: { 
+                                                    productTypeID: product.productTypeID,
+                                                    productName: product.productName,
+                                                    productCategoryID: product.productCategoryID,
+                                                    price: product.price,
+                                                    productArray: product.productArray,
+                                                    productStockArray: product.productStockArray,
+                                                    productImage: product.productImage,
+                                                }});
                                             }}>
                                                 Product: {product.productName}
                                                 <br />
