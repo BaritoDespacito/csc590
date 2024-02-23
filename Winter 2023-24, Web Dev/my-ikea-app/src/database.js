@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import {db} from './firebase.js';
 import ProductType from "./Models/productTypeModel.js"
+import CustomerOrder from './Models/customerOrderModel.js'
 
 const testCollectionRef = collection(db, "testCollection");
 const productCollectionRef = collection(db, "productCollection");
@@ -270,6 +271,31 @@ class DatabaseService {
       }
     })
     return products.slice(0, 3)
+  }
+
+  ReadCustomerOrders = async () => {
+    const orderSnapshot = await getDocs(customerOrdersCollectionRef)
+    let orders = []
+    orderSnapshot.forEach(doc => {
+      // console.log(doc.data())
+      orders.push(new CustomerOrder(
+        doc.data().orderNumber,
+        doc.data().customerID,
+        doc.data().price,
+        doc.data().productArray,
+        doc.data().time,
+      ))
+    })
+    orders.sort((a, b) => {
+      if (a.time.toDate() < b.time.toDate()) {
+        return 1
+      } else if (a.time.toDate() > b.time.toDate()) {
+        return -1
+      } else {
+        return 0
+      }
+    })
+    return orders.slice(0, 3)
   }
 
 }

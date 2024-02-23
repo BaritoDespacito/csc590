@@ -7,6 +7,7 @@ class Product {
         this.category = category;
         this.sold = sold;
     }
+    
 }
 
 export default Product;
