@@ -16,6 +16,7 @@ import {
 import {db} from './firebase.js';
 import ProductType from "./Models/productTypeModel.js"
 import CustomerOrder from './Models/customerOrderModel.js'
+import ProductOrder from './Models/productOrderModel.js'
 
 const testCollectionRef = collection(db, "testCollection");
 const productCollectionRef = collection(db, "productCollection");
@@ -278,13 +279,15 @@ class DatabaseService {
     let orders = []
     orderSnapshot.forEach(doc => {
       // console.log(doc.data())
-      orders.push(new CustomerOrder(
-        doc.data().orderNumber,
-        doc.data().customerID,
-        doc.data().price,
-        doc.data().productArray,
-        doc.data().time,
-      ))
+      if (!doc.data().highestID) {
+        orders.push(new CustomerOrder(
+          doc.data().orderNumber,
+          doc.data().customerID,
+          doc.data().price,
+          doc.data().productArray,
+          doc.data().time,
+        ))
+      }
     })
     orders.sort((a, b) => {
       if (a.time.toDate() < b.time.toDate()) {
@@ -295,6 +298,33 @@ class DatabaseService {
         return 0
       }
     })
+    return orders.slice(0, 3)
+  }
+
+  ReadProductOrders = async () => {
+    const orderSnapshot = await getDocs(productOrdersCollectionRef)
+    let orders = []
+    orderSnapshot.forEach(doc => {
+      if (!doc.data().highestID) {
+        orders.push(new ProductOrder(
+          doc.data().orderNumber,
+          doc.data().productName,
+          doc.data().productTypeID,
+          doc.data().productArray,
+          doc.data().time,
+        ))
+      }
+    })
+    orders.sort((a, b) => {
+      if (a.time.toDate() < b.time.toDate()) {
+        return 1
+      } else if (a.time.toDate() > b.time.toDate()) {
+        return -1
+      } else {
+        return 0
+      }
+    })
+    console.log(orders)
     return orders.slice(0, 3)
   }
 

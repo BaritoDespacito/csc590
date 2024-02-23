@@ -4,6 +4,7 @@ import { Timestamp, toDate } from "firebase/firestore";
 import CustomerOrder from "../Models/customerOrderModel.js"
 import DatabaseService from "../database";
 import '../Styling/dashboard.css'
+import ProductOrder from "../Models/productOrderModel.js";
 
 function Dashboard() {
     const [loading, setLoading] = useState(false)
@@ -13,6 +14,11 @@ function Dashboard() {
     const [currentCustomerOrder, setCurrentCustomerOrder] = useState(new CustomerOrder(
         "0", "0", 0, [], Date()
     ))
+    const [productOrderArray, setProductOrderArray] = useState([])
+    const [showProductOrder, setShowProductOrder] = useState(false)
+    const [currentProductOrder, setCurrentProductOrder] = useState(new ProductOrder(
+        "0", "0", "0", [], Date()
+    ))
 
     const fetchData = async () => {
         // set the data to loading
@@ -21,10 +27,12 @@ function Dashboard() {
         // get the data
         const res = await DatabaseService.ReadLowestStock()
         const res2 = await DatabaseService.ReadCustomerOrders()
+        const res3 = await DatabaseService.ReadProductOrders()
 
         // show the data in console
         console.log("data", res[0], res[1], res[2])
         console.log('data 2', res2[0], res2[1], res2[2])
+        console.log('data 3', res3[0], res3[1], res[2])
 
         // stop loading
         setLoading(false)
@@ -32,6 +40,7 @@ function Dashboard() {
         // set the data to the result
         setLowStockArray(res)
         setCustomerOrderArray(res2)
+        setProductOrderArray(res3)
     }
 
     useEffect(() => {
@@ -105,6 +114,44 @@ function Dashboard() {
                         </div>
                         : <div></div>
                     }
+                    <br />
+                    <h4>RECENT PRODUCT ORDERS:</h4>
+                    <table className="lowStockTable">
+                        {productOrderArray.map((order) => (
+                            <tbody key={order.orderNumber}>
+                                <tr>
+                                    <td className="lowStockTableData">
+                                        <center>
+                                            <button id={order.orderNumber} className="lowStockButton" onClick={(event) => {
+                                                setShowProductOrder(true)
+                                                setCurrentProductOrder(order)
+                                            }}>
+                                                Order Number: {order.orderNumber}
+                                                <br />
+                                                Time: {order.time.toDate().toDateString()}
+                                            </button>
+                                        </center>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        ))}
+                    </table>
+                    <br />
+                    { showProductOrder 
+                        ? <div>
+                            Order Number: {currentProductOrder.orderNumber}
+                            <br />
+                            Product Name: {currentProductOrder.productName}
+                            <br />
+                            Product Type ID: {currentProductOrder.productTypeID}
+                            <br />
+                            Products: {currentProductOrder.productArray.toString()}
+                            <br />
+                            Time: {currentProductOrder.time.toDate().toDateString()}
+                        </div>
+                        : <div></div>
+                    }
+                    <br />
                 </div>
             }
         </center>
