@@ -5,6 +5,7 @@ import CustomerOrder from "../Models/customerOrderModel.js"
 import DatabaseService from "../database";
 import '../Styling/dashboard.css'
 import ProductOrder from "../Models/productOrderModel.js";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
     const [loading, setLoading] = useState(false)
@@ -55,6 +56,15 @@ function Dashboard() {
             { loading 
                 ? <h3>LOADING</h3>
                 : <div>
+                    <Link
+                        key="linkToProductList"
+                        to="/productList"
+                    >Product List</Link>
+                    <br />
+                    <Link
+                        key="linkToProductOrder"
+                        to="/productOrder"
+                    >Product Order</Link>
                     <h4>LOW STOCK: </h4>
                     <table className="lowStockTable">
                         {lowStockArray.map((product) => (
