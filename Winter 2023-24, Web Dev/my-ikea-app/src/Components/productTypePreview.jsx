@@ -1,5 +1,6 @@
 import React from "react";
 import '../Styling/productTypePreview.css'
+import ProductType from "../Models/productTypeModel";
 
 function ProductTypePreview({product}) {
     return(

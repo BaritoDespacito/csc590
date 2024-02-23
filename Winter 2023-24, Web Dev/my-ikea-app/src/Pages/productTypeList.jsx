@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DatabaseService from "../database.js";
 import ProductTypePreview from "../Components/productTypePreview.jsx";
 
@@ -88,6 +89,8 @@ function ProductTypeList() {
         setSortValue(event.target.value);
     };
 
+    const navigate = useNavigate();
+
     return(
         <div>
             <center>
@@ -139,12 +142,26 @@ function ProductTypeList() {
                         { allProductTypes.length > 0
                             ? <div>
                                 {allProductTypes.map((product) => (
-                                    <div key={product.productID}>
-                                        <ProductTypePreview
-                                            product={product}
-                                        ></ProductTypePreview>
-                                        <br />
-                                    </div>
+                                    <button id={product.productTypeID} onClick={(event) => {
+                                        console.log(product)
+                                        console.log(product.productTypeID)
+                                        navigate('/productDetail', { state: { 
+                                            productTypeID: product.productTypeID,
+                                            productName: product.productName,
+                                            productCategoryID: product.productCategoryID,
+                                            price: product.price,
+                                            productArray: product.productArray,
+                                            productStockArray: product.productStockArray,
+                                            productImage: product.productImage,
+                                        }});
+                                    }}>
+                                        <div key={product.productTypeID} >
+                                            <ProductTypePreview
+                                                product={product}
+                                            ></ProductTypePreview>
+                                            <br />
+                                        </div>
+                                    </button>
                                 ))}
                             </div>
                            : <h2>NO PRODUCTS FOUND</h2>
