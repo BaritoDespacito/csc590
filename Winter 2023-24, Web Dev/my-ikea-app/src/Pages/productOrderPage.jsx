@@ -12,6 +12,7 @@ function ProductOrderPage() {
     const [selectedProduct, setSelectedProduct] = useState("NONE")
     const [selectedProductID, setSelectedProductID] = useState("-1")
     const [quantity, setQuantity] = useState(0)
+    var [errormessage, setMessage] = useState("")
 
     const navigate = useNavigate();
 
@@ -45,9 +46,11 @@ function ProductOrderPage() {
 
     const createProductOrder = async () => { // used to handle input of order button
         if (selectedProduct == "NONE") { // if there isn't a selected product
-            console.log('select smth bozo')
+            // console.log('select smth bozo')
+            setMessage("select smth bozo")
         } else if (quantity <= 0) { // if the quantity of product isn't selected or is invalid
-            console.log('put a quantity bozo')
+            // console.log('put a quantity bozo')
+            setMessage("put a quantity bozo")
         } else {
             await DatabaseService.CreateProductOrder(quantity, selectedProductID) // create the product order
             navigate('/productOrderSuccess') // push the product order success page 
@@ -94,6 +97,7 @@ function ProductOrderPage() {
                                 }}/></label>
                                 <br />
                                 <button id = "link" onClick={createProductOrder}><h4 id = "button">ORDER</h4></button>
+                                <h4 style = {{margin: "2px"}}>{errormessage}</h4>
                             </div>
                            : <h2>NO PRODUCTS FOUND</h2> // if no products from search query are found
                         }
