@@ -12,7 +12,7 @@ function ProductOrderPage() {
     const [selectedProduct, setSelectedProduct] = useState("NONE")
     const [selectedProductID, setSelectedProductID] = useState("-1")
     const [quantity, setQuantity] = useState(0)
-    var [errormessage, setMessage] = useState("")
+    const [errormessage, setMessage] = useState("")
 
     const navigate = useNavigate();
 
