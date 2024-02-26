@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Timestamp, toDate } from "firebase/firestore";
 import CustomerOrder from "../Models/customerOrderModel.js"
 import DatabaseService from "../database";
 import '../Styling/dashboard.css'
@@ -8,6 +7,9 @@ import ProductOrder from "../Models/productOrderModel.js";
 import { Link } from "react-router-dom";
 
 function Dashboard() {
+
+    // The Dashboard is the landing page of the application. It shows an overview of product statuses, including a list of low stock products and a list of recent product and customer orders.
+
     const [loading, setLoading] = useState(false)
     const [lowStockArray, setLowStockArray] = useState([])
     const [customerOrderArray, setCustomerOrderArray] = useState([])
@@ -22,18 +24,14 @@ function Dashboard() {
     ))
 
     const fetchData = async () => {
-        // set the data to loading
+
+        // set the page to loading
         setLoading(true)
 
         // get the data
         const res = await DatabaseService.ReadLowestStock()
         const res2 = await DatabaseService.ReadCustomerOrders()
         const res3 = await DatabaseService.ReadProductOrders()
-
-        // show the data in console
-        console.log("data", res[0], res[1], res[2])
-        console.log('data 2', res2[0], res2[1], res2[2])
-        console.log('data 3', res3[0], res3[1], res[2])
 
         // stop loading
         setLoading(false)
@@ -45,6 +43,7 @@ function Dashboard() {
     }
 
     useEffect(() => {
+        // run the fetch data function on load
         fetchData();
     }, [])
 
@@ -53,9 +52,9 @@ function Dashboard() {
     return(
         <center>
             <h1>DASHBOARD</h1>
-            { loading 
-                ? <h3>LOADING</h3>
-                : <div>
+            { loading // conditional rendering for if page is loading
+                ? <h3>LOADING</h3> // if loading is true
+                : <div> 
                     <Link
                         key="linkToProductList"
                         to="/productList"
@@ -67,14 +66,13 @@ function Dashboard() {
                     >Product Order</Link>
                     <h4>LOW STOCK: </h4>
                     <table className="lowStockTable">
-                        {lowStockArray.map((product) => (
+                        {lowStockArray.map((product) => ( // for each product in lowStockArray, render a button
                             <tbody key={product.productName}>
                                 <tr>
                                     <td className="lowStockTableData">
                                         <center>
                                             <button id={product.productTypeID} className="lowStockButton" onClick={(event) => {
-                                                // console.log('hi')
-                                                console.log(event.target.id)
+                                                // on click, push the productDetail page with the product data
                                                 navigate('/productDetail', { state: { 
                                                     productTypeID: product.productTypeID,
                                                     productName: product.productName,
@@ -98,12 +96,13 @@ function Dashboard() {
                     <br />
                     <h4>RECENT CUSTOMER ORDERS:</h4>
                     <table className="lowStockTable">
-                        {customerOrderArray.map((order) => (
+                        {customerOrderArray.map((order) => ( // for each customer order in customerOrderArray, render a button
                             <tbody key={order.orderNumber}>
                                 <tr>
                                     <td className="lowStockTableData">
                                         <center>
                                             <button id={order.orderNumber} className="lowStockButton" onClick={(event) => {
+                                                // on click, show the customer order data
                                                 setShowCustomerOrder(true)
                                                 setCurrentCustomerOrder(order)
                                             }}>
@@ -118,7 +117,7 @@ function Dashboard() {
                         ))}
                     </table>
                     <br />
-                    { showCustomerOrder 
+                    { showCustomerOrder // if any customer order button has been clicked
                         ? <div>
                             Order Number: {currentCustomerOrder.orderNumber}
                             <br />
@@ -135,12 +134,13 @@ function Dashboard() {
                     <br />
                     <h4>RECENT PRODUCT ORDERS:</h4>
                     <table className="lowStockTable">
-                        {productOrderArray.map((order) => (
+                        {productOrderArray.map((order) => ( // for each product order in productOrderArray, render a button
                             <tbody key={order.orderNumber}>
                                 <tr>
                                     <td className="lowStockTableData">
                                         <center>
                                             <button id={order.orderNumber} className="lowStockButton" onClick={(event) => {
+                                                // on click, show the product order data
                                                 setShowProductOrder(true)
                                                 setCurrentProductOrder(order)
                                             }}>
@@ -155,7 +155,7 @@ function Dashboard() {
                         ))}
                     </table>
                     <br />
-                    { showProductOrder 
+                    { showProductOrder // if any product order button has been clicked
                         ? <div>
                             Order Number: {currentProductOrder.orderNumber}
                             <br />

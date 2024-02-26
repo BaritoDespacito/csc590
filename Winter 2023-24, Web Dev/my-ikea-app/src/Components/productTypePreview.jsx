@@ -1,8 +1,10 @@
 import React from "react";
 import '../Styling/productTypePreview.css'
-import ProductType from "../Models/productTypeModel";
 
 function ProductTypePreview({product}) {
+
+    // The ProductTypePreview is a subcomponent of the ProductTypeList page. It receives a product's data, and displays a basic preview of the product, including its name, price, and image.
+
     return(
         <div>
             <div>this is a product type preview</div>

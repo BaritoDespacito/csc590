@@ -6,8 +6,10 @@ import "../Styling/productDetailPage.css"
 
 function ProductDetailPage() {
 
+    // ProductDetailPage is a page used to show detailed information about each product. It takes in the product's data and displays all information available.
+
     const {state} = useLocation();
-    const { productTypeID, productName, productCategoryID, price, productArray, productStockArray, productImage } = state; // Read values passed on state
+    const { productTypeID, productName, productCategoryID, price, productArray, productStockArray, productImage } = state; // read values passed through state
 
     return(
         <div>
@@ -17,7 +19,7 @@ function ProductDetailPage() {
                 <h3>Price: {price}</h3>
                 <h3>IN STOCK: {productStockArray.length}</h3>
                 <table className="productStockTable">
-                    {productStockArray.map((product) => (
+                    {productStockArray.map((product) => ( // for each product in productStockArray, render a row
                         <tbody>
                             <tr>
                                 <td>
@@ -29,7 +31,7 @@ function ProductDetailPage() {
                         </tbody>
                     ))}
                 </table>
-                <h3>SOLD: {productArray.length-productStockArray.length}</h3>
+                <h3>SOLD: {productArray.length-productStockArray.length}</h3> 
                 <Link
                     key="linkToProductOrder"
                     to="/productOrder"

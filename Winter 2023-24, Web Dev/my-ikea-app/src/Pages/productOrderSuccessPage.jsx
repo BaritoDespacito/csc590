@@ -3,19 +3,19 @@ import { Link } from "react-router-dom";
 import DatabaseService from '../database';
 
 function ProductOrderSuccessPage() {
+
+    // ProductOrderSuccessPage is a page used once a product order has successfully been created. It fetches the most recent product order (the one just created) and displays a summary.
+
     const [loading, setLoading] = useState(false)
     const [productName, setProductName] = useState(false)
     const [quantity, setQuantity] = useState(false)
 
     const fetchData = async () => {
-        // set the data to loading
+        // set the page to loading
         setLoading(true)
 
         // get the data
         const res = await DatabaseService.ReadLastProductOrder()
-
-        // show the data in console
-        console.log("data", res[0], res[1])
 
         // stop loading
         setLoading(false)
@@ -26,6 +26,7 @@ function ProductOrderSuccessPage() {
     }
 
     useEffect(() => {
+        // fetch data on load
         fetchData();
     }, [])
 

@@ -4,6 +4,9 @@ import DatabaseService from "../database.js";
 import ProductTypePreview from "../Components/productTypePreview.jsx";
 
 function ProductTypeList() {
+
+    // ProductTypeList is the main search page of the system. Users are able to input a search query, as well as sort/filter their query for better results. Each result is displayed as a button which links to the ProductDetailPage.
+
     const [allProductTypes, setAllProductTypes] = useState([])
     const [loading, setLoading] = useState(false)
     const [categoryFilterValue, setCategoryFilterValue] = useState('-1');
@@ -12,14 +15,11 @@ function ProductTypeList() {
     const [sortValue, setSortValue] = useState('1');
 
     const fetchData = async () => {
-        // set the data to loading
+        // set the page to loading
         setLoading(true)
 
         // get the data
         const resAllDocs = await DatabaseService.ReadAllProductTypes()
-
-        // show the data in console
-        console.log("resAllDocs", resAllDocs)
 
         // stop loading
         setLoading(false)
@@ -29,22 +29,20 @@ function ProductTypeList() {
     }
 
     useEffect(() => {
+        // fetch data on load
         fetchData();
     }, [])
 
-    const handleKeyPress = async (event) => {
-        if(event.key === 'Enter'){
-            console.log('enter pressed, sending search query of', event.target.value)
-            console.log(categoryFilterValue);
-            setLoading(true)
-            const res = await DatabaseService.ReadProductTypesWithQuery(event.target.value, categoryFilterValue, priceFilterValue, stockFilterValue, sortValue);
-            console.log('result from search', res)
-            setLoading(false)
+    const handleKeyPress = async (event) => { // used to handle user inputs on search bar
+        if(event.key === 'Enter'){ // if the user clicks enter
+            setLoading(true) // set page to loading
+            const res = await DatabaseService.ReadProductTypesWithQuery(event.target.value, categoryFilterValue, priceFilterValue, stockFilterValue, sortValue); // search for all products with query and sort/filter
+            setLoading(false) // stop loading
             setAllProductTypes(res)
         }
     }
 
-    const priceFilterOptions = [
+    const priceFilterOptions = [ // options for price filtering
         { label: "All", value: "-1" },
         { label: '< 50.00', value: "1" },
         { label: '50.00-100.00', value: '2' },
@@ -52,12 +50,12 @@ function ProductTypeList() {
         { label: '>200.00', value: "4" },
     ];
 
-    const stockFilterOptions = [
+    const stockFilterOptions = [ // options for stock filtering
         { label: "All", value: "-1" },
         { label: 'In Stock', value: "1" },
     ];
 
-    const categoryFilterOptions = [
+    const categoryFilterOptions = [ // options for category filtering
         { label: "All", value: "-1" },
         { label: 'Chair', value: "1" },
         { label: 'Table', value: '2' },
@@ -66,26 +64,26 @@ function ProductTypeList() {
         { label: 'Drawers', value: '5' },
     ];
 
-    const sortOptions = [
+    const sortOptions = [ // options for sorting
         { label: "Alphabetical", value: "1" },
         { label: 'Price Ascending', value: "2" },
         { label: 'Price Descending', value: "3" },
         { label: 'Category', value: '4' },
     ];
 
-    const handleChangeCategory = (event) => {
+    const handleChangeCategory = (event) => { // used to handle changes on category filter
         setCategoryFilterValue(event.target.value);
     };
 
-    const handleChangePrice = (event) => {
+    const handleChangePrice = (event) => { // used to handle changes on price filter
         setPriceFilterValue(event.target.value);
     };
 
-    const handleChangeStock = (event) => {
+    const handleChangeStock = (event) => { // used to handle changes on stock filter
         setStockFilterValue(event.target.value);
     };
 
-    const handleChangeSort = (event) => {
+    const handleChangeSort = (event) => { // used to handle changes on sort
         setSortValue(event.target.value);
     };
 
@@ -103,7 +101,7 @@ function ProductTypeList() {
                 <label>
                     Filter Category:
                     <select value={categoryFilterValue} onChange={handleChangeCategory}>
-                        {categoryFilterOptions.map((option) => (
+                        {categoryFilterOptions.map((option) => ( // for each category filter option, render an option
                             <option key={option.label} value={option.value}>{option.label}</option>
                         ))}
                     </select>
@@ -112,7 +110,7 @@ function ProductTypeList() {
                 <label>
                     Filter Price:
                     <select value={priceFilterValue} onChange={handleChangePrice}>
-                        {priceFilterOptions.map((option) => (
+                        {priceFilterOptions.map((option) => ( // for each price filter option, render an option
                             <option key={option.label} value={option.value}>{option.label}</option>
                         ))}
                     </select>
@@ -121,7 +119,7 @@ function ProductTypeList() {
                 <label>
                     Filter Stock:
                     <select value={stockFilterValue} onChange={handleChangeStock}>
-                        {stockFilterOptions.map((option) => (
+                        {stockFilterOptions.map((option) => ( // for each stock filter option, render an option
                             <option key={option.label} value={option.value}>{option.label}</option>
                         ))}
                     </select>
@@ -130,7 +128,7 @@ function ProductTypeList() {
                 <label>
                     Sort By:
                     <select value={sortValue} onChange={handleChangeSort}>
-                        {sortOptions.map((option) => (
+                        {sortOptions.map((option) => ( // for each sort option, render an option
                             <option key={option.label} value={option.value}>{option.label}</option>
                         ))}
                     </select>
@@ -139,13 +137,12 @@ function ProductTypeList() {
                 { loading
                     ? <h2>LOADING</h2>
                     : <div>
-                        { allProductTypes.length > 0
+                        { allProductTypes.length > 0 // if there are products found from query
                             ? <div>
-                                {allProductTypes.map((product) => (
-                                    <button id={product.productTypeID} onClick={(event) => {
-                                        console.log(product)
-                                        console.log(product.productTypeID)
+                                {allProductTypes.map((product) => ( // for each product found, render a button
+                                    <button id={product.productTypeID} onClick={() => {
                                         navigate('/productDetail', { state: { 
+                                            // when button is clicked, push productDetail page with product info
                                             productTypeID: product.productTypeID,
                                             productName: product.productName,
                                             productCategoryID: product.productCategoryID,

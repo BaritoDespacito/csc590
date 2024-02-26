@@ -5,6 +5,9 @@ import ProductType from '../Models/productTypeModel.js';
 import { Link } from "react-router-dom";
 
 function TestDBApp() {
+
+    // TestDBApp is a testing component. Its purpose was to test the read/write functions for Firestore. It is not used in the final product.
+
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState(new ProductType(
         "n/a", "n/a", "n/a", 0, []
@@ -18,10 +21,6 @@ function TestDBApp() {
         // get the data
         const res = await DatabaseService.TestReadProductType()
         const resAllDocs = await DatabaseService.ReadAllProductTypes()
-
-        // show the data in console
-        console.log("res is ", res)
-        console.log("resAllDocs", resAllDocs)
 
         // stop loading
         setLoading(false)

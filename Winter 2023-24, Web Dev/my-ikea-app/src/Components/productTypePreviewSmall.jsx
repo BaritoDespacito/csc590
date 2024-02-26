@@ -1,23 +1,16 @@
 import React from "react";
 import '../Styling/productTypePreviewSmall.css'
 
-function ProductTypePreviewSmall({product, handler}) {
+function ProductTypePreviewSmall({product}) {
 
-    // const onTrigger = (event) => {
-    //     // Call the parent callback function
-    //     console.log('child', event.target.id);
-    //     handler(
-    //         event
-    //     );
-    // };
+    // The ProductTypePreviewSmall is a subcomponent of the ProductOrderPage. It receives a product's data, then concisely displays the product's information, including its name and quantity in stock.
+    // This is different to the ProductTypePreview because it is in a more concise form, used for more backend purposes. 
 
     return(
-        // <button id={product.productName} onClick={onTrigger}>
             <div className='fullBox'>
                 <div>{product.productName}</div>
                 <div>Quantity: {product.productStockArray.length}</div>
             </div>
-        // </button>
     );
 }
 

@@ -18,6 +18,7 @@ import ProductType from "./Models/productTypeModel.js"
 import CustomerOrder from './Models/customerOrderModel.js'
 import ProductOrder from './Models/productOrderModel.js'
 
+// Collection references, used to reference each collection in Firestore
 const testCollectionRef = collection(db, "testCollection");
 const productCollectionRef = collection(db, "productCollection");
 const productTypeCollectionRef = collection(db, "productTypeCollection");
@@ -25,7 +26,12 @@ const productOrdersCollectionRef = collection(db, "productOrdersCollection");
 const customerOrdersCollectionRef = collection(db, "customerOrdersCollection");
 class DatabaseService {
 
+  // The DatabaseService class is the entire backend service of the system. The class contains all database functions required in the system. An instance of the class can be initialized in any page in order to access all available functions.
+
   TestAdd = async () => {
+
+    // TestAdd was created to test the database's write function. TestAdd is not used in the final product.
+
     console.log('hi this is testadd function')
     const data = {
       name: 'Los Angeles',
@@ -33,7 +39,7 @@ class DatabaseService {
       country: 'USA'
     };
     
-    // Add a new document in collection "cities" with ID 'LA'
+    // Add a new document in collection "testCollection" with data and random ID
     const res = await addDoc(testCollectionRef, data)
     console.log('data added')
 
@@ -41,11 +47,12 @@ class DatabaseService {
   }
 
   TestReadProductType = async () => {
-    console.log('hi this is testread function')
-    const sampleDoc = doc(productTypeCollectionRef, '1');
-    const snapshot = await getDoc(sampleDoc);
-    console.log(snapshot.data());
-    const res = new ProductType(
+
+    // TestReadProductType was created to test the database's read function. TestReadProductType is not used in the final product.
+
+    const sampleDoc = doc(productTypeCollectionRef, '1'); // create reference of document
+    const snapshot = await getDoc(sampleDoc); // get data from firestore
+    const res = new ProductType( // format data from snapshot into ProductType model
       snapshot.data().productTypeID,
       snapshot.data().productName,
       snapshot.data().productCategoryID,
@@ -58,10 +65,12 @@ class DatabaseService {
   }
 
   ReadSpecificProductType = async (productID) => {
-    const typeDoc = doc(productTypeCollectionRef, productID);
-    const snapshot = await getDoc(typeDoc);
-    console.log(snapshot.data());
-    const res = new ProductType(
+
+    // ReadSpecificProductType was created for an earlier iteration of the productDetailPage. It was used to read all product details of an inputted product type ID. ReadSpecificProductType is not used in the final product.
+
+    const typeDoc = doc(productTypeCollectionRef, productID); // create reference of document
+    const snapshot = await getDoc(typeDoc); // get data from firestore
+    const res = new ProductType( // format data from snapshot into ProductType model
       snapshot.data().productTypeID,
       snapshot.data().productName,
       snapshot.data().productCategoryID,
@@ -74,10 +83,13 @@ class DatabaseService {
   }
 
   ReadAllProductTypes = async () => {
-    const snapshot = await getDocs(productTypeCollectionRef);
+
+    // ReadAllProducTypes is used to read all product types stored in Firestore. It returns an array of ProductType instances.
+
+    const snapshot = await getDocs(productTypeCollectionRef); // get all data from firestore
     const res = [];
-    snapshot.forEach(doc => {
-      res.push(new ProductType(
+    snapshot.forEach(doc => { // for each document included in the snapshot
+      res.push(new ProductType( // format data from snapshot into ProductType model, and add to res
         doc.data().productTypeID,
         doc.data().productName,
         doc.data().productCategoryID,
@@ -87,52 +99,53 @@ class DatabaseService {
         doc.data().productImage,
       ))
     });
-    return res.sort((productA, productB) => {
-      if (productA.productName < productB.productName) {
-        return -1;
-      } else if (productA.productName > productB.productName) {
+    return res.sort((productA, productB) => { // return a sorted version of res
+      if (productA.productName < productB.productName) { // if productA is alphabetically behind productB
+        return -1; // put it behind
+      } else if (productA.productName > productB.productName) { // vice versa
         return 1;
       } else {
-        return 0;
+        return 0; // if they are alphabetically the same
       }
     });
   }
 
   ReadProductTypesWithQuery = async (searchQuery, categoryFilter, priceFilter, stockFilter, sortBy) => {
-    let res = [];
-    let allProducts = await this.ReadAllProductTypes();
 
-    for (let product of allProducts) {
-      console.log(product.price);
-      if (!product.productName.includes(searchQuery.toUpperCase())) {
-        continue
+    // ReadProductTypesWithQuery is an inbuilt search algorithm used to search through all product types with a query and sort/filters.
+
+    let res = [];
+    let allProducts = await this.ReadAllProductTypes(); // use ReadAllProductTypes to get list of all products
+
+    for (let product of allProducts) { // for each product
+      if (!product.productName.includes(searchQuery.toUpperCase())) { // if the search query is not included in product name
+        continue // continue, which skips the current product and moves to next for loop iteration
+      } 
+      if (categoryFilter != "-1" && categoryFilter != product.productCategoryID) { // if there is a category filter and the filter does not meet the product's category
+        continue // continue, which skips the current product and moves to next for loop iteration
       }
-      if (categoryFilter != "-1" && categoryFilter != product.productCategoryID) {
-        continue
+      if (stockFilter != "-1" && product.productArray.length == 0) { // if there is a stock filter and the product is out of stock
+        continue // continue, which skips the current product and moves to next for loop iteration
       }
-      if (stockFilter != "-1" && product.productArray.length == 0) {
-        continue
-      }
-      if (priceFilter != "-1") {
-        if (priceFilter == "1" && product.price >= 50.00) {
-          console.log('continuing');
-          continue
+      if (priceFilter != "-1") { // if there is a price filter
+        if (priceFilter == "1" && product.price >= 50.00) { // if the price does not meet filter 
+          continue // continue, which skips the current product and moves to next for loop iteration
         }
-        else if (priceFilter == "2" && (product.price < 50.00 || product.price > 100.00)) {
-          continue
+        else if (priceFilter == "2" && (product.price < 50.00 || product.price > 100.00)) { // if the price does not meet filter 
+          continue // continue, which skips the current product and moves to next for loop iteration
         }
-        else if (priceFilter == "3" && (product.price < 100.00 || product.price > 200.00)) {
-          continue
+        else if (priceFilter == "3" && (product.price < 100.00 || product.price > 200.00)) { // if the price does not meet filter 
+          continue // continue, which skips the current product and moves to next for loop iteration
         }
-        else if (priceFilter == "4" && product.price <= 200.00) {
-          continue
+        else if (priceFilter == "4" && product.price <= 200.00) { // if the price does not meet filter 
+          continue // continue, which skips the current product and moves to next for loop iteration
         }
       }
-      res.push(product);
+      res.push(product); // if the search has not continued, the product passes all queries/filters, so the product can be included in final result
     }
 
-    return res.sort((productA, productB) => {
-      if (sortBy == "1") {
+    return res.sort((productA, productB) => { // return a sorted version of res
+      if (sortBy == "1") { // if the sort is alphabetical
         if (productA.productName < productB.productName) {
           return -1;
         } else if (productA.productName > productB.productName) {
@@ -140,7 +153,7 @@ class DatabaseService {
         } else {
           return 0;
         }
-      } else if (sortBy == "2") {
+      } else if (sortBy == "2") { // if the sort is by price ascending
         if (productA.price < productB.price) {
           return -1;
         } else if (productA.price > productB.price) {
@@ -148,7 +161,7 @@ class DatabaseService {
         } else {
           return 0;
         }
-      } else if (sortBy == "3") {
+      } else if (sortBy == "3") { // if the sort is by price descending
         if (productA.price > productB.price) {
           return -1;
         } else if (productA.price < productB.price) {
@@ -156,7 +169,7 @@ class DatabaseService {
         } else {
           return 0;
         }
-      } else {
+      } else { // if the sort is by category
         if (productA.productCategoryID < productB.productCategoryID) {
           return -1;
         } else if (productA.productCategoryID > productB.productCategoryID) {
@@ -169,6 +182,9 @@ class DatabaseService {
   }
 
   CreateProductOrder = async (quantity, productTypeID) => {
+
+    // CreateProductOrder is used to fetch all data required to make a product order, then create all necessary documents associated with that order. It will create the order document and new product documents, and update the product type document accordingly.
+
     // search for the product type's document
     const productTypeDocument = doc(productTypeCollectionRef, productTypeID);
     const productSnapshot = await getDoc(productTypeDocument);
@@ -181,13 +197,12 @@ class DatabaseService {
       productSnapshot.data().productStockArray,
       productSnapshot.data().productImage,
     );
-    console.log('got product type data')
+
 
     // get the current highest id
     const idInfo = doc(productCollectionRef, 'collectionInfo');
     const infoSnapshot = await getDoc(idInfo);
     const highestID = parseInt(infoSnapshot.data().highestID);
-    console.log('got highest id', highestID.toString())
 
     // create products for productCollection
     let productIDs = [];
@@ -199,7 +214,6 @@ class DatabaseService {
       sold: false,
     };
     for (let i = 1; i<= quantity; i++) {
-      console.log(highestID+i);
       productIDs.push((highestID+i).toString())
       productData.productID = (highestID+i).toString()
       const res = await setDoc(doc(productCollectionRef, (highestID+i).toString()), productData)
@@ -207,7 +221,6 @@ class DatabaseService {
         highestID: (highestID+i).toString()
       })
     }
-    console.log('created product doc')
 
     // update productType doc with new ids (product array and product stock array)
     const res1 = await updateDoc(doc(productTypeCollectionRef, productTypeID), {
@@ -216,11 +229,9 @@ class DatabaseService {
     })
 
     // create productOrder doc
-    console.log('order data created')
     const ordersInfo = doc(productOrdersCollectionRef, 'collectionInfo')
     const orderInfoSnapshot = await getDoc(ordersInfo)
     const newOrderID = parseInt(orderInfoSnapshot.data().highestID)
-    console.log('got new order id', newOrderID+1)
     const orderData = {
       orderNumber: newOrderID+1,
       productArray: productIDs,
@@ -229,7 +240,6 @@ class DatabaseService {
       time: serverTimestamp(),
     };
     const res4 = await setDoc(doc(productOrdersCollectionRef, (newOrderID+1).toString()), orderData)
-    console.log('made product order')
 
     // set new orders collection highest
     const res5 = await updateDoc(doc(productOrdersCollectionRef, 'collectionInfo'), {
@@ -238,7 +248,10 @@ class DatabaseService {
   }
 
   ReadLastProductOrder = async () => {
-    const collectionInfo = await getDoc(doc(productOrdersCollectionRef, 'collectionInfo'));
+
+    // ReadLastProductOrder is used to read the product order just created on the ProductOrderSuccess page.
+
+    const collectionInfo = await getDoc(doc(productOrdersCollectionRef, 'collectionInfo')); 
     const lastID = collectionInfo.data().highestID;
     
     const lastOrder = await getDoc(doc(productOrdersCollectionRef, lastID))
@@ -249,21 +262,11 @@ class DatabaseService {
   }
 
   ReadLowestStock = async () => {
-    const productSnapshot = await getDocs(productTypeCollectionRef)
-    let products = []
-    productSnapshot.forEach(doc => {
-      // console.log(doc.data())
-      products.push(new ProductType(
-        doc.data().productTypeID,
-        doc.data().productName,
-        doc.data().productCategoryID,
-        doc.data().price,
-        doc.data().productArray,
-        doc.data().productStockArray,
-        doc.data().productImage,
-      ))
-    })
-    products.sort((a, b) => {
+
+    // ReadLowestStock is used on the dashboard to get the products of lowest stock.
+
+    let products = await this.ReadAllProductTypes() // get all products
+    products.sort((a, b) => { // sort products by stock
       if (a.productStockArray.length > b.productStockArray.length) {
         return 1
       } else if (a.productStockArray.length < b.productStockArray.length) {
@@ -272,14 +275,16 @@ class DatabaseService {
         return 0
       }
     })
-    return products.slice(0, 3)
+    return products.slice(0, 3) // return the three lowest stock products
   }
 
   ReadCustomerOrders = async () => {
-    const orderSnapshot = await getDocs(customerOrdersCollectionRef)
+
+    // ReadCustomerOrders is used on the dashboard to get the most recent customer orders.
+
+    const orderSnapshot = await getDocs(customerOrdersCollectionRef) // get all orders
     let orders = []
-    orderSnapshot.forEach(doc => {
-      // console.log(doc.data())
+    orderSnapshot.forEach(doc => { // format each order into CustomerOrder model
       if (!doc.data().highestID) {
         orders.push(new CustomerOrder(
           doc.data().orderNumber,
@@ -290,7 +295,7 @@ class DatabaseService {
         ))
       }
     })
-    orders.sort((a, b) => {
+    orders.sort((a, b) => { // sort orders by date
       if (a.time.toDate() < b.time.toDate()) {
         return 1
       } else if (a.time.toDate() > b.time.toDate()) {
@@ -299,13 +304,16 @@ class DatabaseService {
         return 0
       }
     })
-    return orders.slice(0, 3)
+    return orders.slice(0, 3) // return the three most recent orders
   }
 
   ReadProductOrders = async () => {
-    const orderSnapshot = await getDocs(productOrdersCollectionRef)
+
+    // ReadProductOrders is used on the dashboard to get the most recent product orders.
+
+    const orderSnapshot = await getDocs(productOrdersCollectionRef) // get all product orders
     let orders = []
-    orderSnapshot.forEach(doc => {
+    orderSnapshot.forEach(doc => { // format each order into ProductOrder model
       if (!doc.data().highestID) {
         orders.push(new ProductOrder(
           doc.data().orderNumber,
@@ -316,7 +324,7 @@ class DatabaseService {
         ))
       }
     })
-    orders.sort((a, b) => {
+    orders.sort((a, b) => { // sort orders by date
       if (a.time.toDate() < b.time.toDate()) {
         return 1
       } else if (a.time.toDate() > b.time.toDate()) {
@@ -325,8 +333,7 @@ class DatabaseService {
         return 0
       }
     })
-    console.log(orders)
-    return orders.slice(0, 3)
+    return orders.slice(0, 3) // return the three most recent orders
   }
 
 }
