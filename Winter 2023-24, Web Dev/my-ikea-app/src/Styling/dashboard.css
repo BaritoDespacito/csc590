@@ -1,0 +1,65 @@
+.lowStockTable {
+    width: 225px;
+}
+
+.lowStockButton {
+    width: 200px
+}
+
+h1#header {
+    margin-top: 0;
+    background: #003399;
+    color: #ffcc00;
+    padding: 10px;
+}
+
+h3 {
+    color: #ffcc00;
+}
+
+h4 {
+    color: #ffcc00;
+    margin-bottom: 5px;
+}
+
+h4#button {
+    color: #ffcc00;
+    margin: 5px;
+}
+
+.lowStockTableData {
+    border: 0px;
+    width: 225px;
+}
+
+.lowStockButton {
+    background: #002e8a;
+    border: 0px;
+    color: #ffcc00;
+}
+
+.lowStockButton:hover {
+    background: #00297a;
+}
+
+a {
+    color: #ffcc00;
+    /* background: #002e8a; */
+    text-decoration: none;
+}
+
+button#link {
+    margin: 5px;
+    width: 200px;
+    background: #002e8a;
+    border: 0px;
+    height: 33px;
+}
+
+button#link:hover {
+    background: #00297a;
+}
+
+body {
+    color: #ffcc00;
+}

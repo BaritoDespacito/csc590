@@ -1,0 +1,9 @@
+.productTypePreviewImage {
+    height: 200px;
+}
+
+.fullBox {
+    /* background-color: rgb(111, 178, 255); */
+    width: 150px;
+    color: #ffcc00;
+}

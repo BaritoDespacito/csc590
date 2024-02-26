@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import './Styling/index.css';
 import reportWebVitals from './reportWebVitals';
-import TestDBApp from './Components/testDBApp';
-import Testpage from './Components/Testpage';
+import { BrowserRouter as Router } from "react-router-dom";
+import RouterPage from "./routerPage.js";
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <div>
-    <center>
-      <TestDBApp />
-      {/* <Testpage /> */}
-    </center>
-  </div>
+  <StrictMode>
+    <Router>
+      <RouterPage />
+    </Router>
+  </StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
