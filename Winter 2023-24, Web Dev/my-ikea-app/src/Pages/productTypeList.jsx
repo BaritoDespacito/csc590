@@ -92,7 +92,7 @@ function ProductTypeList() {
     return(
         <div>
             <center>
-                <h1>PRODUCTS</h1>
+                <h1 id = "header">PRODUCTS</h1>
                 <input 
                     type="text"
                     onKeyDown={handleKeyPress}
@@ -136,11 +136,11 @@ function ProductTypeList() {
                 <br />
                 { loading
                     ? <h2>LOADING</h2>
-                    : <div>
+                    : <div id = "bigtablething">
                         { allProductTypes.length > 0 // if there are products found from query
                             ? <div>
                                 {allProductTypes.map((product) => ( // for each product found, render a button
-                                    <button id={product.productTypeID} onClick={() => {
+                                    <button className = "productbuttons" id={product.productTypeID} onClick={() => {
                                         navigate('/productDetail', { state: { 
                                             // when button is clicked, push productDetail page with product info
                                             productTypeID: product.productTypeID,

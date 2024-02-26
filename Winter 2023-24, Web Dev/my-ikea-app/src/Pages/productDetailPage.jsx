@@ -14,10 +14,16 @@ function ProductDetailPage() {
     return(
         <div>
             <center>
-                <h1>{productName}</h1>
-                <img src={productImage} alt="" />
+                <h1 id = "header">{productName}</h1>
+                <img className = "detailimg" src={productImage} alt="" />
                 <h3>Price: {price}</h3>
                 <h3>IN STOCK: {productStockArray.length}</h3>
+                <h3>SOLD: {productArray.length-productStockArray.length}</h3>
+                <Link
+                    key="linkToProductOrder"
+                    to="/productOrder"
+                ><button id = "link"><h4 id = "button2">Product Order</h4></button></Link>
+                <h3>IN STOCK ID's:</h3>
                 <table className="productStockTable">
                     {productStockArray.map((product) => ( // for each product in productStockArray, render a row
                         <tbody>
@@ -31,11 +37,6 @@ function ProductDetailPage() {
                         </tbody>
                     ))}
                 </table>
-                <h3>SOLD: {productArray.length-productStockArray.length}</h3> 
-                <Link
-                    key="linkToProductOrder"
-                    to="/productOrder"
-                >Product Order</Link>
             </center>
         </div>
     );

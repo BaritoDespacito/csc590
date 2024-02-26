@@ -32,7 +32,7 @@ function ProductOrderSuccessPage() {
 
     return(
         <center>
-            <h1>PRODUCTS ORDERED SUCCESSFULLY</h1>
+            <h1 id ="header">PRODUCTS ORDERED SUCCESSFULLY</h1>
             <br />
             { loading 
                 ? <div>
@@ -44,7 +44,7 @@ function ProductOrderSuccessPage() {
                     <Link
                         key="linkToDashboard"
                         to="/"
-                    >Back to Dashboard</Link>
+                    ><button id = "link"><h4 id = "button2">Dashboard</h4></button></Link>
                 </div>
             }
         </center>

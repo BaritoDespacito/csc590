@@ -3,6 +3,7 @@
 }
 
 .fullBox {
-    background-color: rgb(111, 178, 255);
+    /* background-color: rgb(111, 178, 255); */
     width: 150px;
+    color: #ffcc00;
 }

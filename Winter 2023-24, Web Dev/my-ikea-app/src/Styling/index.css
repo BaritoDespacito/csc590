@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #335cad;
 }
 
 code {
@@ -12,7 +13,7 @@ code {
     monospace;
 }
 
-.Testpage {
+/* .Testpage {
   position: absolute;
   left: 0;
   top: 0;
@@ -28,7 +29,15 @@ code {
   left: 5vw;
   top: 0px;
   margin-top: 20px;
-}
+} */
+
+/* .InvRow {
+  width: 100%;
+} */
+
+/* td {
+  border: 2px solid salmon;
+} */
 
 table {
   width: 100%;
@@ -36,10 +45,49 @@ table {
   border-collapse: collapse;
 }
 
-.InvRow {
-  width: 100%;
+div#bigtablething {
+  margin: 10px;
 }
 
-td {
-  border: 2px solid salmon;
+.productbuttons {
+  background: white;
+  border: 0px;
+  margin: 5px;
+  padding: 10px;
+}
+
+.productbuttons:hover {
+  /* background: #e6e6e6; */
+  border: 3px solid #ffcc00;
+  margin: 2px;
+}
+
+.propreview {
+  color: black;
+  font-size: 14px;
+}
+
+input#mmmm {
+  margin-bottom: 10px;
+}
+
+button#orderbuttons {
+  background: #002e8a;
+  border: 0px;
+  margin: 2px;
+  width: 223px;
+}
+
+button#orderbuttons:hover {
+  background: #00297a;
+}
+
+h4#button2 {
+  color: #ffcc00;
+  margin: 5px;
+  font-size: 18.72px;
+}
+
+.detailimg {
+  width: 300px;
 }

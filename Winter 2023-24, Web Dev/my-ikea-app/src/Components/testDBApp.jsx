@@ -42,7 +42,7 @@ function TestDBApp() {
                     to="/productList"
                 >Product List</Link>
                 <br></br>
-                <Link
+                {/* <Link
                     key = "nikotest"
                     to = "/nikoattempt"
                 >nikooooooo</Link>
@@ -50,7 +50,7 @@ function TestDBApp() {
                  <Link
                     key = "devtestignthinggyyyyy"
                     to = "/dev"
-                >devtestignthinggyyyyy</Link>
+                >devtestignthinggyyyyy</Link> */}
                 <h1>testdbapp</h1>
                 { loading && 
                     <h2>loading...</h2>

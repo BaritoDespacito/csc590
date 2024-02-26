@@ -57,10 +57,11 @@ function ProductOrderPage() {
     return(
         <div>
             <center>
-                <h1>ORDER PRODUCTS</h1>
+                <h1 id = "header">ORDER PRODUCTS</h1>
                 <input 
                     type="text"
                     onKeyDown={handleKeyPress}
+                    id = "mmmm"
                 />
                 { loading
                     ? <h2>LOADING</h2>
@@ -69,13 +70,15 @@ function ProductOrderPage() {
                             ? <div>
                                 {allProductTypes.map((product) => ( // for each product found, create a button
                                     <div key={product.productName}>
-                                        <button key={product.productName} onClick={() => {
+                                        <button id = "orderbuttons" key={product.productName} onClick={() => {
                                             setSelectedProduct(product.productName) // if the button is clicked, set the current selected product to that
                                             setSelectedProductID(product.productTypeID);
                                         }}>
-                                            <ProductTypePreviewSmall
-                                                product={product}
-                                            ></ProductTypePreviewSmall>
+                                            <center>
+                                                <ProductTypePreviewSmall
+                                                    product={product}
+                                                ></ProductTypePreviewSmall>
+                                            </center>
                                         </button>
                                         <br />
                                     </div>
@@ -90,7 +93,7 @@ function ProductOrderPage() {
                                     }
                                 }}/></label>
                                 <br />
-                                <button onClick={createProductOrder}>ORDER</button>
+                                <button id = "link" onClick={createProductOrder}><h4 id = "button">ORDER</h4></button>
                             </div>
                            : <h2>NO PRODUCTS FOUND</h2> // if no products from search query are found
                         }

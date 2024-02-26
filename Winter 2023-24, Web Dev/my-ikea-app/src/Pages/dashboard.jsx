@@ -51,20 +51,20 @@ function Dashboard() {
 
     return(
         <center>
-            <h1>DASHBOARD</h1>
+            <h1 id = "header">DASHBOARD</h1>
             { loading // conditional rendering for if page is loading
                 ? <h3>LOADING</h3> // if loading is true
                 : <div> 
                     <Link
                         key="linkToProductList"
                         to="/productList"
-                    >Product List</Link>
+                    ><button id = "link"><h4 id = "button">Product List</h4></button></Link>
                     <br />
                     <Link
                         key="linkToProductOrder"
                         to="/productOrder"
-                    >Product Order</Link>
-                    <h4>LOW STOCK: </h4>
+                    ><button id = "link"><h4 id = "button">Product Order</h4></button></Link>
+                    <h4>LOW STOCK </h4>
                     <table className="lowStockTable">
                         {lowStockArray.map((product) => ( // for each product in lowStockArray, render a button
                             <tbody key={product.productName}>
@@ -94,7 +94,7 @@ function Dashboard() {
                         ))}
                     </table>
                     <br />
-                    <h4>RECENT CUSTOMER ORDERS:</h4>
+                    <h4>RECENT CUSTOMER ORDERS</h4>
                     <table className="lowStockTable">
                         {customerOrderArray.map((order) => ( // for each customer order in customerOrderArray, render a button
                             <tbody key={order.orderNumber}>
@@ -132,7 +132,7 @@ function Dashboard() {
                         : <div></div>
                     }
                     <br />
-                    <h4>RECENT PRODUCT ORDERS:</h4>
+                    <h4>RECENT PRODUCT ORDERS</h4>
                     <table className="lowStockTable">
                         {productOrderArray.map((order) => ( // for each product order in productOrderArray, render a button
                             <tbody key={order.orderNumber}>
