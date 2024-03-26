@@ -47,11 +47,11 @@ namespace TMPro
         { get { return m_ClosingDefinition; } }
 
 
-        public int[] styleOpeningTagArray
+        public uint[] styleOpeningTagArray
         { get { return m_OpeningTagArray; } }
 
 
-        public int[] styleClosingTagArray
+        public uint[] styleClosingTagArray
         { get { return m_ClosingTagArray; } }
 
 
@@ -69,9 +69,10 @@ namespace TMPro
         private string m_ClosingDefinition;
 
         [SerializeField]
-        private int[] m_OpeningTagArray;
+        private uint[] m_OpeningTagArray;
 
         [SerializeField]
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_Style.cs
         private int[] m_ClosingTagArray;
 
         [SerializeField]
@@ -79,6 +80,9 @@ namespace TMPro
 
         [SerializeField]
         internal uint[] m_ClosingTagUnicodeArray;
+========
+        private uint[] m_ClosingTagArray;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_Style.cs
 
         /// <summary>
         /// Constructor
@@ -105,23 +109,37 @@ namespace TMPro
             m_HashCode = TMP_TextParsingUtilities.GetHashCode(m_Name);
 
             int s1 = m_OpeningDefinition.Length;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_Style.cs
             m_OpeningTagArray = new int[s1];
             m_OpeningTagUnicodeArray = new uint[s1];
+========
+            m_OpeningTagArray = new uint[s1];
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_Style.cs
 
             for (int i = 0; i < s1; i++)
             {
                 m_OpeningTagArray[i] = m_OpeningDefinition[i];
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_Style.cs
                 m_OpeningTagUnicodeArray[i] = m_OpeningDefinition[i];
             }
 
             int s2 = m_ClosingDefinition.Length;
             m_ClosingTagArray = new int[s2];
             m_ClosingTagUnicodeArray = new uint[s2];
+========
+            }
+
+            int s2 = m_ClosingDefinition.Length;
+            m_ClosingTagArray = new uint[s2];
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_Style.cs
 
             for (int i = 0; i < s2; i++)
             {
                 m_ClosingTagArray[i] = m_ClosingDefinition[i];
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_Style.cs
                 m_ClosingTagUnicodeArray[i] = m_ClosingDefinition[i];
+========
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_Style.cs
             }
         }
 

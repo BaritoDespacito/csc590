@@ -27,6 +27,12 @@ namespace TMPro
         string m_CreationFeedback;
 
         TMP_SpriteAsset m_SpriteAsset;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMP_SpriteAssetImporter.cs
+========
+
+        static readonly GUIContent k_ConvertSpriteNameToUnicodeLabel = new GUIContent("Use filenames as Unicodes", "Should sprite filenames be converted and assigned as Unicode code points for each sprite? This conversion assumes the sprite filenames represent valid Unicode code points.");
+        static bool k_SpriteNameIsUnicodeValue;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMP_SpriteAssetImporter.cs
 
         /// <summary>
         ///
@@ -69,6 +75,8 @@ namespace TMPro
             m_JsonFile = EditorGUILayout.ObjectField("Sprite Data Source", m_JsonFile, typeof(TextAsset), false) as TextAsset;
 
             m_SpriteDataFormat = (SpriteAssetImportFormats)EditorGUILayout.EnumPopup("Import Format", m_SpriteDataFormat);
+
+            k_SpriteNameIsUnicodeValue = EditorGUILayout.Toggle(k_ConvertSpriteNameToUnicodeLabel, k_SpriteNameIsUnicodeValue);
 
             // Sprite Texture Selection
             m_SpriteAtlas = EditorGUILayout.ObjectField("Sprite Texture Atlas", m_SpriteAtlas, typeof(Texture2D), false) as Texture2D;
@@ -183,9 +191,24 @@ namespace TMPro
 
                 spriteGlyphTable.Add(spriteGlyph);
 
-                TMP_SpriteCharacter spriteCharacter = new TMP_SpriteCharacter(0, spriteGlyph);
-                spriteCharacter.name = spriteData.filename.Split('.')[0];
-                spriteCharacter.unicode = 0xFFFE;
+                TMP_SpriteCharacter spriteCharacter = new TMP_SpriteCharacter(0xFFFE, spriteGlyph);
+
+                // Special handling for .notdef sprite name
+                string fileNameToLowerInvariant = spriteData.filename.ToLowerInvariant();
+                if (fileNameToLowerInvariant == ".notdef" || fileNameToLowerInvariant == "notdef")
+                {
+                    spriteCharacter.name = fileNameToLowerInvariant;
+                    spriteCharacter.unicode = 0;
+                }
+                else
+                {
+                    string spriteName = spriteData.filename.Split('.')[0];
+                    spriteCharacter.name = spriteName;
+
+                    if (k_SpriteNameIsUnicodeValue)
+                        spriteCharacter.unicode = (uint)TMP_TextUtilities.StringHexToInt(spriteName);
+                }
+
                 spriteCharacter.scale = 1.0f;
 
                 spriteCharacterTable.Add(spriteCharacter);
@@ -237,7 +260,7 @@ namespace TMPro
             material.SetTexture(ShaderUtilities.ID_MainTex, spriteAsset.spriteSheet);
 
             spriteAsset.material = material;
-            material.hideFlags = HideFlags.HideInHierarchy;
+            material.name = spriteAsset.name + " Material";
             AssetDatabase.AddObjectToAsset(material, spriteAsset);
         }
 

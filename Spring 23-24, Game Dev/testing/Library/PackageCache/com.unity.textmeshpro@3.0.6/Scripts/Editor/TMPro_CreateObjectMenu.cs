@@ -132,7 +132,6 @@ namespace TMPro.EditorUtilities
         }
 
 
-
         [MenuItem("GameObject/UI/Input Field - TextMeshPro", false, 2037)]
         static void AddTextMeshProInputField(MenuCommand menuCommand)
         {
@@ -340,7 +339,7 @@ namespace TMPro.EditorUtilities
 
         private static void CreateEventSystem(bool select, GameObject parent)
         {
-            var esys = Object.FindObjectOfType<EventSystem>();
+            var esys = Object.FindFirstObjectByType<EventSystem>();
             if (esys == null)
             {
                 var eventSystem = new GameObject("EventSystem");

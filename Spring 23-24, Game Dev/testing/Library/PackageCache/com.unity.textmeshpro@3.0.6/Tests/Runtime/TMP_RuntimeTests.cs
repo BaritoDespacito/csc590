@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace TMPro
 {
@@ -18,7 +18,7 @@ namespace TMPro
         // Characters: 104  Spaces: 14  Words: 15  Lines:
         private const string m_TextBlock_01 = "Unity 2017 introduces new features that help teams of artists and developers build experiences together.";
 
-        // Characters: 1500  Spaces: 228  Words: 241 
+        // Characters: 1500  Spaces: 228  Words: 241
         private const string m_TextBlock_02 = "The European languages are members of the same family. Their separate existence is a myth. For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ in their grammar, their pronunciation and their most common words." +
             "Everyone realizes why a new common language would be desirable: one could refuse to pay expensive translators.To achieve this, it would be necessary to have uniform grammar, pronunciation and more common words.If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual languages." +
             "The new common language will be more simple and regular than the existing European languages.It will be as simple as Occidental; in fact, it will be Occidental.To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is. The European languages are members of the same family." +
@@ -41,7 +41,7 @@ namespace TMPro
             "Phasellus leo dolor, tempus non, auctor et, hendrerit quis, nisi.Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo.Maecenas malesuada. Praesent congue erat at massa.Sed cursus turpis vitae tortor.Donec posuere vulputate arcu. Phasellus accumsan cursus velit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed aliquam, nisi quis porttitor congue, elit erat euismod orci, ac placerat dolor lectus quis orci.Phasellus consectetuer vestibulum elit.Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.Vestibulum fringilla pede sit amet augue." +
             "In turpis. Pellentesque posuere. Praesent turpis. Aenean posuere, tortor sed cursus feugiat, nunc augue blandit nunc, eu sollicitudin urna dolor sagittis lacus. Donec elit libero, sodales nec, volutpat a, suscipit non, turpis.Nullam sagittis. Suspendisse pulvinar, augue ac venenatis condimentum, sem libero volutpat nibh, nec pellentesque velit pede quis nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce id purus.Ut varius tincidunt libero.Phasellus dolor.Maecenas vestibulum mollis";
 
-        // 
+        //
         private const string m_TextBlock_05 = "This block of text contains <b>bold</b> and <i>italicized</i> characters.";
 
         private const string m_TextBlock_06 = "<align=center><style=H1><#ffffff><u>Multiple<#80f0ff> Alignment</color> per text object</u></color></style></align><line-height=2em>\n" +
@@ -87,7 +87,7 @@ namespace TMPro
         public void Parsing_TextInfo_WordWrapDisabled(int sourceTextIndex, int characterCount, int spaceCount, int wordCount, int lineCount)
         {
             m_TextComponent.text = testStrings[sourceTextIndex];
-            m_TextComponent.enableWordWrapping = false;
+            m_TextComponent.textWrappingMode = TextWrappingModes.NoWrap;
             m_TextComponent.alignment = TextAlignmentOptions.TopLeft;
 
             // Size the RectTransform
@@ -116,7 +116,7 @@ namespace TMPro
         public void Parsing_TextInfo_WordWrapEnabled(int sourceTextIndex, int characterCount, int spaceCount, int wordCount, int lineCount)
         {
             m_TextComponent.text = testStrings[sourceTextIndex];
-            m_TextComponent.enableWordWrapping = true;
+            m_TextComponent.textWrappingMode = TextWrappingModes.Normal;
             m_TextComponent.alignment = TextAlignmentOptions.TopLeft;
 
             // Size the RectTransform
@@ -143,7 +143,7 @@ namespace TMPro
         public void Parsing_TextInfo_AlignmentTopJustified(int sourceTextIndex, int characterCount, int spaceCount, int wordCount, int lineCount)
         {
             m_TextComponent.text = testStrings[sourceTextIndex];
-            m_TextComponent.enableWordWrapping = true;
+            m_TextComponent.textWrappingMode = TextWrappingModes.Normal;
             m_TextComponent.alignment = TextAlignmentOptions.TopJustified;
 
             // Size the RectTransform
@@ -169,7 +169,7 @@ namespace TMPro
         public void Parsing_TextInfo_RichText(int sourceTextIndex, int characterCount, int spaceCount, int wordCount, int lineCount)
         {
             m_TextComponent.text = testStrings[sourceTextIndex];
-            m_TextComponent.enableWordWrapping = true;
+            m_TextComponent.textWrappingMode = TextWrappingModes.Normal;
             m_TextComponent.alignment = TextAlignmentOptions.TopLeft;
 
             // Size the RectTransform
@@ -184,6 +184,77 @@ namespace TMPro
             Assert.AreEqual(m_TextComponent.textInfo.lineCount, lineCount);
         }
 
+        public static IEnumerable<object[]> TestCases_MultiLineNewline_OnLastLine_WhenPressedEnter_Caret_ShouldNotGoto_NextLine()
+        {
+            yield return new object[] { 1, 1 };
+            yield return new object[] { 2, 2 };
+            yield return new object[] { 3, 3 };
+            yield return new object[] { 4, 4 };
+            yield return new object[] { 5, 5 };
+            yield return new object[] { 6, 6 };
+        }
+
+        [Test, TestCaseSource(nameof(TestCases_MultiLineNewline_OnLastLine_WhenPressedEnter_Caret_ShouldNotGoto_NextLine))]
+        public void MultiLineNewline_OnLastLine_WhenPressedEnter_Caret_ShouldNotGoto_NextLine(int lineLimit,
+            int expectedLineCount)
+        {
+            MultiLineNewline_LineLimit_ExpectedLineCount_Logic(lineLimit, lineLimit, 3);
+            Assert.AreEqual(m_TextComponent.textInfo.lineCount, expectedLineCount);
+        }
+
+        private void MultiLineNewline_LineLimit_ExpectedLineCount_Logic(int lineLimitValue, int lineLimitApplied,
+            int extraKeyDownEventCount)
+        {
+            var cameraObject = new GameObject("Camera Object", typeof(Camera));
+            var canvasObject = new GameObject("Canvas Object", typeof(Canvas), typeof(GraphicRaycaster));
+            canvasObject.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            var inputObject = new GameObject("Input Object", typeof(TMP_InputField));
+            inputObject.transform.parent = canvasObject.transform;
+            inputObject.AddComponent<Image>();
+            var inputField = inputObject.GetComponent<TMP_InputField>(); 
+            inputField.targetGraphic = inputObject.GetComponent<Image>();
+            inputField.textComponent = m_TextComponent;
+            inputField.lineType = TMP_InputField.LineType.MultiLineNewline;
+            inputField.lineLimit = lineLimitValue;
+
+            var eventGameObject = new GameObject("Event Object", typeof(EventSystem), typeof(StandaloneInputModule));
+            var enterKeyDownEvent = new Event { type = EventType.KeyDown, keyCode = KeyCode.KeypadEnter, modifiers = EventModifiers.None, character = '\n' };
+
+            inputField.text = "POTUS";
+            EventSystem.current.SetSelectedGameObject(inputObject);
+            inputField.ActivateInputField();
+            int count = lineLimitApplied + extraKeyDownEventCount;
+            while (count > 0)
+            {
+                inputField.ProcessEvent(enterKeyDownEvent);
+                inputField.ForceLabelUpdate();
+                count--;
+            }
+
+            inputField.textComponent.ForceMeshUpdate();
+            CanvasUpdateRegistry.RegisterCanvasElementForGraphicRebuild(inputField);
+
+            inputField.DeactivateInputField();
+            GameObject.Destroy(eventGameObject);
+            GameObject.Destroy(inputObject);
+            GameObject.Destroy(canvasObject);
+            GameObject.Destroy(cameraObject);
+        }
+
+        public static IEnumerable<object[]> TestCases_MultiLineNewLine_NegativeOrZeroLineLimit_AddsNewLine()
+        {
+            yield return new object[] { 0, 0, 1 };
+            yield return new object[] { 0, 0, 4 };
+            yield return new object[] { -1, 0, 2 };
+        }
+
+        [Test, TestCaseSource(nameof(TestCases_MultiLineNewLine_NegativeOrZeroLineLimit_AddsNewLine))]
+        public void MultiLineNewLine_NegativeOrZeroLineLimit_AddsNewLine(int lineLimitValue, int lineLimitApplied,
+            int extraKeyDownEventCount)
+        {
+            MultiLineNewline_LineLimit_ExpectedLineCount_Logic(lineLimitValue, lineLimitApplied, extraKeyDownEventCount);
+            Assert.AreEqual(m_TextComponent.textInfo.lineCount, extraKeyDownEventCount + 1);
+        }
 
         //[OneTimeTearDown]
         //public void Cleanup()

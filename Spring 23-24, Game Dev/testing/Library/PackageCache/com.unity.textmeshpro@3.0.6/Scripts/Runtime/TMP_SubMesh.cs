@@ -234,17 +234,19 @@ namespace TMPro
 
         public static TMP_SubMesh AddSubTextObject(TextMeshPro textComponent, MaterialReference materialReference)
         {
-            GameObject go = new GameObject("TMP SubMesh [" + materialReference.material.name + "]", typeof(TMP_SubMesh));
-            go.hideFlags = HideFlags.DontSave;
-
-            TMP_SubMesh subMesh = go.GetComponent<TMP_SubMesh>();
-
+            GameObject go = new GameObject();
+            go.hideFlags = TMP_Settings.hideSubTextObjects ? HideFlags.HideAndDontSave : HideFlags.DontSave;
             go.transform.SetParent(textComponent.transform, false);
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.identity;
             go.transform.localScale = Vector3.one;
             go.layer = textComponent.gameObject.layer;
 
+            #if UNITY_EDITOR
+            go.name = materialReference.material == null ? "TMP SubMesh" : "TMP SubMesh [" + materialReference.material.name + "]";
+            #endif
+
+            TMP_SubMesh subMesh = go.AddComponent<TMP_SubMesh>();
             subMesh.m_TextComponent = textComponent;
             subMesh.m_fontAsset = materialReference.fontAsset;
             subMesh.m_spriteAsset = materialReference.spriteAsset;
@@ -389,11 +391,7 @@ namespace TMPro
         void ON_DRAG_AND_DROP_MATERIAL(GameObject obj, Material currentMaterial, Material newMaterial)
         {
             // Check if event applies to this current object
-            #if UNITY_2018_2_OR_NEWER
             if (obj == gameObject || UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(gameObject) == obj)
-            #else
-            if (obj == gameObject || UnityEditor.PrefabUtility.GetPrefabParent(gameObject) == obj)
-            #endif
             {
                 if (!m_isDefaultMaterial) return;
 
@@ -426,7 +424,7 @@ namespace TMPro
         // Event received when font asset properties are changed in Font Inspector
         void ON_FONT_PROPERTY_CHANGED(bool isChanged, Object fontAsset)
         {
-            if (m_fontAsset != null && fontAsset.GetInstanceID() == m_fontAsset.GetInstanceID())
+            if (m_fontAsset != null && fontAsset != null && fontAsset.GetInstanceID() == m_fontAsset.GetInstanceID())
             {
                 // Copy Normal and Bold Weight
                 if (m_fallbackMaterial != null)
@@ -599,7 +597,7 @@ namespace TMPro
             m_renderer.sharedMaterial = m_sharedMaterial;
 
             // Special handling to keep the Culling of the material in sync with parent text object
-            if (m_sharedMaterial.HasProperty(ShaderUtilities.ShaderTag_CullMode))
+            if (m_sharedMaterial.HasProperty(ShaderUtilities.ShaderTag_CullMode) && textComponent.fontSharedMaterial != null)
             {
                 float cullMode = textComponent.fontSharedMaterial.GetFloat(ShaderUtilities.ShaderTag_CullMode);
                 m_sharedMaterial.SetFloat(ShaderUtilities.ShaderTag_CullMode, cullMode);

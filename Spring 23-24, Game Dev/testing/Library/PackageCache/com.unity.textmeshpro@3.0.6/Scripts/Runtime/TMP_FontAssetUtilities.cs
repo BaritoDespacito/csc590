@@ -114,12 +114,17 @@ namespace TMPro
                 {
                     if (temp.characterLookupTable.TryGetValue(unicode, out character))
                     {
-                        isAlternativeTypeface = true;
+                        if (character.textAsset != null)
+                        {
+                            isAlternativeTypeface = true;
+                            return character;
+                        }
 
-                        return character;
+                        // Remove character from lookup table
+                        temp.characterLookupTable.Remove(unicode);
                     }
 
-                    if (temp.atlasPopulationMode == AtlasPopulationMode.Dynamic)
+                    if (temp.atlasPopulationMode == AtlasPopulationMode.Dynamic || temp.atlasPopulationMode == AtlasPopulationMode.DynamicOS)
                     {
                         if (temp.TryAddCharacterInternal(unicode, out character))
                         {
@@ -146,15 +151,20 @@ namespace TMPro
                     // At this point, we were not able to find the requested character in the alternative typeface
                     // so we check the source font asset and its potential fallbacks.
                 }
-
             }
             #endregion
 
             // Search the source font asset for the requested character.
             if (sourceFontAsset.characterLookupTable.TryGetValue(unicode, out character))
-                return character;
+            {
+                if (character.textAsset != null)
+                    return character;
 
-            if (sourceFontAsset.atlasPopulationMode == AtlasPopulationMode.Dynamic)
+                // Remove character from lookup table
+                sourceFontAsset.characterLookupTable.Remove(unicode);
+            }
+
+            if (sourceFontAsset.atlasPopulationMode == AtlasPopulationMode.Dynamic || sourceFontAsset.atlasPopulationMode == AtlasPopulationMode.DynamicOS)
             {
                 if (sourceFontAsset.TryAddCharacterInternal(unicode, out character))
                     return character;
@@ -184,7 +194,11 @@ namespace TMPro
                         continue;
 
                     // Add reference to this search query
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_FontAssetUtilities.cs
                     sourceFontAsset.FallbackSearchQueryLookup.Add(id);
+========
+                    //sourceFontAsset.FallbackSearchQueryLookup.Add(id);
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_FontAssetUtilities.cs
 
                     character = GetCharacterFromFontAsset_Internal(unicode, temp, true, fontStyle, fontWeight, out isAlternativeTypeface);
 
@@ -236,12 +250,57 @@ namespace TMPro
                 if (fontAsset == null) continue;
 
                 // Add reference to this search query
-                sourceFontAsset.FallbackSearchQueryLookup.Add(fontAsset.instanceID);
+                //sourceFontAsset.FallbackSearchQueryLookup.Add(fontAsset.instanceID);
 
                 TMP_Character character = GetCharacterFromFontAsset_Internal(unicode, fontAsset, includeFallbacks, fontStyle, fontWeight, out isAlternativeTypeface);
 
                 if (character != null)
                     return character;
+            }
+
+            return null;
+        }
+
+        internal static TMP_TextElement GetTextElementFromTextAssets(uint unicode, TMP_FontAsset sourceFontAsset, List<TMP_Asset> textAssets, bool includeFallbacks, FontStyles fontStyle, FontWeight fontWeight, out bool isAlternativeTypeface)
+        {
+            isAlternativeTypeface = false;
+
+            // Make sure font asset list is valid
+            if (textAssets == null || textAssets.Count == 0)
+                return null;
+
+            if (includeFallbacks)
+            {
+                if (k_SearchedAssets == null)
+                    k_SearchedAssets = new HashSet<int>();
+                else
+                    k_SearchedAssets.Clear();
+            }
+
+            int textAssetCount = textAssets.Count;
+
+            for (int i = 0; i < textAssetCount; i++)
+            {
+                TMP_Asset textAsset = textAssets[i];
+
+                if (textAsset == null) continue;
+
+                if (textAsset.GetType() == typeof(TMP_FontAsset))
+                {
+                    TMP_FontAsset fontAsset = textAsset as TMP_FontAsset;
+                    TMP_Character character = GetCharacterFromFontAsset_Internal(unicode, fontAsset, includeFallbacks, fontStyle, fontWeight, out isAlternativeTypeface);
+
+                    if (character != null)
+                        return character;
+                }
+                else
+                {
+                    TMP_SpriteAsset spriteAsset = textAsset as TMP_SpriteAsset;
+                    TMP_SpriteCharacter spriteCharacter = GetSpriteCharacterFromSpriteAsset_Internal(unicode, spriteAsset, true);
+
+                    if (spriteCharacter != null)
+                        return spriteCharacter;
+                }
             }
 
             return null;
@@ -363,9 +422,9 @@ namespace TMPro
         // FONT ENGINE & FONT FILE MANAGEMENT - Fields, Properties and Functions
         // =====================================================================
 
+        /*
         private static bool k_IsFontEngineInitialized;
 
-        /*
         private static bool TryGetCharacterFromFontFile(uint unicode, TMP_FontAsset fontAsset, out TMP_Character character)
         {
             character = null;

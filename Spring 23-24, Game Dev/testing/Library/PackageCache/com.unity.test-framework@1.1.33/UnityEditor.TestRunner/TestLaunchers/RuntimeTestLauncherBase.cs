@@ -32,6 +32,10 @@ namespace UnityEditor.TestTools.TestRunner
             runnerSetup(runner);
             runner.settings.bootstrapScene = sceneName;
             runner.settings.orderedTestNames = m_Settings.orderedTestNames;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/TestLaunchers/RuntimeTestLauncherBase.cs
+========
+            runner.settings.randomOrderSeed = m_Settings.randomOrderSeed;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/TestLaunchers/RuntimeTestLauncherBase.cs
             runner.AssembliesWithTests = editorLoadedTestAssemblyProvider.GetAssembliesGroupedByType(TestPlatform.PlayMode).Select(x => x.Assembly.GetName().Name).ToList();
 
             EditorSceneManager.MarkSceneDirty(scene);
@@ -51,7 +55,11 @@ namespace UnityEditor.TestTools.TestRunner
             var editorLoadedTestAssemblyProvider = new EditorLoadedTestAssemblyProvider(new EditorCompilationInterfaceProxy(), new EditorAssembliesProxy());
             var assembliesWithTests = editorLoadedTestAssemblyProvider.GetAssembliesGroupedByType(TestPlatform.PlayMode).Select(x => x.Assembly.GetName().Name).ToList();
 
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/TestLaunchers/RuntimeTestLauncherBase.cs
             var nUnitTestAssemblyRunner = new UnityTestAssemblyRunner(new UnityTestAssemblyBuilder(m_Settings.orderedTestNames), null);
+========
+            var nUnitTestAssemblyRunner = new UnityTestAssemblyRunner(new UnityTestAssemblyBuilder(m_Settings.orderedTestNames, m_Settings.randomOrderSeed), null, UnityTestExecutionContext.CurrentContext);
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/TestLaunchers/RuntimeTestLauncherBase.cs
             var assemblyProvider = new PlayerTestAssemblyProvider(new AssemblyLoadProxy(), assembliesWithTests);
             nUnitTestAssemblyRunner.Load(assemblyProvider.GetUserAssemblies().Select(a => a.Assembly).ToArray(), TestPlatform.PlayMode, UnityTestAssemblyBuilder.GetNUnitTestBuilderSettings(TestPlatform.PlayMode));
             return nUnitTestAssemblyRunner;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework.Interfaces;
+using UnityEngine.TestRunner.NUnitExtensions;
 using UnityEngine.TestRunner.TestLaunchers;
 
 namespace UnityEditor.TestTools.TestRunner.Api
@@ -32,6 +33,11 @@ namespace UnityEditor.TestTools.TestRunner.Api
             Output = result.Output;
             Children = children;
             m_Result = result;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/Api/TestResultAdaptor.cs
+========
+            RetryIteration = result.Test.GetRetryIteration();
+            RepeatIteration = result.Test.GetRepeatIteration();
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/Api/TestResultAdaptor.cs
         }
 
         internal TestResultAdaptor(RemoteTestResultData result, RemoteTestResultDataWithTestData allData)
@@ -53,7 +59,12 @@ namespace UnityEditor.TestTools.TestRunner.Api
             InconclusiveCount = result.inconclusiveCount;
             HasChildren = result.hasChildren;
             Output = result.output;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/Api/TestResultAdaptor.cs
             Children = result.childrenIds.Select(childId => new TestResultAdaptor(allData.results.First(r => r.testId == childId), allData)).ToArray();
+========
+            Children = result.childrenIds.Select(childId =>
+                new TestResultAdaptor(allData.results.First(r => r.testId == childId), allData)).ToArray();
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/Api/TestResultAdaptor.cs
             if (!string.IsNullOrEmpty(result.xml))
             {
                 m_Node = TNode.FromXml(result.xml);
@@ -78,14 +89,22 @@ namespace UnityEditor.TestTools.TestRunner.Api
         public bool HasChildren { get; private set; }
         public IEnumerable<ITestResultAdaptor> Children { get; private set; }
         public string Output { get; private set; }
+
         public TNode ToXml()
         {
             if (m_Node == null)
             {
                 m_Node = m_Result.ToXml(true);
             }
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/Api/TestResultAdaptor.cs
+========
+
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/Api/TestResultAdaptor.cs
             return m_Node;
         }
+
+        internal int RetryIteration { get; set; }
+        internal int RepeatIteration { get; set; }
 
         private static TestStatus ParseTestStatus(NUnit.Framework.Interfaces.TestStatus testStatus)
         {

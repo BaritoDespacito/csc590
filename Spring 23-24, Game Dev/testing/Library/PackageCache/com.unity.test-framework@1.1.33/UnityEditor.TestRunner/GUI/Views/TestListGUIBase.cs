@@ -35,7 +35,11 @@ namespace UnityEditor.TestTools.TestRunner.GUI
         [SerializeField]
         private List<TestRunnerResult> m_NewResultList = new List<TestRunnerResult>();
 
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
         Dictionary<string, TestRunnerResult> m_ResultByKey;
+========
+        private Dictionary<string, TestRunnerResult> m_ResultByKey;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
         internal Dictionary<string, TestRunnerResult> ResultsByKey
         {
             get
@@ -109,7 +113,11 @@ namespace UnityEditor.TestTools.TestRunner.GUI
                             result.resultStatus == TestRunnerResult.ResultStatus.Inconclusive)
                             failedTestnames.Add(result.fullName);
                     }
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                     RunTests(new UITestRunnerFilter() {testNames = failedTestnames.ToArray(), categoryNames = m_TestRunnerUIFilter.CategoryFilter});
+========
+                    RunTests(new UITestRunnerFilter {testNames = failedTestnames.ToArray(), categoryNames = m_TestRunnerUIFilter.CategoryFilter});
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                     GUIUtility.ExitGUI();
                 }
             }
@@ -382,35 +390,6 @@ namespace UnityEditor.TestTools.TestRunner.GUI
                     false,
                     data => RunTests(testFilters),
                     "");
-
-                if (EditorPrefs.GetBool("DeveloperMode", false))
-                {
-                    m.AddItem(multilineSelection ? s_GUIRunSelectedTests : s_GUIRunUntilFailed,
-                        false,
-                        data =>
-                        {
-                            foreach (var filter in testFilters)
-                            {
-                                filter.testRepetitions = int.MaxValue;
-                            }
-                            
-                            RunTests(testFilters);
-                        },
-                        "");
-
-                    m.AddItem(multilineSelection ? s_GUIRunSelectedTests : s_GUIRun100Times,
-                        false,
-                        data =>
-                        {
-                            foreach (var filter in testFilters)
-                            {
-                                filter.testRepetitions = 100;
-                            }
-                            
-                            RunTests(testFilters);
-                        },
-                        "");
-                }
             }
             else
                 m.AddDisabledItem(multilineSelection ? s_GUIRunSelectedTests : s_GUIRun, false);
@@ -463,7 +442,11 @@ namespace UnityEditor.TestTools.TestRunner.GUI
 
             if (assembliesToRun.Count > 0)
             {
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                 filters.Add(new UITestRunnerFilter()
+========
+                filters.Add(new UITestRunnerFilter
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                 {
                     assemblyNames = assembliesToRun.ToArray()
                 });
@@ -471,7 +454,11 @@ namespace UnityEditor.TestTools.TestRunner.GUI
             
             if (namesToRun.Count > 0)
             {
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                 filters.Add(new UITestRunnerFilter()
+========
+                filters.Add(new UITestRunnerFilter
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                 {
                     groupNames = namesToRun.ToArray(),
                     assemblyNames = assembliesForNamesToRun.ToArray()
@@ -480,7 +467,11 @@ namespace UnityEditor.TestTools.TestRunner.GUI
             
             if (exactNamesToRun.Count > 0)
             {
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                 filters.Add(new UITestRunnerFilter()
+========
+                filters.Add(new UITestRunnerFilter
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/GUI/Views/TestListGUIBase.cs
                 {
                     testNames = exactNamesToRun.ToArray()
                 });
@@ -520,7 +511,7 @@ namespace UnityEditor.TestTools.TestRunner.GUI
         {
             if (m_TestListTree.HasSelection())
             {
-                var firstClickedID = m_TestListState.selectedIDs.First<int>() == m_TestListState.lastClickedID ? m_TestListState.selectedIDs.Last<int>() : m_TestListState.selectedIDs.First<int>();
+                var firstClickedID = m_TestListState.selectedIDs.First() == m_TestListState.lastClickedID ? m_TestListState.selectedIDs.Last() : m_TestListState.selectedIDs.First();
                 m_TestListTree.Frame(firstClickedID, true, false);
             }
         }

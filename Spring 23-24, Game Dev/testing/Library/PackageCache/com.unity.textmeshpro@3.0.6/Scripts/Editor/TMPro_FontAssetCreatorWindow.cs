@@ -27,7 +27,7 @@ namespace TMPro.EditorUtilities
         }
 
 
-        public static void ShowFontAtlasCreatorWindow(Font sourceFontFile)
+        public static void ShowFontAtlasCreatorWindow(Font font)
         {
             var window = GetWindow<TMPro_FontAssetCreatorWindow>();
 
@@ -39,7 +39,7 @@ namespace TMPro.EditorUtilities
             window.m_SelectedFontAsset = null;
 
             // Override selected font asset
-            window.m_SourceFontFile = sourceFontFile;
+            window.m_SourceFont = font;
 
             // Make sure TMP Essential Resources have been imported.
             window.CheckEssentialResources();
@@ -63,9 +63,8 @@ namespace TMPro.EditorUtilities
                 window.LoadFontCreationSettings(fontAsset.creationSettings);
 
                 // Override settings to inject character list from font asset
-                window.m_CharacterSetSelectionMode = 6;
-                window.m_CharacterSequence = TMP_EditorUtility.GetUnicodeCharacterSequence(TMP_FontAsset.GetCharactersArray(fontAsset));
-
+                //window.m_CharacterSetSelectionMode = 6;
+                //window.m_CharacterSequence = TMP_EditorUtility.GetUnicodeCharacterSequence(TMP_FontAsset.GetCharactersArray(fontAsset));
 
                 window.m_ReferencedFontAsset = fontAsset;
                 window.m_SavedFontAtlas = fontAsset.atlasTexture;
@@ -73,7 +72,7 @@ namespace TMPro.EditorUtilities
             else
             {
                 window.m_WarningMessage = "Font Asset [" + fontAsset.name + "] does not contain any previous \"Font Asset Creation Settings\". This usually means [" + fontAsset.name + "] was created before this new functionality was added.";
-                window.m_SourceFontFile = null;
+                window.m_SourceFont = null;
                 window.m_LegacyFontAsset = fontAsset;
             }
 
@@ -106,7 +105,7 @@ namespace TMPro.EditorUtilities
 
         string[] m_FontSizingOptions = { "Auto Sizing", "Custom Size" };
         int m_PointSizeSamplingMode;
-        string[] m_FontResolutionLabels = { "8", "16","32", "64", "128", "256", "512", "1024", "2048", "4096", "8192" };
+        string[] m_FontResolutionLabels = { "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192" };
         int[] m_FontAtlasResolutions = { 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
         string[] m_FontCharacterSets = { "ASCII", "Extended ASCII", "ASCII Lowercase", "ASCII Uppercase", "Numbers + Symbols", "Custom Range", "Unicode Range (Hex)", "Custom Characters", "Characters from File" };
         enum FontPackingModes { Fast = 0, Optimum = 4 };
@@ -125,7 +124,6 @@ namespace TMPro.EditorUtilities
 
         float m_AtlasGenerationProgress;
         string m_AtlasGenerationProgressLabel = string.Empty;
-        float m_RenderingProgress;
         bool m_IsGlyphPackingDone;
         bool m_IsGlyphRenderingDone;
         bool m_IsRenderingDone;
@@ -134,16 +132,22 @@ namespace TMPro.EditorUtilities
         bool m_IsGenerationCancelled;
 
         bool m_IsFontAtlasInvalid;
-        Object m_SourceFontFile;
+        Font m_SourceFont;
+        int m_SourceFontFaceIndex;
+        private string[] m_SourceFontFaces = new string[0];
         TMP_FontAsset m_SelectedFontAsset;
         TMP_FontAsset m_LegacyFontAsset;
         TMP_FontAsset m_ReferencedFontAsset;
 
         TextAsset m_CharactersFromFile;
         int m_PointSize;
-        int m_Padding = 5;
-        //FaceStyles m_FontStyle = FaceStyles.Normal;
-        //float m_FontStyleValue = 2;
+        float m_PaddingFieldValue = 10;
+        int m_Padding;
+
+        enum PaddingMode { Undefined = 0, Percentage = 1, Pixel = 2 };
+
+        string[] k_PaddingOptionLabels = { "%", "px" };
+        private PaddingMode m_PaddingMode = PaddingMode.Percentage;
 
         GlyphRenderMode m_GlyphRenderMode = GlyphRenderMode.SDFAA;
         int m_AtlasWidth = 512;
@@ -200,6 +204,10 @@ namespace TMPro.EditorUtilities
                     LoadFontCreationSettings(m_FontAssetCreationSettingsContainer.fontAssetCreationSettings[m_FontAssetCreationSettingsCurrentIndex]);
                 }
             }
+
+            // Get potential font face and styles for the current font.
+            if (m_SourceFont != null)
+                m_SourceFontFaces = GetFontFaces();
 
             ClearGeneratedData();
         }
@@ -423,14 +431,27 @@ namespace TMPro.EditorUtilities
             // Disable Options if already generating a font atlas texture.
             EditorGUI.BeginDisabledGroup(m_IsProcessing);
             {
-                // FONT TTF SELECTION
+                // FONT SELECTION
                 EditorGUI.BeginChangeCheck();
-                m_SourceFontFile = EditorGUILayout.ObjectField("Source Font File", m_SourceFontFile, typeof(Font), false) as Font;
+                m_SourceFont = EditorGUILayout.ObjectField("Source Font", m_SourceFont, typeof(Font), false) as Font;
+                if (EditorGUI.EndChangeCheck())
+                {
+                    m_SelectedFontAsset = null;
+                    m_IsFontAtlasInvalid = true;
+                    m_SourceFontFaces = GetFontFaces();
+                    m_SourceFontFaceIndex = 0;
+                }
+
+                // FONT FACE AND STYLE SELECTION
+                EditorGUI.BeginChangeCheck();
+                GUI.enabled = m_SourceFont != null;
+                m_SourceFontFaceIndex = EditorGUILayout.Popup("Font Face", m_SourceFontFaceIndex, m_SourceFontFaces);
                 if (EditorGUI.EndChangeCheck())
                 {
                     m_SelectedFontAsset = null;
                     m_IsFontAtlasInvalid = true;
                 }
+                GUI.enabled = true;
 
                 // FONT SIZING
                 EditorGUI.BeginChangeCheck();
@@ -451,13 +472,23 @@ namespace TMPro.EditorUtilities
                 }
 
                 // FONT PADDING
+                GUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                m_Padding = EditorGUILayout.IntField("Padding", m_Padding);
-                m_Padding = (int)Mathf.Clamp(m_Padding, 0f, 64f);
+
+                m_PaddingFieldValue = EditorGUILayout.FloatField("Padding", m_PaddingFieldValue);
+
+                int selection = m_PaddingMode == PaddingMode.Undefined || m_PaddingMode == PaddingMode.Pixel ? 1 : 0;
+                selection = GUILayout.SelectionGrid(selection, k_PaddingOptionLabels, 2);
+
+                if (m_PaddingMode == PaddingMode.Percentage)
+                    m_PaddingFieldValue = (int)(m_PaddingFieldValue + 0.5f);
+
                 if (EditorGUI.EndChangeCheck())
                 {
+                    m_PaddingMode = (PaddingMode)selection + 1;
                     m_IsFontAtlasInvalid = true;
                 }
+                GUILayout.EndHorizontal();
 
                 // FONT PACKING METHOD SELECTION
                 EditorGUI.BeginChangeCheck();
@@ -654,7 +685,7 @@ namespace TMPro.EditorUtilities
                     m_IsFontAtlasInvalid = true;
                 }
 
-                m_IncludeFontFeatures = EditorGUILayout.Toggle("Get Kerning Pairs", m_IncludeFontFeatures);
+                m_IncludeFontFeatures = EditorGUILayout.Toggle("Get Font Features", m_IncludeFontFeatures);
 
                 EditorGUILayout.Space();
             }
@@ -666,10 +697,10 @@ namespace TMPro.EditorUtilities
                 EditorGUILayout.HelpBox(m_WarningMessage, MessageType.Warning);
             }
 
-            GUI.enabled = m_SourceFontFile != null && !m_IsProcessing && !m_IsGenerationDisabled; // Enable Preview if we are not already rendering a font.
+            GUI.enabled = m_SourceFont != null && !m_IsProcessing && !m_IsGenerationDisabled; // Enable Preview if we are not already rendering a font.
             if (GUILayout.Button("Generate Font Atlas") && GUI.enabled)
             {
-                if (!m_IsProcessing && m_SourceFontFile != null)
+                if (!m_IsProcessing && m_SourceFont != null)
                 {
                     DestroyImmediate(m_FontAtlasTexture);
                     DestroyImmediate(m_GlyphRectPreviewTexture);
@@ -684,16 +715,13 @@ namespace TMPro.EditorUtilities
                         Debug.Log("Font Asset Creator - Error [" + errorCode + "] has occurred while Initializing the FreeType Library.");
                     }
 
-                    // Get file path of the source font file.
-                    string fontPath = AssetDatabase.GetAssetPath(m_SourceFontFile);
-
                     if (errorCode == FontEngineError.Success)
                     {
-                        errorCode = FontEngine.LoadFontFace(fontPath);
+                        errorCode = FontEngine.LoadFontFace(m_SourceFont, 0, m_SourceFontFaceIndex);
 
                         if (errorCode != FontEngineError.Success)
                         {
-                            Debug.Log("Font Asset Creator - Error Code [" + errorCode + "] has occurred trying to load the [" + m_SourceFontFile.name + "] font file. This typically results from the use of an incompatible or corrupted font file.", m_SourceFontFile);
+                            Debug.Log("Font Asset Creator - Error Code [" + errorCode + "] has occurred trying to load the [" + m_SourceFont.name + "] font file. This typically results from the use of an incompatible or corrupted font file.", m_SourceFont);
                         }
                     }
 
@@ -748,6 +776,11 @@ namespace TMPro.EditorUtilities
                         glyphLoadFlags = ((GlyphRasterModes)m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_MONO) == GlyphRasterModes.RASTER_MODE_MONO
                             ? glyphLoadFlags | GlyphLoadFlags.LOAD_MONOCHROME
                             : glyphLoadFlags;
+                        #if TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
+                        glyphLoadFlags = ((GlyphRasterModes)m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_COLOR) == GlyphRasterModes.RASTER_MODE_COLOR
+                            ? glyphLoadFlags | GlyphLoadFlags.LOAD_COLOR
+                            : glyphLoadFlags;
+                        #endif
 
                         //
                         AutoResetEvent autoEvent = new AutoResetEvent(false);
@@ -817,11 +850,13 @@ namespace TMPro.EditorUtilities
                                     m_PointSize = (maxPointSize + minPointSize) / 2;
 
                                     bool optimumPointSizeFound = false;
-                                    for (int iteration = 0; iteration < 15 && optimumPointSizeFound == false; iteration++)
+                                    for (int iteration = 0; iteration < 15 && optimumPointSizeFound == false && m_PointSize > 0; iteration++)
                                     {
                                         m_AtlasGenerationProgressLabel = "Packing glyphs - Pass (" + iteration + ")";
 
                                         FontEngine.SetFaceSize(m_PointSize);
+
+                                        m_Padding = (int)(m_PaddingMode == PaddingMode.Percentage ? m_PointSize * m_PaddingFieldValue / 100f : m_PaddingFieldValue);
 
                                         m_GlyphsToPack.Clear();
                                         m_GlyphsPacked.Clear();
@@ -893,6 +928,8 @@ namespace TMPro.EditorUtilities
                                     // Set point size
                                     FontEngine.SetFaceSize(m_PointSize);
 
+                                    m_Padding = (int)(m_PaddingMode == PaddingMode.Percentage ? m_PointSize * m_PaddingFieldValue / 100 : m_PaddingFieldValue);
+
                                     m_GlyphsToPack.Clear();
                                     m_GlyphsPacked.Clear();
 
@@ -936,6 +973,8 @@ namespace TMPro.EditorUtilities
 
                                 FontEngine.SetFaceSize(m_PointSize);
 
+                                m_Padding = (int)(m_PaddingMode == PaddingMode.Percentage ? m_PointSize * m_PaddingFieldValue / 100 : m_PaddingFieldValue);
+
                                 m_GlyphsToPack.Clear();
                                 m_GlyphsPacked.Clear();
 
@@ -960,6 +999,7 @@ namespace TMPro.EditorUtilities
                                 int upSampling = 1;
                                 switch (m_GlyphRenderMode)
                                 {
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMPro_FontAssetCreatorWindow.cs
                                  case GlyphRenderMode.SDF8:
                                      upSampling = 8;
                                      break;
@@ -969,6 +1009,17 @@ namespace TMPro.EditorUtilities
                                  case GlyphRenderMode.SDF32:
                                      upSampling = 32;
                                      break;
+========
+                                    case GlyphRenderMode.SDF8:
+                                        upSampling = 8;
+                                        break;
+                                    case GlyphRenderMode.SDF16:
+                                        upSampling = 16;
+                                        break;
+                                    case GlyphRenderMode.SDF32:
+                                        upSampling = 32;
+                                        break;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMPro_FontAssetCreatorWindow.cs
                                 }
 
                                 Debug.Log("Glyph rendering has been aborted due to sampling point size of [" + m_PointSize + "] x SDF [" + upSampling + "] up sampling exceeds 16,384 point size. Please revise your generation settings to make sure the sampling point size x SDF up sampling mode does not exceed 16,384.");
@@ -1024,7 +1075,18 @@ namespace TMPro.EditorUtilities
                                 m_IsRenderingDone = false;
 
                                 // Allocate texture data
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMPro_FontAssetCreatorWindow.cs
                                 m_AtlasTextureBuffer = new byte[m_AtlasWidth * m_AtlasHeight];
+========
+                                #if TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
+                                if (m_GlyphRenderMode == GlyphRenderMode.COLOR || m_GlyphRenderMode == GlyphRenderMode.COLOR_HINTED)
+                                    m_AtlasTextureBuffer = new byte[m_AtlasWidth * m_AtlasHeight * 4];
+                                else
+                                    m_AtlasTextureBuffer = new byte[m_AtlasWidth * m_AtlasHeight];
+                                #else
+                                m_AtlasTextureBuffer = new byte[m_AtlasWidth * m_AtlasHeight];
+                                #endif
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMPro_FontAssetCreatorWindow.cs
 
                                 m_AtlasGenerationProgressLabel = "Rendering glyphs...";
 
@@ -1092,7 +1154,7 @@ namespace TMPro.EditorUtilities
                     if (m_LegacyFontAsset != null)
                         SaveNewFontAssetWithSameName(m_LegacyFontAsset);
                     else
-                        SaveNewFontAsset(m_SourceFontFile);
+                        SaveNewFontAsset(m_SourceFont);
                 }
                 else
                 {
@@ -1109,7 +1171,7 @@ namespace TMPro.EditorUtilities
             {
                 if (m_SelectedFontAsset == null)
                 {
-                    SaveNewFontAsset(m_SourceFontFile);
+                    SaveNewFontAsset(m_SourceFont);
                 }
                 else
                 {
@@ -1162,6 +1224,16 @@ namespace TMPro.EditorUtilities
             m_WarningMessage = string.Empty;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        string[] GetFontFaces()
+        {
+            FontEngine.LoadFontFace(m_SourceFont, 0, 0);
+            return FontEngine.GetFontFaces();
+        }
+
 
         /// <summary>
         /// Function to update the feedback window showing the results of the latest generation.
@@ -1177,7 +1249,7 @@ namespace TMPro.EditorUtilities
 
             missingGlyphReport = "Font: <b>" + colorTag2 + m_FaceInfo.familyName + "</color></b>  Style: <b>" + colorTag2 + m_FaceInfo.styleName + "</color></b>";
 
-            missingGlyphReport += "\nPoint Size: <b>" + colorTag2 + m_FaceInfo.pointSize + "</color></b>   SP/PD Ratio: <b>" + colorTag2 +  ((float)m_Padding / m_FaceInfo.pointSize).ToString("0.0%" + "</color></b>");
+            missingGlyphReport += "\nPoint Size: <b>" + colorTag2 + m_FaceInfo.pointSize + "</color></b>   Padding: <b>" + colorTag2 + m_Padding + "</color></b>   SP/PD Ratio: <b>" + colorTag2 + ((float)m_Padding / m_FaceInfo.pointSize).ToString("0.0%" + "</color></b>");
 
             missingGlyphReport += "\n\nCharacters included: <color=#ffff00><b>" + m_FontCharacterTable.Count + "/" + m_CharacterCount + "</b></color>";
             missingGlyphReport += "\nMissing characters: <color=#ffff00><b>" + m_MissingCharacters.Count + "</b></color>";
@@ -1258,15 +1330,44 @@ namespace TMPro.EditorUtilities
             if (m_FontAtlasTexture != null)
                 DestroyImmediate(m_FontAtlasTexture);
 
-            m_FontAtlasTexture = new Texture2D(m_AtlasWidth, m_AtlasHeight, TextureFormat.Alpha8, false, true);
-
             Color32[] colors = new Color32[m_AtlasWidth * m_AtlasHeight];
+
+            #if TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
+            switch (m_GlyphRenderMode)
+            {
+                case GlyphRenderMode.COLOR:
+                case GlyphRenderMode.COLOR_HINTED:
+                    m_FontAtlasTexture = new Texture2D(m_AtlasWidth, m_AtlasHeight, TextureFormat.RGBA32, false, true);
+
+                    for (int i = 0; i < colors.Length; i++)
+                    {
+                        int readIndex = i * 4;
+                        byte r = m_AtlasTextureBuffer[readIndex + 0];
+                        byte g = m_AtlasTextureBuffer[readIndex + 1];
+                        byte b = m_AtlasTextureBuffer[readIndex + 2];
+                        byte a = m_AtlasTextureBuffer[readIndex + 3];
+                        colors[i] = new Color32(r, g, b, a);
+                    }
+                    break;
+                default:
+                    m_FontAtlasTexture = new Texture2D(m_AtlasWidth, m_AtlasHeight, TextureFormat.Alpha8, false, true);
+
+                    for (int i = 0; i < colors.Length; i++)
+                    {
+                        byte c = m_AtlasTextureBuffer[i];
+                        colors[i] = new Color32(c, c, c, c);
+                    }
+                    break;
+            }
+            #else
+            m_FontAtlasTexture = new Texture2D(m_AtlasWidth, m_AtlasHeight, TextureFormat.Alpha8, false, true);
 
             for (int i = 0; i < colors.Length; i++)
             {
                 byte c = m_AtlasTextureBuffer[i];
                 colors[i] = new Color32(c, c, c, c);
             }
+            #endif
 
             // Clear allocation of
             m_AtlasTextureBuffer = null;
@@ -1348,12 +1449,6 @@ namespace TMPro.EditorUtilities
 
             string dataPath = Application.dataPath;
 
-            if (filePath.IndexOf(dataPath, System.StringComparison.InvariantCultureIgnoreCase) == -1)
-            {
-                Debug.LogError("You're saving the font asset in a directory outside of this project folder. This is not supported. Please select a directory under \"" + dataPath + "\"");
-                return;
-            }
-
             string relativeAssetPath = filePath.Substring(dataPath.Length - 6);
             string tex_DirName = Path.GetDirectoryName(relativeAssetPath);
             string tex_FileName = Path.GetFileNameWithoutExtension(relativeAssetPath);
@@ -1374,8 +1469,8 @@ namespace TMPro.EditorUtilities
                 fontAsset.atlasRenderMode = m_GlyphRenderMode;
 
                 // Reference to the source font file GUID.
-                fontAsset.m_SourceFontFile_EditorRef = (Font)m_SourceFontFile;
-                fontAsset.m_SourceFontFileGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_SourceFontFile));
+                fontAsset.m_SourceFontFile_EditorRef = m_SourceFont;
+                fontAsset.m_SourceFontFileGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_SourceFont));
 
                 // Add FaceInfo to Font Asset
                 fontAsset.faceInfo = m_FaceInfo;
@@ -1391,7 +1486,7 @@ namespace TMPro.EditorUtilities
 
                 // Get and Add Kerning Pairs to Font Asset
                 if (m_IncludeFontFeatures)
-                    fontAsset.fontFeatureTable = GetKerningTable();
+                    fontAsset.fontFeatureTable = GetAllFontFeatures();
 
 
                 // Add Font Atlas as Sub-Asset
@@ -1404,7 +1499,7 @@ namespace TMPro.EditorUtilities
                 AssetDatabase.AddObjectToAsset(m_FontAtlasTexture, fontAsset);
 
                 // Create new Material and Add it as Sub-Asset
-                Shader default_Shader = Shader.Find("TextMeshPro/Bitmap"); // m_shaderSelection;
+                Shader default_Shader = Shader.Find("TextMeshPro/Bitmap");
                 Material tmp_material = new Material(default_Shader);
                 tmp_material.name = tex_FileName + " Material";
                 tmp_material.SetTexture(ShaderUtilities.ID_MainTex, m_FontAtlasTexture);
@@ -1442,7 +1537,7 @@ namespace TMPro.EditorUtilities
 
                 // Get and Add Kerning Pairs to Font Asset
                 if (m_IncludeFontFeatures)
-                    fontAsset.fontFeatureTable = GetKerningTable();
+                    fontAsset.fontFeatureTable = GetAllFontFeatures();
 
                 // Destroy Assets that will be replaced.
                 if (fontAsset.atlasTextures != null && fontAsset.atlasTextures.Length > 0)
@@ -1467,7 +1562,15 @@ namespace TMPro.EditorUtilities
 
                 if (tex.width != m_AtlasWidth || tex.height != m_AtlasHeight)
                 {
+                    #if UNITY_2021_2_OR_NEWER
+                    tex.Reinitialize(m_AtlasWidth, m_AtlasHeight);
+                    #else
                     tex.Resize(m_AtlasWidth, m_AtlasHeight);
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMPro_FontAssetCreatorWindow.cs
+========
+                    #endif
+
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMPro_FontAssetCreatorWindow.cs
                     tex.Apply(false);
                 }
 
@@ -1496,7 +1599,12 @@ namespace TMPro.EditorUtilities
             }
 
             // Set texture to non readable
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMPro_FontAssetCreatorWindow.cs
             FontEngineEditorUtilities.SetAtlasTextureIsReadable(fontAsset.atlasTexture, false);
+========
+            if (fontAsset.atlasPopulationMode == AtlasPopulationMode.Static)
+                FontEngineEditorUtilities.SetAtlasTextureIsReadable(fontAsset.atlasTexture, false);
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMPro_FontAssetCreatorWindow.cs
 
             // Add list of GlyphRects to font asset.
             fontAsset.freeGlyphRects = m_FreeGlyphRects;
@@ -1529,12 +1637,6 @@ namespace TMPro.EditorUtilities
 
             string dataPath = Application.dataPath;
 
-            if (filePath.IndexOf(dataPath, System.StringComparison.InvariantCultureIgnoreCase) == -1)
-            {
-                Debug.LogError("You're saving the font asset in a directory outside of this project folder. This is not supported. Please select a directory under \"" + dataPath + "\"");
-                return;
-            }
-
             string relativeAssetPath = filePath.Substring(dataPath.Length - 6);
             string tex_DirName = Path.GetDirectoryName(relativeAssetPath);
             string tex_FileName = Path.GetFileNameWithoutExtension(relativeAssetPath);
@@ -1553,8 +1655,8 @@ namespace TMPro.EditorUtilities
                 fontAsset.version = "1.1.0";
 
                 // Reference to source font file GUID.
-                fontAsset.m_SourceFontFile_EditorRef = (Font)m_SourceFontFile;
-                fontAsset.m_SourceFontFileGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_SourceFontFile));
+                fontAsset.m_SourceFontFile_EditorRef = m_SourceFont;
+                fontAsset.m_SourceFontFileGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_SourceFont));
 
                 //Set Font Asset Type
                 fontAsset.atlasRenderMode = m_GlyphRenderMode;
@@ -1573,7 +1675,7 @@ namespace TMPro.EditorUtilities
 
                 // Get and Add Kerning Pairs to Font Asset
                 if (m_IncludeFontFeatures)
-                    fontAsset.fontFeatureTable = GetKerningTable();
+                    fontAsset.fontFeatureTable = GetAllFontFeatures();
 
                 // Add Font Atlas as Sub-Asset
                 fontAsset.atlasTextures = new Texture2D[] { m_FontAtlasTexture };
@@ -1633,7 +1735,7 @@ namespace TMPro.EditorUtilities
                 // Get and Add Kerning Pairs to Font Asset
                 // TODO: Check and preserve existing adjustment pairs.
                 if (m_IncludeFontFeatures)
-                    fontAsset.fontFeatureTable = GetKerningTable();
+                    fontAsset.fontFeatureTable = GetAllFontFeatures();
 
                 // Destroy Assets that will be replaced.
                 if (fontAsset.atlasTextures != null && fontAsset.atlasTextures.Length > 0)
@@ -1658,7 +1760,15 @@ namespace TMPro.EditorUtilities
 
                 if (tex.width != m_AtlasWidth || tex.height != m_AtlasHeight)
                 {
+                    #if UNITY_2021_2_OR_NEWER
+                    tex.Reinitialize(m_AtlasWidth, m_AtlasHeight);
+                    #else
                     tex.Resize(m_AtlasWidth, m_AtlasHeight);
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMPro_FontAssetCreatorWindow.cs
+========
+                    #endif
+
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMPro_FontAssetCreatorWindow.cs
                     tex.Apply(false);
                 }
 
@@ -1691,7 +1801,12 @@ namespace TMPro.EditorUtilities
             //File.WriteAllBytes("Assets/Textures/Debug Distance Field.png", pngData);
 
             // Set texture to non readable
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMPro_FontAssetCreatorWindow.cs
             FontEngineEditorUtilities.SetAtlasTextureIsReadable(fontAsset.atlasTexture, false);
+========
+            if (fontAsset.atlasPopulationMode == AtlasPopulationMode.Static)
+                FontEngineEditorUtilities.SetAtlasTextureIsReadable(fontAsset.atlasTexture, false);
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMPro_FontAssetCreatorWindow.cs
 
             // Add list of GlyphRects to font asset.
             fontAsset.freeGlyphRects = m_FreeGlyphRects;
@@ -1726,10 +1841,12 @@ namespace TMPro.EditorUtilities
             FontAssetCreationSettings settings = new FontAssetCreationSettings();
 
             //settings.sourceFontFileName = m_SourceFontFile.name;
-            settings.sourceFontFileGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_SourceFontFile));
+            settings.sourceFontFileGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_SourceFont));
+            settings.faceIndex = m_SourceFontFaceIndex;
             settings.pointSizeSamplingMode = m_PointSizeSamplingMode;
             settings.pointSize = m_PointSize;
             settings.padding = m_Padding;
+            settings.paddingMode = (int)m_PaddingMode;
             settings.packingMode = (int)m_PackingMode;
             settings.atlasWidth = m_AtlasWidth;
             settings.atlasHeight = m_AtlasHeight;
@@ -1737,8 +1854,6 @@ namespace TMPro.EditorUtilities
             settings.characterSequence = m_CharacterSequence;
             settings.referencedFontAssetGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_ReferencedFontAsset));
             settings.referencedTextAssetGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(m_CharactersFromFile));
-            //settings.fontStyle = (int)m_FontStyle;
-            //settings.fontStyleModifier = m_FontStyleValue;
             settings.renderMode = (int)m_GlyphRenderMode;
             settings.includeFontFeatures = m_IncludeFontFeatures;
 
@@ -1752,10 +1867,14 @@ namespace TMPro.EditorUtilities
         /// <param name="settings"></param>
         void LoadFontCreationSettings(FontAssetCreationSettings settings)
         {
-            m_SourceFontFile = AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath(settings.sourceFontFileGUID));
+            m_SourceFont = AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath(settings.sourceFontFileGUID));
+            m_SourceFontFaceIndex = settings.faceIndex;
+            m_SourceFontFaces = GetFontFaces();
             m_PointSizeSamplingMode  = settings.pointSizeSamplingMode;
             m_PointSize = settings.pointSize;
             m_Padding = settings.padding;
+            m_PaddingMode = settings.paddingMode == 0 ? PaddingMode.Pixel : (PaddingMode)settings.paddingMode;
+            m_PaddingFieldValue = m_PaddingMode == PaddingMode.Percentage ? (float)m_Padding / m_PointSize * 100 : m_Padding;
             m_PackingMode = (FontPackingModes)settings.packingMode;
             m_AtlasWidth = settings.atlasWidth;
             m_AtlasHeight = settings.atlasHeight;
@@ -1763,8 +1882,6 @@ namespace TMPro.EditorUtilities
             m_CharacterSequence = settings.characterSequence;
             m_ReferencedFontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID));
             m_CharactersFromFile = AssetDatabase.LoadAssetAtPath<TextAsset>(AssetDatabase.GUIDToAssetPath(settings.referencedTextAssetGUID));
-            //m_FontStyle = (FaceStyles)settings.fontStyle;
-            //m_FontStyleValue = settings.fontStyleModifier;
             m_GlyphRenderMode = (GlyphRenderMode)settings.renderMode;
             m_IncludeFontFeatures = settings.includeFontFeatures;
         }
@@ -1831,7 +1948,14 @@ namespace TMPro.EditorUtilities
 
             if (m_FontAtlasTexture != null)
             {
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMPro_FontAssetCreatorWindow.cs
                 EditorGUI.DrawTextureAlpha(pixelRect, m_FontAtlasTexture, ScaleMode.StretchToFill);
+========
+                if (m_FontAtlasTexture.format == TextureFormat.Alpha8)
+                    EditorGUI.DrawTextureAlpha(pixelRect, m_FontAtlasTexture, ScaleMode.StretchToFill);
+                else
+                    EditorGUI.DrawPreviewTexture(pixelRect, m_FontAtlasTexture, null, ScaleMode.StretchToFill);
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Editor/TMP/TMPro_FontAssetCreatorWindow.cs
 
                 // Destroy GlyphRect preview texture
                 if (m_GlyphRectPreviewTexture != null)
@@ -1881,24 +2005,159 @@ namespace TMPro.EditorUtilities
         }
 
 
-        // Get Kerning Pairs
-        public TMP_FontFeatureTable GetKerningTable()
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        TMP_FontFeatureTable GetAllFontFeatures()
+        {
+            TMP_FontFeatureTable fontFeatureTable = new TMP_FontFeatureTable();
+
+            PopulateGlyphAdjustmentTable(fontFeatureTable);
+
+            #if TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
+            PopulateLigatureTable(fontFeatureTable);
+
+            PopulateDiacriticalMarkAdjustmentTables(fontFeatureTable);
+            #endif
+
+            return fontFeatureTable;
+        }
+
+        #if TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
+        void PopulateGlyphAdjustmentTable(TMP_FontFeatureTable fontFeatureTable)
+        {
+            GlyphPairAdjustmentRecord[] adjustmentRecords = FontEngine.GetPairAdjustmentRecords(m_AvailableGlyphsToAdd);
+
+            if (adjustmentRecords == null)
+                return;
+
+            float emScale = (float)m_FaceInfo.pointSize / m_FaceInfo.unitsPerEM;
+
+            for (int i = 0; i < adjustmentRecords.Length && adjustmentRecords[i].firstAdjustmentRecord.glyphIndex != 0; i++)
+            {
+                GlyphPairAdjustmentRecord record = adjustmentRecords[i];
+
+                // Adjust values currently in Units per EM to make them relative to Sampling Point Size.
+                GlyphValueRecord valueRecord = record.firstAdjustmentRecord.glyphValueRecord;
+                valueRecord.xAdvance *= emScale;
+
+                GlyphPairAdjustmentRecord newRecord = new GlyphPairAdjustmentRecord { firstAdjustmentRecord = new GlyphAdjustmentRecord { glyphIndex = record.firstAdjustmentRecord.glyphIndex, glyphValueRecord = valueRecord }, secondAdjustmentRecord = record.secondAdjustmentRecord };
+
+                fontFeatureTable.glyphPairAdjustmentRecords.Add(newRecord);
+            }
+
+            fontFeatureTable.SortGlyphPairAdjustmentRecords();
+        }
+
+        void PopulateLigatureTable(TMP_FontFeatureTable fontFeatureTable)
+        {
+            UnityEngine.TextCore.LowLevel.LigatureSubstitutionRecord[] ligatureRecords = FontEngine.GetLigatureSubstitutionRecords(m_AvailableGlyphsToAdd);
+            if (ligatureRecords != null)
+                AddLigatureRecords(fontFeatureTable, ligatureRecords);
+        }
+
+        void AddLigatureRecords(TMP_FontFeatureTable fontFeatureTable, UnityEngine.TextCore.LowLevel.LigatureSubstitutionRecord[] records)
+        {
+            for (int i = 0; i < records.Length; i++)
+            {
+                UnityEngine.TextCore.LowLevel.LigatureSubstitutionRecord record = records[i];
+
+                if (records[i].componentGlyphIDs == null || records[i].ligatureGlyphID == 0)
+                    return;
+
+                uint firstComponentGlyphIndex = record.componentGlyphIDs[0];
+
+                LigatureSubstitutionRecord newRecord = new LigatureSubstitutionRecord() { componentGlyphIDs = record.componentGlyphIDs, ligatureGlyphID = record.ligatureGlyphID };
+
+                // Add new record to lookup
+                if (!fontFeatureTable.m_LigatureSubstitutionRecordLookup.ContainsKey(firstComponentGlyphIndex))
+                {
+                    fontFeatureTable.m_LigatureSubstitutionRecordLookup.Add(firstComponentGlyphIndex, new List<LigatureSubstitutionRecord> { newRecord });
+                }
+                else
+                {
+                    fontFeatureTable.m_LigatureSubstitutionRecordLookup[firstComponentGlyphIndex].Add(newRecord);
+                }
+
+                fontFeatureTable.m_LigatureSubstitutionRecords.Add(newRecord);
+            }
+        }
+
+        void PopulateDiacriticalMarkAdjustmentTables(TMP_FontFeatureTable fontFeatureTable)
+        {
+            UnityEngine.TextCore.LowLevel.MarkToBaseAdjustmentRecord[] markToBaseRecords = FontEngine.GetMarkToBaseAdjustmentRecords(m_AvailableGlyphsToAdd);
+            if (markToBaseRecords != null)
+                AddMarkToBaseAdjustmentRecords(fontFeatureTable, markToBaseRecords);
+
+            UnityEngine.TextCore.LowLevel.MarkToMarkAdjustmentRecord[] markToMarkRecords = FontEngine.GetMarkToMarkAdjustmentRecords(m_AvailableGlyphsToAdd);
+            if (markToMarkRecords != null)
+                AddMarkToMarkAdjustmentRecords(fontFeatureTable, markToMarkRecords);
+
+        }
+
+        void AddMarkToBaseAdjustmentRecords(TMP_FontFeatureTable fontFeatureTable, UnityEngine.TextCore.LowLevel.MarkToBaseAdjustmentRecord[] records)
+        {
+            float emScale = (float)m_FaceInfo.pointSize / m_FaceInfo.unitsPerEM;
+
+            for (int i = 0; i < records.Length; i++)
+            {
+                UnityEngine.TextCore.LowLevel.MarkToBaseAdjustmentRecord record = records[i];
+
+                uint key = record.markGlyphID << 16 | record.baseGlyphID;
+
+                if (fontFeatureTable.m_MarkToBaseAdjustmentRecordLookup.ContainsKey(key))
+                    continue;
+
+                MarkToBaseAdjustmentRecord newRecord = new MarkToBaseAdjustmentRecord {
+                    baseGlyphID = record.baseGlyphID,
+                    baseGlyphAnchorPoint = new GlyphAnchorPoint { xCoordinate = record.baseGlyphAnchorPoint.xCoordinate * emScale, yCoordinate = record.baseGlyphAnchorPoint.yCoordinate * emScale },
+                    markGlyphID = record.markGlyphID,
+                    markPositionAdjustment = new MarkPositionAdjustment { xPositionAdjustment = record.markPositionAdjustment.xPositionAdjustment * emScale, yPositionAdjustment = record.markPositionAdjustment.yPositionAdjustment * emScale } };
+
+                fontFeatureTable.MarkToBaseAdjustmentRecords.Add(newRecord);
+                fontFeatureTable.m_MarkToBaseAdjustmentRecordLookup.Add(key, newRecord);
+            }
+        }
+
+        void AddMarkToMarkAdjustmentRecords(TMP_FontFeatureTable fontFeatureTable, UnityEngine.TextCore.LowLevel.MarkToMarkAdjustmentRecord[] records)
+        {
+            float emScale = (float)m_FaceInfo.pointSize / m_FaceInfo.unitsPerEM;
+
+            for (int i = 0; i < records.Length; i++)
+            {
+                UnityEngine.TextCore.LowLevel.MarkToMarkAdjustmentRecord record = records[i];
+
+                uint key = record.combiningMarkGlyphID << 16 | record.baseMarkGlyphID;
+
+                if (fontFeatureTable.m_MarkToMarkAdjustmentRecordLookup.ContainsKey(key))
+                    continue;
+
+                MarkToMarkAdjustmentRecord newRecord = new MarkToMarkAdjustmentRecord {
+                    baseMarkGlyphID = record.baseMarkGlyphID,
+                    baseMarkGlyphAnchorPoint = new GlyphAnchorPoint { xCoordinate = record.baseMarkGlyphAnchorPoint.xCoordinate * emScale, yCoordinate = record.baseMarkGlyphAnchorPoint.yCoordinate * emScale},
+                    combiningMarkGlyphID = record.combiningMarkGlyphID,
+                    combiningMarkPositionAdjustment = new MarkPositionAdjustment { xPositionAdjustment = record.combiningMarkPositionAdjustment.xPositionAdjustment * emScale, yPositionAdjustment = record.combiningMarkPositionAdjustment.yPositionAdjustment * emScale } };
+
+                fontFeatureTable.MarkToMarkAdjustmentRecords.Add(newRecord);
+                fontFeatureTable.m_MarkToMarkAdjustmentRecordLookup.Add(key, newRecord);
+            }
+        }
+        #else
+        void PopulateGlyphAdjustmentTable(TMP_FontFeatureTable fontFeatureTable)
         {
             GlyphPairAdjustmentRecord[] adjustmentRecords = FontEngine.GetGlyphPairAdjustmentTable(m_AvailableGlyphsToAdd.ToArray());
 
             if (adjustmentRecords == null)
-                return null;
-
-            TMP_FontFeatureTable fontFeatureTable = new TMP_FontFeatureTable();
+                return;
 
             for (int i = 0; i < adjustmentRecords.Length && adjustmentRecords[i].firstAdjustmentRecord.glyphIndex != 0; i++)
             {
-                fontFeatureTable.glyphPairAdjustmentRecords.Add(new TMP_GlyphPairAdjustmentRecord(adjustmentRecords[i]));
+                fontFeatureTable.glyphPairAdjustmentRecords.Add(adjustmentRecords[i]);
             }
 
             fontFeatureTable.SortGlyphPairAdjustmentRecords();
-
-            return fontFeatureTable;
         }
+        #endif
     }
 }

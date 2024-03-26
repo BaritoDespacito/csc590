@@ -193,11 +193,22 @@ namespace TMPro.EditorUtilities
             ShaderUtilities.GetShaderPropertyIDs(); // Make sure we have valid Property IDs
             if (mat.HasProperty(ShaderUtilities.ID_GradientScale))
             {
+                bool isSRPShader = mat.HasProperty(ShaderUtilities.ID_IsoPerimeter);
+
                 // Copy unique properties of the SDF Material
                 var texture = mat.GetTexture(ShaderUtilities.ID_MainTex);
                 var gradientScale = mat.GetFloat(ShaderUtilities.ID_GradientScale);
-                var texWidth = mat.GetFloat(ShaderUtilities.ID_TextureWidth);
-                var texHeight = mat.GetFloat(ShaderUtilities.ID_TextureHeight);
+
+                float texWidth = 0, texHeight = 0;
+                float normalWeight = 0, boldWeight = 0;
+
+                if (!isSRPShader)
+                {
+                    texWidth = mat.GetFloat(ShaderUtilities.ID_TextureWidth);
+                    texHeight = mat.GetFloat(ShaderUtilities.ID_TextureHeight);
+                    normalWeight = mat.GetFloat(ShaderUtilities.ID_WeightNormal);
+                    boldWeight = mat.GetFloat(ShaderUtilities.ID_WeightBold);
+                }
 
                 var stencilId = 0.0f;
                 var stencilComp = 0.0f;
@@ -208,9 +219,6 @@ namespace TMPro.EditorUtilities
                     stencilComp = mat.GetFloat(ShaderUtilities.ID_StencilComp);
                 }
 
-                var normalWeight = mat.GetFloat(ShaderUtilities.ID_WeightNormal);
-                var boldWeight = mat.GetFloat(ShaderUtilities.ID_WeightBold);
-
                 // Reset the material
                 Unsupported.SmartReset(mat);
 
@@ -220,17 +228,20 @@ namespace TMPro.EditorUtilities
                 // Copy unique material properties back to the material.
                 mat.SetTexture(ShaderUtilities.ID_MainTex, texture);
                 mat.SetFloat(ShaderUtilities.ID_GradientScale, gradientScale);
-                mat.SetFloat(ShaderUtilities.ID_TextureWidth, texWidth);
-                mat.SetFloat(ShaderUtilities.ID_TextureHeight, texHeight);
+
+                if (!isSRPShader)
+                {
+                    mat.SetFloat(ShaderUtilities.ID_TextureWidth, texWidth);
+                    mat.SetFloat(ShaderUtilities.ID_TextureHeight, texHeight);
+                    mat.SetFloat(ShaderUtilities.ID_WeightNormal, normalWeight);
+                    mat.SetFloat(ShaderUtilities.ID_WeightBold, boldWeight);
+                }
 
                 if (mat.HasProperty(ShaderUtilities.ID_StencilID))
                 {
                     mat.SetFloat(ShaderUtilities.ID_StencilID, stencilId);
                     mat.SetFloat(ShaderUtilities.ID_StencilComp, stencilComp);
                 }
-
-                mat.SetFloat(ShaderUtilities.ID_WeightNormal, normalWeight);
-                mat.SetFloat(ShaderUtilities.ID_WeightBold, boldWeight);
             }
             else
             {
@@ -292,15 +303,13 @@ namespace TMPro.EditorUtilities
 
                 mat.SetTexture(ShaderUtilities.ID_MainTex, m_copiedTexture);
             }
-
-            //DestroyImmediate(m_copiedAtlasProperties);
         }
         #endif
 
 
         // Context Menus for TMPro Font Assets
         //This function is used for debugging and fixing potentially broken font atlas links.
-        [MenuItem("CONTEXT/TMP_FontAsset/Extract Atlas", false, 2100)]
+        [MenuItem("CONTEXT/TMP_FontAsset/Extract Atlas", false, 2200)]
         static void ExtractAtlas(MenuCommand command)
         {
             TMP_FontAsset font = command.context as TMP_FontAsset;
@@ -344,7 +353,7 @@ namespace TMPro.EditorUtilities
             }
         }
 
-        [MenuItem("CONTEXT/TMP_FontAsset/Force Upgrade To Version 1.1.0...", false, 2010)]
+        /*[MenuItem("CONTEXT/TMP_FontAsset/Force Upgrade To Version 1.1.0...", false, 2020)]
         static void ForceFontAssetUpgrade(MenuCommand command)
         {
             TMP_FontAsset fontAsset = command.context as TMP_FontAsset;
@@ -354,7 +363,7 @@ namespace TMPro.EditorUtilities
                 fontAsset.UpgradeFontAsset();
                 TMPro_EventManager.ON_FONT_PROPERTY_CHANGED(true, fontAsset);
             }
-        }
+        }*/
 
 
         /// <summary>
@@ -372,17 +381,77 @@ namespace TMPro.EditorUtilities
         {
             TMP_FontAsset fontAsset = command.context as TMP_FontAsset;
 
-            if (fontAsset != null && Selection.activeObject != fontAsset)
-            {
+            if (fontAsset == null)
+                return;
+
+            if (Selection.activeObject != fontAsset)
                 Selection.activeObject = fontAsset;
-            }
 
             fontAsset.ClearFontAssetData(true);
+
+            TMP_ResourceManager.RebuildFontAssetCache();
 
             TMPro_EventManager.ON_FONT_PROPERTY_CHANGED(true, fontAsset);
         }
 
+        /// <summary>
+        /// Clear Character and Glyph data (only).
+        /// </summary>
+        /// <param name="command"></param>
+        [MenuItem("CONTEXT/TMP_FontAsset/Clear Dynamic Data", true, 2100)]
+        static bool ClearFontCharacterDataValidate(MenuCommand command)
+        {
+            return AssetDatabase.IsOpenForEdit(command.context);
+        }
 
+        [MenuItem("CONTEXT/TMP_FontAsset/Clear Dynamic Data", false, 2100)]
+        static void ClearFontCharacterData(MenuCommand command)
+        {
+            TMP_FontAsset fontAsset = command.context as TMP_FontAsset;
+
+            if (fontAsset == null)
+                return;
+
+            if (Selection.activeObject != fontAsset)
+                Selection.activeObject = fontAsset;
+
+            fontAsset.ClearCharacterAndGlyphTablesInternal();
+
+            TMPro_EventManager.ON_FONT_PROPERTY_CHANGED(true, fontAsset);
+        }
+
+        /// <summary>
+        /// Import all font features
+        /// </summary>
+        /// <param name="command"></param>
+        #if TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
+        [MenuItem("CONTEXT/TMP_FontAsset/Import Font Features", true, 2110)]
+        static bool ReimportFontFeaturesValidate(MenuCommand command)
+        {
+            return AssetDatabase.IsOpenForEdit(command.context);
+        }
+
+        [MenuItem("CONTEXT/TMP_FontAsset/Import Font Features", false, 2110)]
+        static void ReimportFontFeatures(MenuCommand command)
+        {
+            TMP_FontAsset fontAsset = command.context as TMP_FontAsset;
+
+            if (fontAsset == null)
+                return;
+
+            if (Selection.activeObject != fontAsset)
+                Selection.activeObject = fontAsset;
+
+            fontAsset.ImportFontFeatures();
+
+            TMPro_EventManager.ON_FONT_PROPERTY_CHANGED(true, fontAsset);
+        }
+        #endif
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="command"></param>
         [MenuItem("CONTEXT/TrueTypeFontImporter/Create TMP Font Asset...", false, 200)]
         static void CreateFontAsset(MenuCommand command)
         {

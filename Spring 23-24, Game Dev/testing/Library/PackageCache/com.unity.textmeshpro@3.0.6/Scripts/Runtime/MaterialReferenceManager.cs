@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace TMPro
@@ -110,7 +109,8 @@ namespace TMPro
             m_FontMaterialReferenceLookup.Add(hashCode, spriteAsset.material);
 
             // Compatibility check
-            if (spriteAsset.hashCode == 0) spriteAsset.hashCode = hashCode;
+            if (spriteAsset.hashCode == 0)
+                spriteAsset.hashCode = hashCode;
         }
 
 
@@ -522,7 +522,7 @@ namespace TMPro
             this.fontAsset = fontAsset;
             this.spriteAsset = spriteAsset;
             this.material = material;
-            this.isDefaultMaterial = material.GetInstanceID() == fontAsset.material.GetInstanceID() ? true : false;
+            this.isDefaultMaterial = material.GetInstanceID() == fontAsset.material.GetInstanceID();
             this.isFallbackMaterial = false;
             this.fallbackMaterial = null;
             this.padding = padding;
@@ -570,6 +570,7 @@ namespace TMPro
 
             // Add new reference index
             materialReferenceIndexLookup[materialID] = index;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/MaterialReferenceManager.cs
 
             if (index >= materialReferences.Length)
                 System.Array.Resize(ref materialReferences, Mathf.NextPowerOfTwo(index + 1));
@@ -584,6 +585,20 @@ namespace TMPro
 
             return index;
 
+========
+
+            if (index >= materialReferences.Length)
+                System.Array.Resize(ref materialReferences, Mathf.NextPowerOfTwo(index + 1));
+
+            materialReferences[index].index = index;
+            materialReferences[index].fontAsset = fontAsset;
+            materialReferences[index].spriteAsset = null;
+            materialReferences[index].material = material;
+            materialReferences[index].isDefaultMaterial = materialID == fontAsset.material.GetInstanceID();
+            materialReferences[index].referenceCount = 0;
+
+            return index;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/MaterialReferenceManager.cs
         }
 
 
@@ -616,7 +631,10 @@ namespace TMPro
             materialReferences[index].spriteAsset = spriteAsset;
             materialReferences[index].material = material;
             materialReferences[index].isDefaultMaterial = true;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/MaterialReferenceManager.cs
             //materialReferences[index].padding = 0;
+========
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/MaterialReferenceManager.cs
             materialReferences[index].referenceCount = 0;
 
             return index;

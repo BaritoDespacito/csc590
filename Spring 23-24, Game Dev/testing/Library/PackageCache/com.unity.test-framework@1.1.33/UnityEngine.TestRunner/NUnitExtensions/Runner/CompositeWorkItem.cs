@@ -3,14 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Internal.Commands;
 using NUnit.Framework.Internal.Execution;
 using UnityEngine.TestTools.Logging;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEngine.TestRunner/NUnitExtensions/Runner/CompositeWorkItem.cs
 using UnityEngine.TestTools.TestRunner;
 using CountdownEvent = System.Threading.CountdownEvent;
+========
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEngine.TestRunner/NUnitExtensions/Runner/CompositeWorkItem.cs
 
 namespace UnityEngine.TestRunner.NUnitExtensions.Runner
 {
@@ -265,7 +269,7 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
         private void SkipFixture(ResultState resultState, string message, string stackTrace)
         {
             Result.SetResult(resultState.WithSite(FailureSite.SetUp), message, StackFilter.Filter(stackTrace));
-            SkipChildren(_suite, resultState.WithSite(FailureSite.Parent), "OneTimeSetUp: " + message);
+            SkipChildren(_suite, resultState.WithSite(FailureSite.Parent), message);
         }
 
         private void SkipChildren(TestSuite suite, ResultState resultState, string message)
@@ -327,7 +331,7 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
                 foreach (var childResult in _suiteResult.Children)
                     if (childResult.ResultState == ResultState.Cancelled)
                     {
-                        this.Result.SetResult(ResultState.Cancelled, "Cancelled by user");
+                        Result.SetResult(ResultState.Cancelled, "Cancelled by user");
                         break;
                     }
 

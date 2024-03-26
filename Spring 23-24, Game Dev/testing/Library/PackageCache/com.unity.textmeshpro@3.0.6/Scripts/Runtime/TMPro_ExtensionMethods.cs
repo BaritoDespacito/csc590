@@ -7,6 +7,32 @@ namespace TMPro
 {
     public static class TMPro_ExtensionMethods
     {
+        
+        /// <summary>
+        /// Converts a string of 4 ascii characters to an int. 
+        /// </summary>
+        /// <param name="s">String comprised of 4 ascii characters.</param>
+        /// <returns>The integer value for the string.</returns>
+        internal static int TagToInt(this string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return 0;
+            
+            return s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];            
+        }
+        
+        
+        public static int[] ToIntArray(this string text)
+        {
+            int[] intArray = new int[text.Length];
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                intArray[i] = text[i];
+            }
+
+            return intArray;
+        }
 
         public static int[] ToIntArray(this string text)
         {
@@ -140,6 +166,27 @@ namespace TMPro
             byte a = (byte)(Mathf.Clamp(c1.a / 255f * tint * 255, 0, 255));
 
             return new Color32(r, g, b, a);
+        }
+
+        internal static Color32 GammaToLinear(this Color32 c)
+        {
+            return new Color32(GammaToLinear(c.r), GammaToLinear(c.g), GammaToLinear(c.b), c.a);
+        }
+
+        static byte GammaToLinear(byte value)
+        {
+            float v = value / 255f;
+
+            if (v <= 0.04045f)
+                return (byte)(v / 12.92f * 255f);
+
+            if (v < 1.0f)
+                return (byte)(Mathf.Pow((v + 0.055f) / 1.055f, 2.4f) * 255);
+
+            if (v == 1.0f)
+                return 255;
+
+            return (byte)(Mathf.Pow(v, 2.2f) * 255);
         }
 
         public static Color MinAlpha(this Color c1, Color c2)

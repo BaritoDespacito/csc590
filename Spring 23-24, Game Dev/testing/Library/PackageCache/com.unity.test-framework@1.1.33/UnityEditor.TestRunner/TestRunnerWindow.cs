@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEditor.Callbacks;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEditor.TestTools.TestRunner.GUI;
@@ -77,6 +78,12 @@ namespace UnityEditor.TestTools.TestRunner
         static TestRunnerWindow()
         {
             InitBackgroundRunners();
+            TestRunnerApi.runProgressChanged.AddListener(UpdateProgressStatus);
+            var isRunFromCommandLine = Environment.GetCommandLineArgs().Any(arg => arg == "-runTests");
+            if (!isRunFromCommandLine)
+            {
+                EditorApplication.update += UpdateProgressBar;
+            }
         }
 
         private static void InitBackgroundRunners()
@@ -111,7 +118,7 @@ namespace UnityEditor.TestTools.TestRunner
             s_Instance = this;
             SelectTestListGUI(m_TestTypeToolbarIndex);
 
-            m_testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
+            m_testRunnerApi = CreateInstance<TestRunnerApi>();
             m_WindowResultUpdater = new WindowResultUpdater();
             m_testRunnerApi.RegisterCallbacks(m_WindowResultUpdater);
         }
@@ -156,7 +163,11 @@ namespace UnityEditor.TestTools.TestRunner
             if (!m_SelectedTestTypes.HasTreeData())
             {
                 var listToInit = m_SelectedTestTypes;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/TestRunnerWindow.cs
                 m_testRunnerApi.RetrieveTestList(m_SelectedTestTypes.TestMode, (rootTest) =>
+========
+                m_testRunnerApi.RetrieveTestList(m_SelectedTestTypes.TestMode, rootTest =>
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/TestRunnerWindow.cs
                 {
                     listToInit.Init(this, rootTest);
                     listToInit.Reload();
@@ -230,7 +241,11 @@ namespace UnityEditor.TestTools.TestRunner
             menu.AddItem(m_GUIHorizontalSplit, !m_Settings.verticalSplit, m_Settings.ToggleVerticalSplit);
 
             menu.AddSeparator(null);
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/TestRunnerWindow.cs
             
+========
+
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/TestRunnerWindow.cs
             if (EditorPrefs.GetBool("InternalMode", false))
             {
                 menu.AddItem(m_GUIRunPlayModeTestAsEditModeTests, PlayerSettings.runPlayModeTestAsEditModeTest, () =>
@@ -246,6 +261,36 @@ namespace UnityEditor.TestTools.TestRunner
             }
         }
 
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEditor.TestRunner/TestRunnerWindow.cs
+========
+        private static TestRunProgress runProgress;
+        private static void UpdateProgressStatus(TestRunProgress progress)
+        {
+            runProgress = progress;
+        }
+
+        private static void UpdateProgressBar()
+        {
+            if (runProgress == null)
+            {
+                return;
+            }
+
+            if (runProgress.HasFinished)
+            {
+                runProgress = null;
+                EditorUtility.ClearProgressBar();
+                return;
+            }
+
+            var cancel = EditorUtility.DisplayCancelableProgressBar($"Test Runner - {runProgress.CurrentStageName}", runProgress.CurrentStepName, runProgress.Progress);
+            if (cancel)
+            {
+                TestRunnerApi.CancelTestRun(runProgress.RunGuid);
+            }
+        }
+
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEditor.TestRunner/TestRunnerWindow.cs
         internal void RebuildUIFilter()
         {
             if (m_SelectedTestTypes != null && m_SelectedTestTypes.HasTreeData())

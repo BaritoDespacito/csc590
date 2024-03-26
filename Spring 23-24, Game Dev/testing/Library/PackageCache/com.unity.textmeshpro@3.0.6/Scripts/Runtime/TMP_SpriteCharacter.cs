@@ -15,22 +15,8 @@ namespace TMPro
         public string name
         {
             get { return m_Name; }
-            set
-            {
-                if (value == m_Name)
-                    return;
-
-                m_Name = value;
-                m_HashCode = TMP_TextParsingUtilities.GetHashCodeCaseSensitive(m_Name);
-            }
+            set { m_Name = value; }
         }
-
-        /// <summary>
-        /// The hashcode value which is computed from the name of the sprite element.
-        /// This value is read-only and updated when the name of the text sprite is changed.
-        /// </summary>
-        public int hashCode { get { return m_HashCode; } }
-
 
         // =============================================
         // Private backing fields for public properties.
@@ -38,10 +24,6 @@ namespace TMPro
 
         [SerializeField]
         private string m_Name;
-
-        [SerializeField]
-        private int m_HashCode;
-
 
         // ********************
         // CONSTRUCTORS

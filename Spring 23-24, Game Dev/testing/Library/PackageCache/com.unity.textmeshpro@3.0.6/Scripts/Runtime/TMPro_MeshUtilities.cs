@@ -135,6 +135,8 @@ namespace TMPro
 
             for (int i = 0; i < length; i++)
                 linkID[i] = text[startIndex + i];
+
+            linkIdLength = length;
         }
 
         /// <summary>
@@ -153,6 +155,14 @@ namespace TMPro
             return text;
         }
 
+        /// <summary>
+        /// Function which returns the link as a string.
+        /// </summary>
+        /// <returns></returns>
+        public string GetLink()
+        {
+            return GetLinkID();
+        }
 
         /// <summary>
         /// Function which returns the link ID as a string.
@@ -165,8 +175,6 @@ namespace TMPro
                 return string.Empty;
 
             return new string(linkID, 0, linkIdLength);
-            //return textComponent.text.Substring(linkIdFirstCharacterIndex, linkIdLength);
-
         }
     }
 
@@ -343,11 +351,12 @@ namespace TMPro
 
 
     // Structure used for Word Wrapping which tracks the state of execution when the last space or carriage return character was encountered.
-    public struct WordWrapState
+    internal struct WordWrapState
     {
         public int previous_WordBreak;
         public int total_CharacterCount;
         public int visible_CharacterCount;
+        public int visibleSpaceCount;
         public int visible_SpriteCount;
         public int visible_LinkCount;
         public int firstCharacterIndex;
@@ -371,7 +380,9 @@ namespace TMPro
         public float xAdvance;
         public float preferredWidth;
         public float preferredHeight;
-        //public float maxFontScale;
+        public float renderedWidth;
+        public float renderedHeight;
+
         public float previousLineScale;
 
         public int wordCount;
@@ -383,7 +394,7 @@ namespace TMPro
         public float baselineOffset;
         public float lineOffset;
         public bool isDrivenLineSpacing;
-        public float glyphHorizontalAdvanceAdjustment;
+        public int lastBaseGlyphIndex;
 
         public float cSpace;
         public float mSpace;
@@ -394,7 +405,7 @@ namespace TMPro
         public Color32 vertexColor;
         public Color32 underlineColor;
         public Color32 strikethroughColor;
-        public Color32 highlightColor;
+        public HighlightState highlightState;
         public TMP_FontStyleStack basicStyleStack;
         public TMP_TextProcessingStack<int> italicAngleStack;
         public TMP_TextProcessingStack<Color32> colorStack;
@@ -422,21 +433,23 @@ namespace TMPro
 
         public bool tagNoParsing;
         public bool isNonBreakingSpace;
+
+        public Quaternion fxRotation;
+        public Vector3 fxScale;
     }
 
 
     /// <summary>
     /// Structure used to store retrieve the name and hashcode of the font and material
     /// </summary>
-    public struct TagAttribute
+    internal struct TagAttribute
     {
         public int startIndex;
         public int length;
         public int hashCode;
     }
 
-
-    public struct RichTextTagAttribute
+    internal struct RichTextTagAttribute
     {
         public int nameHashCode;
         public int valueHashCode;

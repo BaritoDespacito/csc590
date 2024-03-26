@@ -2,6 +2,7 @@ using UnityEditor.Experimental;
 using UnityEditor.StyleSheets;
 using UnityEngine;
 using UnityEngine.Timeline;
+using UnityEngine.UIElements;
 
 namespace UnityEditor.Timeline
 {
@@ -9,9 +10,15 @@ namespace UnityEditor.Timeline
     {
         const string k_Elipsis = "…";
         const string k_ImagePath = "Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/{0}.png";
-        public const string resourcesPath = "Packages/com.unity.timeline/Editor/StyleSheets/res/";
+        const string k_ResourcesPath = stylesheetsPath + "res/";
+        const string k_DarkSkinPath = k_ResourcesPath + "Timeline_DarkSkin.txt";
+        const string k_LightSkinPath = k_ResourcesPath + "Timeline_LightSkin.txt";
 
         //Timeline resources
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.timeline@1.7.6/Editor/DirectorStyles.cs
+========
+        public const string stylesheetsPath = "Packages/com.unity.timeline/Editor/StyleSheets/";
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.timeline@1.8.6/Editor/DirectorStyles.cs
         public const string newTimelineDefaultNameSuffix = "Timeline";
 
         public static readonly GUIContent referenceTrackLabel = TrTextContent("R", "This track references an external asset");
@@ -114,9 +121,6 @@ namespace UnityEditor.Timeline
         DirectorNamedColor m_DarkSkinColors;
         DirectorNamedColor m_LightSkinColors;
         DirectorNamedColor m_DefaultSkinColors;
-
-        const string k_DarkSkinPath = resourcesPath + "Timeline_DarkSkin.txt";
-        const string k_LightSkinPath = resourcesPath + "Timeline_LightSkin.txt";
 
         static readonly GUIContent s_TempContent = new GUIContent();
 
@@ -365,6 +369,11 @@ namespace UnityEditor.Timeline
             var blockName = GUIStyleExtensions.StyleNameToBlockName(style.name, false);
             var styleBlock = EditorResources.GetStyle(blockName, state);
             return styleBlock.GetTexture(StyleCatalogKeyword.backgroundImage);
+        }
+
+        public static StyleSheet LoadStyleSheet(string path)
+        {
+            return AssetDatabase.LoadAssetAtPath<StyleSheet>(path);
         }
     }
 }

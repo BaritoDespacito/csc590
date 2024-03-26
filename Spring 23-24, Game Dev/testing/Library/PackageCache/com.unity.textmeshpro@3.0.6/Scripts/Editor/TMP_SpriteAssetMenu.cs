@@ -50,6 +50,7 @@ namespace TMPro.EditorUtilities
             UpdateSpriteAsset(spriteAsset);
         }
 
+
         internal static void UpdateSpriteAsset(TMP_SpriteAsset spriteAsset)
         {
             // Get a list of all the sprites contained in the texture referenced by the sprite asset.
@@ -141,7 +142,24 @@ namespace TMPro.EditorUtilities
                     spriteGlyphTable.Add(spriteGlyph);
 
                     spriteCharacter = new TMP_SpriteCharacter(0xFFFE, spriteGlyph);
-                    spriteCharacter.name = sprite.name;
+
+					// Special handling for .notdef sprite name.
+                    string fileNameToLowerInvariant = sprite.name.ToLowerInvariant();
+                    if (fileNameToLowerInvariant == ".notdef" || fileNameToLowerInvariant == "notdef")
+                    {
+                        spriteCharacter.name = fileNameToLowerInvariant;
+                        spriteCharacter.unicode = 0;
+                    }
+                    else
+                    {
+                        spriteCharacter.unicode = 0xFFFE;
+                        if (!string.IsNullOrEmpty(sprite.name) && sprite.name.Length > 2 && sprite.name[0] == '0' && (sprite.name[1] == 'x' || sprite.name[1] == 'X'))
+                        {
+                            spriteCharacter.unicode = (uint)TMP_TextUtilities.StringHexToInt(sprite.name.Remove(0, 2));
+                        }
+                        spriteCharacter.name = sprite.name;
+                    }
+
                     spriteCharacter.scale = 1.0f;
 
                     spriteAsset.spriteCharacterTable.Add(spriteCharacter);
@@ -160,31 +178,59 @@ namespace TMPro.EditorUtilities
             spriteAsset.SortGlyphTable();
             spriteAsset.UpdateLookupTables();
             TMPro_EventManager.ON_SPRITE_ASSET_PROPERTY_CHANGED(true, spriteAsset);
+            EditorUtility.SetDirty(spriteAsset);
 
         }
 
 
-        [MenuItem("Assets/Create/TextMeshPro/Sprite Asset", false, 110)]
-        public static void CreateSpriteAsset()
+        [MenuItem("Assets/Create/TextMeshPro/Sprite Asset", false, 200)]
+        static void CreateSpriteAsset()
         {
-            Object target = Selection.activeObject;
+            Object[] targets = Selection.objects;
 
-            if (target == null || target.GetType() != typeof(Texture2D)) // && target.GetType() != typeof(SpriteAtlas)))
+            if (targets == null)
             {
-                Debug.LogWarning("A texture must first be selected in order to create a TextMesh Pro Sprite Asset.");
+                Debug.LogWarning("A Sprite Texture must first be selected in order to create a Sprite Asset.");
                 return;
             }
 
+            // Make sure TMP Essential Resources have been imported in the user project.
+            if (TMP_Settings.instance == null)
+            {
+                Debug.Log("Unable to create sprite asset. Please import the TMP Essential Resources.");
+
+                // Show Window to Import TMP Essential Resources
+                return;
+            }
+
+            for (int i = 0; i < targets.Length; i++)
+            {
+                Object target = targets[i];
+
+                // Make sure the selection is a font file
+                if (target == null || target.GetType() != typeof(Texture2D))
+                {
+                    Debug.LogWarning("Selected Object [" + target.name + "] is not a Sprite Texture. A Sprite Texture must be selected in order to create a Sprite Asset.", target);
+                    continue;
+                }
+
+                CreateSpriteAssetFromSelectedObject(target);
+            }
+        }
+
+
+        static void CreateSpriteAssetFromSelectedObject(Object target)
+        {
             // Get the path to the selected asset.
             string filePathWithName = AssetDatabase.GetAssetPath(target);
             string fileNameWithExtension = Path.GetFileName(filePathWithName);
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePathWithName);
             string filePath = filePathWithName.Replace(fileNameWithExtension, "");
-
+            string uniquePath = AssetDatabase.GenerateUniqueAssetPath(filePath + fileNameWithoutExtension + ".asset");
 
             // Create new Sprite Asset
             TMP_SpriteAsset spriteAsset = ScriptableObject.CreateInstance<TMP_SpriteAsset>();
-            AssetDatabase.CreateAsset(spriteAsset, filePath + fileNameWithoutExtension + ".asset");
+            AssetDatabase.CreateAsset(spriteAsset, uniquePath);
 
             spriteAsset.version = "1.1.0";
 
@@ -243,7 +289,7 @@ namespace TMPro.EditorUtilities
         }
 
 
-        private static void PopulateSpriteTables(Texture source, ref List<TMP_SpriteCharacter> spriteCharacterTable, ref List<TMP_SpriteGlyph> spriteGlyphTable)
+        static void PopulateSpriteTables(Texture source, ref List<TMP_SpriteCharacter> spriteCharacterTable, ref List<TMP_SpriteGlyph> spriteGlyphTable)
         {
             //Debug.Log("Creating new Sprite Asset.");
 
@@ -266,7 +312,23 @@ namespace TMPro.EditorUtilities
                 spriteGlyphTable.Add(spriteGlyph);
 
                 TMP_SpriteCharacter spriteCharacter = new TMP_SpriteCharacter(0xFFFE, spriteGlyph);
-                spriteCharacter.name = sprite.name;
+
+                // Special handling for .notdef sprite name.
+                string fileNameToLowerInvariant = sprite.name.ToLowerInvariant();
+                if (fileNameToLowerInvariant == ".notdef" || fileNameToLowerInvariant == "notdef")
+                {
+                    spriteCharacter.unicode = 0;
+                    spriteCharacter.name = fileNameToLowerInvariant;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(sprite.name) && sprite.name.Length > 2 && sprite.name[0] == '0' && (sprite.name[1] == 'x' || sprite.name[1] == 'X'))
+                    {
+                        spriteCharacter.unicode = (uint)TMP_TextUtilities.StringHexToInt(sprite.name.Remove(0, 2));
+                    }
+                    spriteCharacter.name = sprite.name;
+                }
+
                 spriteCharacter.scale = 1.0f;
 
                 spriteCharacterTable.Add(spriteCharacter);
@@ -274,7 +336,7 @@ namespace TMPro.EditorUtilities
         }
 
 
-        private static void PopulateSpriteTables(SpriteAtlas spriteAtlas, ref List<TMP_SpriteCharacter> spriteCharacterTable, ref List<TMP_SpriteGlyph> spriteGlyphTable)
+        static void PopulateSpriteTables(SpriteAtlas spriteAtlas, ref List<TMP_SpriteCharacter> spriteCharacterTable, ref List<TMP_SpriteGlyph> spriteGlyphTable)
         {
             // Get number of sprites contained in the sprite atlas.
             int spriteCount = spriteAtlas.spriteCount;
@@ -309,20 +371,20 @@ namespace TMPro.EditorUtilities
         /// Create and add new default material to sprite asset.
         /// </summary>
         /// <param name="spriteAsset"></param>
-        private static void AddDefaultMaterial(TMP_SpriteAsset spriteAsset)
+        static void AddDefaultMaterial(TMP_SpriteAsset spriteAsset)
         {
             Shader shader = Shader.Find("TextMeshPro/Sprite");
             Material material = new Material(shader);
             material.SetTexture(ShaderUtilities.ID_MainTex, spriteAsset.spriteSheet);
 
             spriteAsset.material = material;
-            material.hideFlags = HideFlags.HideInHierarchy;
+            material.name = spriteAsset.name + " Material";
             AssetDatabase.AddObjectToAsset(material, spriteAsset);
         }
 
 
         // Update existing SpriteInfo
-        private static List<TMP_Sprite> UpdateSpriteInfo(TMP_SpriteAsset spriteAsset)
+        static List<TMP_Sprite> UpdateSpriteInfo(TMP_SpriteAsset spriteAsset)
         {
             //Debug.Log("Updating Sprite Asset.");
 

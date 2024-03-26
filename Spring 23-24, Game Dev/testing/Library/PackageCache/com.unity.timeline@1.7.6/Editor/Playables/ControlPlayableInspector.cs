@@ -23,6 +23,10 @@ namespace UnityEditor.Timeline
             public static readonly GUIContent updateHierarchy = L10n.TextContent("Control Children", "Search child game objects for particle systems and playable directors");
             public static readonly GUIContent randomSeedContent = L10n.TextContent("Random Seed", "A random seed to provide the particle systems for consistent previews. This will only be used on particle systems where AutoRandomSeed is on.");
             public static readonly GUIContent postPlayableContent = L10n.TextContent("Post Playback", "The active state to the leave the game object when the timeline is finished. \n\nRevert will leave the game object in the state it was prior to the timeline being run");
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.timeline@1.7.6/Editor/Playables/ControlPlayableInspector.cs
+========
+            public static readonly GUIContent directorActionOnClipEndContent = L10n.TextContent("On Clip End", "The action to apply to the PlayableDirector when the clip ends.");
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.timeline@1.8.6/Editor/Playables/ControlPlayableInspector.cs
         }
 
         SerializedProperty m_SourceObject;
@@ -34,6 +38,10 @@ namespace UnityEditor.Timeline
         SerializedProperty m_UseActivation;
         SerializedProperty m_PostPlayback;
         SerializedProperty m_RandomSeed;
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.timeline@1.7.6/Editor/Playables/ControlPlayableInspector.cs
+========
+        SerializedProperty m_DirectorActionOnClipEnd;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.timeline@1.8.6/Editor/Playables/ControlPlayableInspector.cs
         bool m_CycleReference;
 
 
@@ -65,6 +73,7 @@ namespace UnityEditor.Timeline
             m_SearchHierarchy = serializedObject.FindProperty("searchHierarchy");
             m_UseActivation = serializedObject.FindProperty("active");
             m_PostPlayback = serializedObject.FindProperty("postPlayback");
+            m_DirectorActionOnClipEnd = serializedObject.FindProperty("directorOnClipEnd");
             m_RandomSeed = serializedObject.FindProperty("particleRandomSeed");
             CheckForCyclicReference();
         }
@@ -138,6 +147,12 @@ namespace UnityEditor.Timeline
                     {
                         CheckForCyclicReference();
                     }
+                    EditorGUI.indentLevel++;
+                    using (new EditorGUI.DisabledScope(!m_UpdateDirector.boolValue))
+                    {
+                        EditorGUILayout.PropertyField(m_DirectorActionOnClipEnd, Styles.directorActionOnClipEndContent);
+                    }
+                    EditorGUI.indentLevel--;
                 }
 
                 EditorGUILayout.PropertyField(m_UpdateParticle, Styles.updateParticleSystemsContent);

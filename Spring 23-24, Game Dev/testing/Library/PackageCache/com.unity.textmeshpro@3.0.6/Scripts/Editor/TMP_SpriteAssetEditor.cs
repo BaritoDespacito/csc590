@@ -24,6 +24,8 @@ namespace TMPro.EditorUtilities
 
         int m_moveToIndex;
         int m_selectedElement = -1;
+        bool m_isCharacterSelected = false;
+        bool m_isSpriteSelected = false;
         int m_CurrentCharacterPage;
         int m_CurrentGlyphPage;
 
@@ -73,9 +75,9 @@ namespace TMPro.EditorUtilities
             m_DescentLineProperty = m_FaceInfoProperty.FindPropertyRelative("m_DescentLine");
 
             m_spriteAtlas_prop = serializedObject.FindProperty("spriteSheet");
-            m_material_prop = serializedObject.FindProperty("material");
+            m_material_prop = serializedObject.FindProperty("m_Material");
             m_SpriteCharacterTableProperty = serializedObject.FindProperty("m_SpriteCharacterTable");
-            m_SpriteGlyphTableProperty = serializedObject.FindProperty("m_SpriteGlyphTable");
+            m_SpriteGlyphTableProperty = serializedObject.FindProperty("m_GlyphTable");
 
             // Fallback TMP Sprite Asset list
             m_fallbackSpriteAssetList = new ReorderableList(serializedObject, serializedObject.FindProperty("fallbackSpriteAssets"), true, true, true, true);
@@ -91,6 +93,9 @@ namespace TMPro.EditorUtilities
             {
                 EditorGUI.LabelField(rect, new GUIContent("Fallback Sprite Asset List", "Select the Sprite Assets that will be searched and used as fallback when a given sprite is missing from this sprite asset."));
             };
+
+            // Clear glyph proxy lookups
+            TMP_PropertyDrawerUtilities.ClearGlyphProxyLookups();
         }
 
 
@@ -254,7 +259,7 @@ namespace TMPro.EditorUtilities
 
                         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                         {
-                            EditorGUI.BeginDisabledGroup(i != m_selectedElement);
+                            EditorGUI.BeginDisabledGroup(i != m_selectedElement || !m_isCharacterSelected);
                             {
                                 EditorGUILayout.PropertyField(spriteCharacterProperty);
                             }
@@ -272,16 +277,19 @@ namespace TMPro.EditorUtilities
                             if (m_selectedElement == i)
                             {
                                 m_selectedElement = -1;
+                                m_isCharacterSelected = false;
                             }
                             else
                             {
                                 m_selectedElement = i;
+                                m_isCharacterSelected = true;
+                                m_isSpriteSelected = false;
                                 GUIUtility.keyboardControl = 0;
                             }
                         }
 
                         // Draw & Handle Section Area
-                        if (m_selectedElement == i)
+                        if (m_selectedElement == i && m_isCharacterSelected)
                         {
                             // Draw selection highlight
                             TMP_EditorUtility.DrawBox(selectionArea, 2f, new Color32(40, 192, 255, 255));
@@ -479,7 +487,7 @@ namespace TMPro.EditorUtilities
 
                         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                         {
-                            EditorGUI.BeginDisabledGroup(i != m_selectedElement);
+                            EditorGUI.BeginDisabledGroup(i != m_selectedElement || !m_isSpriteSelected);
                             {
                                 EditorGUILayout.PropertyField(spriteGlyphProperty);
                             }
@@ -497,16 +505,19 @@ namespace TMPro.EditorUtilities
                             if (m_selectedElement == i)
                             {
                                 m_selectedElement = -1;
+                                m_isSpriteSelected = false;
                             }
                             else
                             {
                                 m_selectedElement = i;
+                                m_isCharacterSelected = false;
+                                m_isSpriteSelected = true;
                                 GUIUtility.keyboardControl = 0;
                             }
                         }
 
                         // Draw & Handle Section Area
-                        if (m_selectedElement == i)
+                        if (m_selectedElement == i && m_isSpriteSelected)
                         {
                             // Draw selection highlight
                             TMP_EditorUtility.DrawBox(selectionArea, 2f, new Color32(40, 192, 255, 255));
@@ -648,7 +659,10 @@ namespace TMPro.EditorUtilities
             if (serializedObject.ApplyModifiedProperties() || evt_cmd == k_UndoRedo || isAssetDirty)
             {
                 if (m_SpriteAsset.m_IsSpriteAssetLookupTablesDirty || evt_cmd == k_UndoRedo)
+                {
                     m_SpriteAsset.UpdateLookupTables();
+                    TMP_ResourceManager.RebuildFontAssetCache();
+                }
 
                 TMPro_EventManager.ON_SPRITE_ASSET_PROPERTY_CHANGED(true, m_SpriteAsset);
 
@@ -833,7 +847,6 @@ namespace TMPro.EditorUtilities
         void CopyCharacterSerializedProperty(SerializedProperty source, ref SerializedProperty target)
         {
             target.FindPropertyRelative("m_Name").stringValue = source.FindPropertyRelative("m_Name").stringValue;
-            target.FindPropertyRelative("m_HashCode").intValue = source.FindPropertyRelative("m_HashCode").intValue;
             target.FindPropertyRelative("m_Unicode").intValue = source.FindPropertyRelative("m_Unicode").intValue;
             target.FindPropertyRelative("m_GlyphIndex").intValue = source.FindPropertyRelative("m_GlyphIndex").intValue;
             target.FindPropertyRelative("m_Scale").floatValue = source.FindPropertyRelative("m_Scale").floatValue;

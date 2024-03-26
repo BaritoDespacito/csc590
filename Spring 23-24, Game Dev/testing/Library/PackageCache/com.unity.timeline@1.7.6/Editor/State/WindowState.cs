@@ -1059,6 +1059,12 @@ namespace UnityEditor.Timeline
                 var animators = m_PreviewedAnimators.GetBindingsForObject(track);
                 foreach (var animator in animators)
                 {
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.timeline@1.7.6/Editor/State/WindowState.cs
+========
+                    if (animator == null)
+                        continue;
+
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.timeline@1.8.6/Editor/State/WindowState.cs
                     if (inputGameObject.transform.IsChildOf(animator.transform))
                         return false;
                 }

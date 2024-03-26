@@ -37,16 +37,30 @@ namespace TMPro
 
         private static GameObject CreateUIElementRoot(string name, Vector2 size)
         {
-            GameObject child = new GameObject(name);
-            RectTransform rectTransform = child.AddComponent<RectTransform>();
+            GameObject root;
+
+            #if UNITY_EDITOR
+            root = ObjectFactory.CreateGameObject(name, typeof(RectTransform));
+            var rt = root.GetComponent<RectTransform>();
+            rt.sizeDelta = size;
+            #else
+            root = new GameObject(name);
+            RectTransform rectTransform = root.AddComponent<RectTransform>();
             rectTransform.sizeDelta = size;
-            return child;
+            #endif
+
+            return root;
         }
 
         static GameObject CreateUIObject(string name, GameObject parent)
         {
-            GameObject go = new GameObject(name);
+            GameObject go;
+            #if UNITY_EDITOR
+            go = ObjectFactory.CreateGameObject(name, typeof(RectTransform));
+            #else
+            go = new GameObject(name);
             go.AddComponent<RectTransform>();
+            #endif
             SetParentAndAlign(go, parent);
             return go;
         }
@@ -95,12 +109,12 @@ namespace TMPro
             GameObject sliderArea = CreateUIObject("Sliding Area", scrollbarRoot);
             GameObject handle = CreateUIObject("Handle", sliderArea);
 
-            Image bgImage = scrollbarRoot.AddComponent<Image>();
+            Image bgImage = AddComponent<Image>(scrollbarRoot);
             bgImage.sprite = resources.background;
             bgImage.type = Image.Type.Sliced;
             bgImage.color = s_DefaultSelectableColor;
 
-            Image handleImage = handle.AddComponent<Image>();
+            Image handleImage = AddComponent<Image>(handle);
             handleImage.sprite = resources.standard;
             handleImage.type = Image.Type.Sliced;
             handleImage.color = s_DefaultSelectableColor;
@@ -113,7 +127,7 @@ namespace TMPro
             RectTransform handleRect = handle.GetComponent<RectTransform>();
             handleRect.sizeDelta = new Vector2(20, 20);
 
-            Scrollbar scrollbar = scrollbarRoot.AddComponent<Scrollbar>();
+            Scrollbar scrollbar = AddComponent<Scrollbar>(scrollbarRoot);
             scrollbar.handleRect = handleRect;
             scrollbar.targetGraphic = handleImage;
             SetDefaultColorTransitionValues(scrollbar);
@@ -125,19 +139,25 @@ namespace TMPro
         {
             GameObject buttonRoot = CreateUIElementRoot("Button", s_ThickElementSize);
 
-            GameObject childText = new GameObject("Text (TMP)");
+            GameObject childText;
+#if UNITY_EDITOR
+            childText = ObjectFactory.CreateGameObject("Text (TMP)", typeof(RectTransform));
+#else
+            childText = new GameObject("Text (TMP)");
             childText.AddComponent<RectTransform>();
+#endif
+
             SetParentAndAlign(childText, buttonRoot);
 
-            Image image = buttonRoot.AddComponent<Image>();
+            Image image = AddComponent<Image>(buttonRoot);
             image.sprite = resources.standard;
             image.type = Image.Type.Sliced;
             image.color = s_DefaultSelectableColor;
 
-            Button bt = buttonRoot.AddComponent<Button>();
+            Button bt = AddComponent<Button>(buttonRoot);
             SetDefaultColorTransitionValues(bt);
 
-            TextMeshProUGUI text = childText.AddComponent<TextMeshProUGUI>();
+            TextMeshProUGUI text = AddComponent<TextMeshProUGUI>(childText);
             text.text = "Button";
             text.alignment = TextAlignmentOptions.Center;
             SetDefaultTextValues(text);
@@ -155,8 +175,12 @@ namespace TMPro
             GameObject go = null;
 
             #if UNITY_EDITOR
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_DefaultControls.cs
                 go = ObjectFactory.CreateGameObject("Text (TMP)");
                 ObjectFactory.AddComponent<TextMeshProUGUI>(go);
+========
+                go = ObjectFactory.CreateGameObject("Text (TMP)", typeof(TextMeshProUGUI));
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_DefaultControls.cs
             #else
                 go = CreateUIElementRoot("Text (TMP)", s_TextElementSize);
                 go.AddComponent<TextMeshProUGUI>();
@@ -164,7 +188,6 @@ namespace TMPro
 
             return go;
         }
-
 
         public static GameObject CreateInputField(Resources resources)
         {
@@ -174,17 +197,21 @@ namespace TMPro
             GameObject childPlaceholder = CreateUIObject("Placeholder", textArea);
             GameObject childText = CreateUIObject("Text", textArea);
 
-            Image image = root.AddComponent<Image>();
+            Image image = AddComponent<Image>(root);
             image.sprite = resources.inputField;
             image.type = Image.Type.Sliced;
             image.color = s_DefaultSelectableColor;
 
-            TMP_InputField inputField = root.AddComponent<TMP_InputField>();
+            TMP_InputField inputField = AddComponent<TMP_InputField>(root);
             SetDefaultColorTransitionValues(inputField);
 
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_DefaultControls.cs
             // Use UI.Mask for Unity 5.0 - 5.1 and 2D RectMask for Unity 5.2 and up
             RectMask2D rectMask = textArea.AddComponent<RectMask2D>();
             #if UNITY_2019_4_OR_NEWER && !UNITY_2019_4_1 && !UNITY_2019_4_2 && !UNITY_2019_4_3 && !UNITY_2019_4_4 && !UNITY_2019_4_5 && !UNITY_2019_4_6 && !UNITY_2019_4_7 && !UNITY_2019_4_8 && !UNITY_2019_4_9 && !UNITY_2019_4_10 && !UNITY_2019_4_11
+========
+            RectMask2D rectMask = AddComponent<RectMask2D>(textArea);
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_DefaultControls.cs
             rectMask.padding = new Vector4(-8, -5, -8, -5);
             #endif
 
@@ -196,18 +223,18 @@ namespace TMPro
             textAreaRectTransform.offsetMax = new Vector2(-10, -7);
 
 
-            TextMeshProUGUI text = childText.AddComponent<TextMeshProUGUI>();
+            TextMeshProUGUI text = AddComponent<TextMeshProUGUI>(childText);
             text.text = "";
-            text.enableWordWrapping = false;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
             text.extraPadding = true;
             text.richText = true;
             SetDefaultTextValues(text);
 
-            TextMeshProUGUI placeholder = childPlaceholder.AddComponent<TextMeshProUGUI>();
+            TextMeshProUGUI placeholder = AddComponent<TextMeshProUGUI>(childPlaceholder);
             placeholder.text = "Enter text...";
             placeholder.fontSize = 14;
             placeholder.fontStyle = FontStyles.Italic;
-            placeholder.enableWordWrapping = false;
+            placeholder.textWrappingMode = TextWrappingModes.NoWrap;
             placeholder.extraPadding = true;
 
             // Make placeholder color half as opaque as normal text color.
@@ -216,7 +243,7 @@ namespace TMPro
             placeholder.color = placeholderColor;
 
             // Add Layout component to placeholder.
-            placeholder.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            AddComponent<LayoutElement>(placeholder.gameObject).ignoreLayout = true;
 
             RectTransform textRectTransform = childText.GetComponent<RectTransform>();
             textRectTransform.anchorMin = Vector2.zero;
@@ -271,28 +298,28 @@ namespace TMPro
 
             // Setup item UI components.
 
-            TextMeshProUGUI itemLabelText = itemLabel.AddComponent<TextMeshProUGUI>();
+            TextMeshProUGUI itemLabelText = AddComponent<TextMeshProUGUI>(itemLabel);
             SetDefaultTextValues(itemLabelText);
             itemLabelText.alignment = TextAlignmentOptions.Left;
 
-            Image itemBackgroundImage = itemBackground.AddComponent<Image>();
+            Image itemBackgroundImage = AddComponent<Image>(itemBackground);
             itemBackgroundImage.color = new Color32(245, 245, 245, 255);
 
-            Image itemCheckmarkImage = itemCheckmark.AddComponent<Image>();
+            Image itemCheckmarkImage = AddComponent<Image>(itemCheckmark);
             itemCheckmarkImage.sprite = resources.checkmark;
 
-            Toggle itemToggle = item.AddComponent<Toggle>();
+            Toggle itemToggle = AddComponent<Toggle>(item);
             itemToggle.targetGraphic = itemBackgroundImage;
             itemToggle.graphic = itemCheckmarkImage;
             itemToggle.isOn = true;
 
             // Setup template UI components.
 
-            Image templateImage = template.AddComponent<Image>();
+            Image templateImage = AddComponent<Image>(template);
             templateImage.sprite = resources.standard;
             templateImage.type = Image.Type.Sliced;
 
-            ScrollRect templateScrollRect = template.AddComponent<ScrollRect>();
+            ScrollRect templateScrollRect = AddComponent<ScrollRect>(template);
             templateScrollRect.content = (RectTransform)content.transform;
             templateScrollRect.viewport = (RectTransform)viewport.transform;
             templateScrollRect.horizontal = false;
@@ -301,28 +328,28 @@ namespace TMPro
             templateScrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
             templateScrollRect.verticalScrollbarSpacing = -3;
 
-            Mask scrollRectMask = viewport.AddComponent<Mask>();
+            Mask scrollRectMask = AddComponent<Mask>(viewport);
             scrollRectMask.showMaskGraphic = false;
 
-            Image viewportImage = viewport.AddComponent<Image>();
+            Image viewportImage = AddComponent<Image>(viewport);
             viewportImage.sprite = resources.mask;
             viewportImage.type = Image.Type.Sliced;
 
             // Setup dropdown UI components.
 
-            TextMeshProUGUI labelText = label.AddComponent<TextMeshProUGUI>();
+            TextMeshProUGUI labelText = AddComponent<TextMeshProUGUI>(label);
             SetDefaultTextValues(labelText);
             labelText.alignment = TextAlignmentOptions.Left;
 
-            Image arrowImage = arrow.AddComponent<Image>();
+            Image arrowImage = AddComponent<Image>(arrow);
             arrowImage.sprite = resources.dropdown;
 
-            Image backgroundImage = root.AddComponent<Image>();
+            Image backgroundImage = AddComponent<Image>(root);
             backgroundImage.sprite = resources.standard;
             backgroundImage.color = s_DefaultSelectableColor;
             backgroundImage.type = Image.Type.Sliced;
 
-            TMP_Dropdown dropdown = root.AddComponent<TMP_Dropdown>();
+            TMP_Dropdown dropdown = AddComponent<TMP_Dropdown>(root);
             dropdown.targetGraphic = backgroundImage;
             SetDefaultColorTransitionValues(dropdown);
             dropdown.template = template.GetComponent<RectTransform>();
@@ -395,6 +422,15 @@ namespace TMPro
             template.SetActive(false);
 
             return root;
+        }
+
+        private static T AddComponent<T>(GameObject go) where T : Component
+        {
+#if UNITY_EDITOR
+            return ObjectFactory.AddComponent<T>(go);
+#else
+            return go.AddComponent<T>();
+#endif
         }
     }
 }

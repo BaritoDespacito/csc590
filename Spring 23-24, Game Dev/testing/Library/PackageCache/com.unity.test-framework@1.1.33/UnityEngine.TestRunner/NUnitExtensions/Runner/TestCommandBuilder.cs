@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Internal.Commands;
 using UnityEngine.TestTools;
+using SetUpTearDownCommand = UnityEngine.TestTools.SetUpTearDownCommand;
+using TestActionCommand = UnityEngine.TestTools.TestActionCommand;
 
 namespace UnityEngine.TestRunner.NUnitExtensions.Runner
 {
@@ -19,18 +22,27 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
                 return new SkipCommand(test);
             }
 
-            var testReturnsIEnumerator = test.Method.ReturnType.Type == typeof(IEnumerator); 
-            
+            var testReturnsIEnumerator = test.Method.ReturnType.Type == typeof(IEnumerator);
+            var testReturnsTask = test.Method.ReturnType.Type == typeof(Task);
+
             TestCommand command;
-            if (!testReturnsIEnumerator)
+            if (testReturnsTask)
             {
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEngine.TestRunner/NUnitExtensions/Runner/TestCommandBuilder.cs
                 command = new UnityTestMethodCommand(test);
+========
+                command = new TaskTestMethodCommand(test);
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEngine.TestRunner/NUnitExtensions/Runner/TestCommandBuilder.cs
             }
-            else
+            else if (testReturnsIEnumerator)
             {
                 command = new EnumerableTestMethodCommand(test);
             }
-            
+            else
+            {
+                command = new UnityTestMethodCommand(test);
+            }
+
             command = new UnityLogCheckDelegatingCommand(command);
             foreach (var wrapper in test.Method.GetCustomAttributes<IWrapTestMethod>(true))
             {
@@ -49,7 +61,7 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
                     {
                         continue;
                     }
-                    
+
                     var message = String.Format("'{0}' is not supported on {1} as it does not handle returning IEnumerator.",
                         wrapper.GetType().FullName,
                         GetTestBuilderName(test));
@@ -57,16 +69,23 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
                 }
             }
 
-            command = new UnityEngine.TestTools.TestActionCommand(command);
-            command = new UnityEngine.TestTools.SetUpTearDownCommand(command);
-            
-            if (!testReturnsIEnumerator)
+            command = new TestActionCommand(command);
+
+            if (!testReturnsIEnumerator && !testReturnsTask)
             {
-                command = new ImmediateEnumerableCommand(command);    
+                command = new ImmediateEnumerableCommand(command);
             }
+            
+            command = new SetUpTearDownCommand(command);
             
             foreach (var wrapper in test.Method.GetCustomAttributes<IWrapSetUpTearDown>(true))
             {
+                if (command is SetUpTearDownCommand && !testReturnsIEnumerator && !testReturnsTask)
+                {
+                    // Ensure that we can use the immediate execute on the setup/teardown
+                    command = new ImmediateEnumerableCommand(command);
+                }
+
                 command = wrapper.Wrap(command);
                 if (command == null)
                 {
@@ -74,7 +93,7 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
                         wrapper.GetType().FullName);
                     return new FailCommand(test, ResultState.Failure, message);
                 }
-                
+
                 if (testReturnsIEnumerator && !(command is IEnumerableTestMethodCommand))
                 {
                     command = TryReplaceWithEnumerableCommand(command);
@@ -82,7 +101,7 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
                     {
                         continue;
                     }
-                    
+
                     var message = String.Format("'{0}' is not supported on {1} as it does not handle returning IEnumerator.",
                         wrapper.GetType().FullName,
                         GetTestBuilderName(test));
@@ -92,13 +111,18 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
 
             command = new EnumerableSetUpTearDownCommand(command);
             command = new OuterUnityTestActionCommand(command);
-
+            command = new RetryCommand(command);
+            command = new RepeatCommand(command);
+            
             IApplyToContext[] changes = test.Method.GetCustomAttributes<IApplyToContext>(true);
             if (changes.Length > 0)
             {
                 command = new EnumerableApplyChangesToContextCommand(command, changes);
             }
 
+            command = new TimeoutCommand(command);
+            command = new IgnoreTestCommand(command, test);
+            command = new StrictCheckCommand(command);
             return command;
         }
 

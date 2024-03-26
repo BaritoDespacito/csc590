@@ -85,7 +85,11 @@ namespace TMPro
                     elapsedTime = 0;
 
                     // Return if sprite was truncated or replaced by the Ellipsis character.
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Runtime/TMP_SpriteAnimator.cs
                     char character = m_TextComponent.textInfo.characterInfo[currentCharacter].character;
+========
+                    uint character = m_TextComponent.textInfo.characterInfo[currentCharacter].character;
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/TerrainStuff/Library/PackageCache/com.unity.ugui@2.0.0/Runtime/TMP/TMP_SpriteAnimator.cs
                     if (character == 0x03 || character == 0x2026)
                     {
                         m_animations.Remove(currentCharacter);
@@ -113,7 +117,7 @@ namespace TMPro
                     vertices[vertexIndex + 3] = br;
 
                     // Update the UV to point to the new sprite
-                    Vector2[] uvs0 = meshInfo.uvs0;
+                    Vector4[] uvs0 = meshInfo.uvs0;
 
                     Vector2 uv0 = new Vector2((float)spriteCharacter.glyph.glyphRect.x / spriteAsset.spriteSheet.width, (float)spriteCharacter.glyph.glyphRect.y / spriteAsset.spriteSheet.height);
                     Vector2 uv1 = new Vector2(uv0.x, (float)(spriteCharacter.glyph.glyphRect.y + spriteCharacter.glyph.glyphRect.height) / spriteAsset.spriteSheet.height);
@@ -127,7 +131,7 @@ namespace TMPro
 
                     // Update the modified vertex attributes
                     meshInfo.mesh.vertices = vertices;
-                    meshInfo.mesh.uv = uvs0;
+                    meshInfo.mesh.SetUVs(0, uvs0);
                     m_TextComponent.UpdateGeometry(meshInfo.mesh, materialIndex);
 
 

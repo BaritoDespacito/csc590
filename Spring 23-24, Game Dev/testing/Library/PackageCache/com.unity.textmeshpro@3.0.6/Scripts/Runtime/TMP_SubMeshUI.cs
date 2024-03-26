@@ -212,14 +212,18 @@ namespace TMPro
         /// <returns></returns>
         public static TMP_SubMeshUI AddSubTextObject(TextMeshProUGUI textComponent, MaterialReference materialReference)
         {
-            GameObject go = new GameObject("TMP UI SubObject [" + materialReference.material.name + "]", typeof(RectTransform));
-            go.hideFlags = HideFlags.DontSave;
+            GameObject go = new GameObject();
+            go.hideFlags = TMP_Settings.hideSubTextObjects ? HideFlags.HideAndDontSave : HideFlags.DontSave;
 
             go.transform.SetParent(textComponent.transform, false);
             go.transform.SetAsFirstSibling();
             go.layer = textComponent.gameObject.layer;
 
-            RectTransform rectTransform = go.GetComponent<RectTransform>();
+            #if UNITY_EDITOR
+            go.name = materialReference.material == null ? "TMP SubMesh" : "TMP SubMesh [" + materialReference.material.name + "]";
+            #endif
+
+            RectTransform rectTransform = go.AddComponent<RectTransform>();
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.one;
             rectTransform.sizeDelta = Vector2.zero;
@@ -229,14 +233,12 @@ namespace TMPro
             layoutElement.ignoreLayout = true;
 
             TMP_SubMeshUI subMesh = go.AddComponent<TMP_SubMeshUI>();
-
-            //subMesh.canvasRenderer = subMesh.canvasRenderer;
             subMesh.m_TextComponent = textComponent;
-
             subMesh.m_materialReferenceIndex = materialReference.index;
             subMesh.m_fontAsset = materialReference.fontAsset;
             subMesh.m_spriteAsset = materialReference.spriteAsset;
             subMesh.m_isDefaultMaterial = materialReference.isDefaultMaterial;
+            subMesh.maskable = textComponent.maskable;
             subMesh.SetSharedMaterial(materialReference.material);
 
             return subMesh;
@@ -427,11 +429,7 @@ namespace TMPro
         void ON_DRAG_AND_DROP_MATERIAL(GameObject obj, Material currentMaterial, Material newMaterial)
         {
             // Check if event applies to this current object
-            #if UNITY_2018_2_OR_NEWER
             if (obj == gameObject || UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(gameObject) == obj)
-            #else
-            if (obj == gameObject || UnityEditor.PrefabUtility.GetPrefabParent(gameObject) == obj)
-            #endif
             {
                 if (!m_isDefaultMaterial) return;
 
@@ -463,7 +461,7 @@ namespace TMPro
         // Event received when font asset properties are changed in Font Inspector
         void ON_FONT_PROPERTY_CHANGED(bool isChanged, Object fontAsset)
         {
-            if (m_fontAsset != null && fontAsset.GetInstanceID() == m_fontAsset.GetInstanceID())
+            if (m_fontAsset != null && fontAsset != null && fontAsset.GetInstanceID() == m_fontAsset.GetInstanceID())
             {
                 // Copy Normal and Bold Weight
                 if (m_fallbackMaterial != null)
@@ -705,7 +703,7 @@ namespace TMPro
             //if (canvasRenderer == null) m_canvasRenderer = this.canvasRenderer;
 
             // Special handling to keep the Culling of the material in sync with parent text object
-            if (m_sharedMaterial.HasProperty(ShaderUtilities.ShaderTag_CullMode))
+            if (m_sharedMaterial.HasProperty(ShaderUtilities.ShaderTag_CullMode) && textComponent.fontSharedMaterial != null)
             {
                 float cullMode = textComponent.fontSharedMaterial.GetFloat(ShaderUtilities.ShaderTag_CullMode);
                 m_sharedMaterial.SetFloat(ShaderUtilities.ShaderTag_CullMode, cullMode);

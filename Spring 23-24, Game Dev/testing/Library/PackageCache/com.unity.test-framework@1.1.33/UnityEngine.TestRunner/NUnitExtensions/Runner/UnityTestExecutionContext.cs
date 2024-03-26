@@ -21,6 +21,8 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
 
         public UnityTestExecutionContext Context { get; private set; }
 
+        public bool Automated { get; set; }
+        
         public Test CurrentTest { get; set; }
         public DateTime StartTime { get; set; }
         public long StartTicks { get; set; }
@@ -70,7 +72,17 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
         public UnityTestExecutionContext()
         {
             UpstreamActions = new List<ITestAction>();
-            CurrentContext = this;
+            SetUpTearDownState = new BeforeAfterTestCommandState();
+            OuterUnityTestActionState = new BeforeAfterTestCommandState();
+            EnumerableTestState = new EnumerableTestState();
+        }
+
+        public UnityTestExecutionContext(BeforeAfterTestCommandState setUpTearDownState,
+            BeforeAfterTestCommandState outerUnityTestActionState, EnumerableTestState enumerableTestState) : this()
+        {
+            SetUpTearDownState = setUpTearDownState;
+            OuterUnityTestActionState = outerUnityTestActionState;
+            EnumerableTestState = enumerableTestState;
         }
 
         public UnityTestExecutionContext(UnityTestExecutionContext other)
@@ -92,7 +104,13 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
 
             CurrentCulture = other.CurrentCulture;
             CurrentUICulture = other.CurrentUICulture;
+            TestMode = other.TestMode;
+            IgnoreTests = other.IgnoreTests;
+            FeatureFlags = other.FeatureFlags;
             CurrentContext = this;
+            Automated = other.Automated;
+            RepeatCount = other.RepeatCount;
+            RetryCount = other.RetryCount;
         }
 
         public TextWriter OutWriter { get; private set; }
@@ -108,6 +126,14 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
         public BeforeAfterTestCommandState SetUpTearDownState { get; set; }
         public BeforeAfterTestCommandState OuterUnityTestActionState { get; set; }
         public EnumerableTestState EnumerableTestState { get; set; }
+<<<<<<<< HEAD:Spring 23-24, Game Dev/testing/Library/PackageCache/com.unity.test-framework@1.1.33/UnityEngine.TestRunner/NUnitExtensions/Runner/UnityTestExecutionContext.cs
+========
+        public IgnoreTest[] IgnoreTests { get; set; }
+        public FeatureFlags FeatureFlags { get; set; }
+        public int RetryCount { get; set; }
+        public int RepeatCount { get; set; }
+        public EnumerableTestState RetryRepeatState { get; set; }
+>>>>>>>> 0c056c51eea347ccf20c100943337fbb136daf12:Spring 23-24, Game Dev/Terrain2/Library/PackageCache/com.unity.test-framework@1.3.9/UnityEngine.TestRunner/NUnitExtensions/Runner/UnityTestExecutionContext.cs
 
         internal int AssertCount
         {
@@ -116,6 +142,8 @@ namespace UnityEngine.TestRunner.NUnitExtensions.Runner
                 return _assertCount;
             }
         }
+
+        public TestPlatform TestMode { get; set; }
 
         public void IncrementAssertCount()
         {

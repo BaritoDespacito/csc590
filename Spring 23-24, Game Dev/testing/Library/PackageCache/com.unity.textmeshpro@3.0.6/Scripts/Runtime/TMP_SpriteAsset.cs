@@ -2,38 +2,17 @@
 using UnityEngine.TextCore;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Serialization;
 
 
 namespace TMPro
 {
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.ugui@2.0/manual/TextMeshPro/Sprites.html")]
     [ExcludeFromPresetAttribute]
     public class TMP_SpriteAsset : TMP_Asset
     {
         internal Dictionary<int, int> m_NameLookup;
         internal Dictionary<uint, int> m_GlyphIndexLookup;
-
-        /// <summary>
-        /// The version of the sprite asset class.
-        /// Version 1.1.0 updates the asset data structure to be compatible with new font asset structure.
-        /// </summary>
-        public string version
-        {
-            get { return m_Version; }
-            internal set { m_Version = value; }
-        }
-        [SerializeField]
-        private string m_Version;
-
-        /// <summary>
-        /// Information about the sprite asset's face.
-        /// </summary>
-        public FaceInfo faceInfo
-        {
-            get { return m_FaceInfo; }
-            internal set { m_FaceInfo = value; }
-        }
-        [SerializeField]
-        internal FaceInfo m_FaceInfo;
 
         // The texture which contains the sprites.
         public Texture spriteSheet;
@@ -74,11 +53,12 @@ namespace TMPro
 
         public List<TMP_SpriteGlyph> spriteGlyphTable
         {
-            get { return m_SpriteGlyphTable; }
-            internal set { m_SpriteGlyphTable = value; }
+            get { return m_GlyphTable; }
+            internal set { m_GlyphTable = value; }
         }
+        [FormerlySerializedAs("m_SpriteGlyphTable")]
         [SerializeField]
-        private List<TMP_SpriteGlyph> m_SpriteGlyphTable = new List<TMP_SpriteGlyph>();
+        private List<TMP_SpriteGlyph> m_GlyphTable = new List<TMP_SpriteGlyph>();
 
         internal Dictionary<uint, TMP_SpriteGlyph> m_SpriteGlyphLookup;
 
@@ -108,20 +88,17 @@ namespace TMPro
         /// <returns></returns>
         Material GetDefaultSpriteMaterial()
         {
-            //isEditingAsset = true;
             ShaderUtilities.GetShaderPropertyIDs();
 
             // Add a new material
             Shader shader = Shader.Find("TextMeshPro/Sprite");
             Material tempMaterial = new Material(shader);
             tempMaterial.SetTexture(ShaderUtilities.ID_MainTex, spriteSheet);
-            tempMaterial.hideFlags = HideFlags.HideInHierarchy;
 
             #if UNITY_EDITOR
             UnityEditor.AssetDatabase.AddObjectToAsset(tempMaterial, this);
             UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(this));
             #endif
-            //isEditingAsset = false;
 
             return tempMaterial;
         }
@@ -152,9 +129,9 @@ namespace TMPro
                 m_SpriteGlyphLookup.Clear();
 
             // Initialize SpriteGlyphLookup
-            for (int i = 0; i < m_SpriteGlyphTable.Count; i++)
+            for (int i = 0; i < m_GlyphTable.Count; i++)
             {
-                TMP_SpriteGlyph spriteGlyph = m_SpriteGlyphTable[i];
+                TMP_SpriteGlyph spriteGlyph = m_GlyphTable[i];
                 uint glyphIndex = spriteGlyph.index;
 
                 if (m_GlyphIndexLookup.ContainsKey(glyphIndex) == false)
@@ -197,7 +174,7 @@ namespace TMPro
                 spriteCharacter.glyph = m_SpriteGlyphLookup[glyphIndex];
                 spriteCharacter.textAsset = this;
 
-                int nameHashCode = m_SpriteCharacterTable[i].hashCode;
+                int nameHashCode = TMP_TextUtilities.GetHashCode(m_SpriteCharacterTable[i].name);
 
                 if (m_NameLookup.ContainsKey(nameHashCode) == false)
                     m_NameLookup.Add(nameHashCode, i);
@@ -511,9 +488,9 @@ namespace TMPro
         /// </summary>
         public void SortGlyphTable()
         {
-            if (m_SpriteGlyphTable == null || m_SpriteGlyphTable.Count == 0) return;
+            if (m_GlyphTable == null || m_GlyphTable.Count == 0) return;
 
-            m_SpriteGlyphTable = m_SpriteGlyphTable.OrderBy(item => item.index).ToList();
+            m_GlyphTable = m_GlyphTable.OrderBy(item => item.index).ToList();
         }
 
         /// <summary>
@@ -546,7 +523,7 @@ namespace TMPro
 
             // Convert legacy glyph and character tables to new format
             m_SpriteCharacterTable.Clear();
-            m_SpriteGlyphTable.Clear();
+            m_GlyphTable.Clear();
 
             for (int i = 0; i < spriteInfoList.Count; i++)
             {
@@ -561,7 +538,7 @@ namespace TMPro
                 spriteGlyph.scale = 1.0f;
                 spriteGlyph.atlasIndex = 0;
 
-                m_SpriteGlyphTable.Add(spriteGlyph);
+                m_GlyphTable.Add(spriteGlyph);
 
                 TMP_SpriteCharacter spriteCharacter = new TMP_SpriteCharacter();
                 spriteCharacter.glyph = spriteGlyph;

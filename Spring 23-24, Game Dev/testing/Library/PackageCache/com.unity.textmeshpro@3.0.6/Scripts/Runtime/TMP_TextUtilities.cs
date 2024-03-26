@@ -141,7 +141,14 @@ namespace TMPro
         /// <returns></returns>
         public static int GetCursorIndexFromPosition(TMP_Text textComponent, Vector3 position, Camera camera, out CaretPosition cursor)
         {
-            int line = TMP_TextUtilities.FindNearestLine(textComponent, position, camera);
+            int line = FindNearestLine(textComponent, position, camera);
+
+            // Return if text doesn't contain any lines of text.
+            if (line == -1)
+            {
+                cursor = CaretPosition.Left;
+                return 0;
+            }
 
             int index = FindNearestCharacterOnLine(textComponent, position, line, camera, false);
 
@@ -250,6 +257,10 @@ namespace TMPro
                 // Get current character info.
                 TMP_CharacterInfo cInfo = text.textInfo.characterInfo[i];
                 if (visibleOnly && !cInfo.isVisible) continue;
+
+                // Ignore Carriage Returns <CR>
+                if (cInfo.character == '\r')
+                    continue;
 
                 // Get Bottom Left and Top Right position of the current character
                 Vector3 bl = rectTransform.TransformPoint(cInfo.bottomLeft);
@@ -2212,6 +2223,9 @@ namespace TMPro
         /// <returns></returns>
         public static int GetHashCode(string s)
         {
+            if (string.IsNullOrEmpty(s))
+                return 0;
+
             int hashCode = 0;
 
             for (int i = 0; i < s.Length; i++)
@@ -2244,6 +2258,21 @@ namespace TMPro
 
             for (int i = 0; i < s.Length; i++)
                 hashCode = (hashCode << 5) + hashCode ^ ToLowerFast(s[i]);
+
+            return hashCode;
+        }
+
+        /// <summary>
+        /// Function which returns a simple hash code from a string converted to uppercase.
+        /// </summary>
+        /// <param name="s">The string from which to compute the hash code.</param>
+        /// <returns>The computed hash code.</returns>
+        public static uint GetHashCodeCaseInSensitive(string s)
+        {
+            uint hashCode = 0;
+
+            for (int i = 0; i < s.Length; i++)
+                hashCode = (hashCode << 5) + hashCode ^ ToUpperFast(s[i]);
 
             return hashCode;
         }
@@ -2301,6 +2330,5 @@ namespace TMPro
 
             return value;
         }
-
     }
 }
