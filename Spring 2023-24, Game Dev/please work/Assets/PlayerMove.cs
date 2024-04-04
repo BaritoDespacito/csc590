@@ -66,7 +66,13 @@ public class PlayerMove : MonoBehaviour
             Destroy(collision.gameObject);
         }
 
-        if (score == 3) {
+        if (collision.gameObject.tag == "Chiken") {
+            score += 3;
+            TextPro.text = "" + (score);
+            Destroy(collision.gameObject);
+        }
+
+        if (score == 15) {
             SceneManager.LoadScene("Scenes/SampleScene");
         }
     }
