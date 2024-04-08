@@ -65,7 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\VehicleMove.cs" />
+    <Compile Include="Assets\FruitControl.cs" />
     <Compile Include="Assets\StartGame.cs" />
+    <Compile Include="Assets\Low Poly Fruits\resources\fruits_tester.cs" />
     <Compile Include="Assets\PlayerMove.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -7,6 +7,7 @@ TagManager:
   - AboveBar
   - Bar
   - Vehicle
+  - Fruit
   layers:
   - Default
   - TransparentFX

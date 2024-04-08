@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PlayerMove : MonoBehaviour
 {
 
     public GameObject Floor;
+    public TextMeshProUGUI TextPro;
     // Start is called before the first frame update
     void Start()
     {
@@ -58,15 +60,22 @@ public class PlayerMove : MonoBehaviour
     }
 
     int z = 20;
+    int score = 0;
 
     void OnTriggerEnter(Collider collision) {
-        if (collision.gameObject.tag == "Vehicle") {
+        if (collision.gameObject.CompareTag("Vehicle")) {
             SceneManager.LoadScene("Scenes/Lose");
         }
 
-        if (collision.gameObject.tag == "AboveBar") {
+        if (collision.gameObject.CompareTag("AboveBar")) {
             z += 20;
             Instantiate(Floor, new Vector3(0, 0, z), Quaternion.Euler(0, -90, 0));
+        }
+
+        if (collision.gameObject.CompareTag("Fruit")) {
+            Destroy(collision.gameObject);
+            score += 1;
+            TextPro.text = "Score: " + score;
         }
     }
 }
