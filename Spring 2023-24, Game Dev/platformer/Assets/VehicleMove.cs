@@ -16,6 +16,6 @@ public class VehicleMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       transform.position += (transform.forward * 10*Time.deltaTime);
+       transform.position += (10 * Time.deltaTime * transform.forward);
     }
 }

@@ -21,21 +21,21 @@ public class PlayerMove : MonoBehaviour
         
         // Move with WASD
         if (Input.GetKey(KeyCode.W)) {
-            this.transform.Translate(Vector3.forward * 4*Time.deltaTime);
+            this.transform.Translate(7 * Time.deltaTime * Vector3.forward);
         }
         if (Input.GetKey(KeyCode.A)) {
-            this.transform.Translate(Vector3.left * 4*Time.deltaTime);
+            this.transform.Translate(7 * Time.deltaTime * Vector3.left);
         }
         if (Input.GetKey(KeyCode.S)) {
-            this.transform.Translate(Vector3.back * 4*Time.deltaTime);
+            this.transform.Translate(7 * Time.deltaTime * Vector3.back);
         }
         if (Input.GetKey(KeyCode.D)) {
-            this.transform.Translate(Vector3.right * 4*Time.deltaTime);
+            this.transform.Translate(7 * Time.deltaTime * Vector3.right);
         }
 
         // Jump with space
         if (Input.GetKey(KeyCode.Space)) {
-            this.transform.Translate(Vector3.up * 10*Time.deltaTime);
+            this.transform.Translate(10 * Time.deltaTime * Vector3.up);
         }
 
         // Rotate with arrow keys
@@ -46,10 +46,10 @@ public class PlayerMove : MonoBehaviour
         //     this.transform.Rotate(Vector3.right * 50*Time.deltaTime);
         // }
         if (Input.GetKey(KeyCode.LeftArrow)) {
-            this.transform.Rotate(Vector3.down * 50*Time.deltaTime);
+            this.transform.Rotate(50 * Time.deltaTime * Vector3.down);
         }
         if (Input.GetKey(KeyCode.RightArrow)) {
-            this.transform.Rotate(Vector3.up * 50*Time.deltaTime);
+            this.transform.Rotate(50 * Time.deltaTime * Vector3.up);
         }
 
         // Rotate with mouse
@@ -64,6 +64,10 @@ public class PlayerMove : MonoBehaviour
 
     void OnTriggerEnter(Collider collision) {
         if (collision.gameObject.CompareTag("Vehicle")) {
+            SceneManager.LoadScene("Scenes/Lose");
+        }
+
+        if (collision.gameObject.CompareTag("Chaser")) {
             SceneManager.LoadScene("Scenes/Lose");
         }
 
