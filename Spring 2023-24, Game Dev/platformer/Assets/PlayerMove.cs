@@ -9,10 +9,11 @@ public class PlayerMove : MonoBehaviour
 
     public GameObject Floor;
     public TextMeshProUGUI TextPro;
+    public static int score = 0;
     // Start is called before the first frame update
     void Start()
     {
-        
+        score = 0;
     }
 
     // Update is called once per frame
@@ -60,7 +61,6 @@ public class PlayerMove : MonoBehaviour
     }
 
     int z = 20;
-    int score = 0;
 
     void OnTriggerEnter(Collider collision) {
         if (collision.gameObject.CompareTag("Vehicle")) {
