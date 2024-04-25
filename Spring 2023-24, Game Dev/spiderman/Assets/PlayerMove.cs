@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -13,12 +14,16 @@ public class PlayerMove : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = 100f;
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+        Debug.DrawRay(transform.position, mousePos - transform.position, Color.red);
         
         if (isWebbing) {
             
@@ -73,18 +78,25 @@ public class PlayerMove : MonoBehaviour
 
     private void FireRay()
     {
-        Ray ray = new Ray(transform.position, Vector3.forward);
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = 100f;
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+        var ray = new Ray(transform.position, mousePos - transform.position);
+        
+        
         RaycastHit hitData;
-        Debug.DrawRay(ray.origin, ray.direction * 100, color:UnityEngine.Color.red);
+        // Debug.DrawRay(ray.origin, ray.direction * 100, color:UnityEngine.Color.red);
 
         Physics.Raycast(ray, out hitData);
+        Debug.Log(hitData.transform.gameObject.name);
             
         var res = web.TryGetComponent<LineRenderer>(out var lr);
-        lr.transform.position = ray.origin;
-        lr.startWidth = 0.1f;
-        lr.endWidth = 0.1f;
-        lr.SetPosition(0, ray.origin);
-        lr.SetPosition(1, hitData.point);
+        // lr.transform.position = ray.origin;
+        // lr.startWidth = 0.1f;
+        // lr.endWidth = 0.1f;
+        lr.SetPosition(0, Vector3.zero);
+        lr.SetPosition(1, hitData.transform.position);
+        Debug.Log(hitData.point);
         
         isWebbing = false;
         
