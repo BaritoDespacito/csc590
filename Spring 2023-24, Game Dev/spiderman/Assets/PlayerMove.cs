@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
@@ -7,6 +8,7 @@ public class PlayerMove : MonoBehaviour
     
     public float speed = 5.0f;
     [SerializeField] private bool isWebbing = false;
+    public GameObject web;
     
     // Start is called before the first frame update
     void Start()
@@ -69,12 +71,22 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void FireRay()
+    private void FireRay()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray = new Ray(transform.position, Vector3.forward);
         RaycastHit hitData;
-        Debug.DrawRay(ray.origin, ray.direction * 10);
+        Debug.DrawRay(ray.origin, ray.direction * 100, color:UnityEngine.Color.red);
 
         Physics.Raycast(ray, out hitData);
+            
+        var res = web.TryGetComponent<LineRenderer>(out var lr);
+        lr.transform.position = ray.origin;
+        lr.startWidth = 0.1f;
+        lr.endWidth = 0.1f;
+        lr.SetPosition(0, ray.origin);
+        lr.SetPosition(1, hitData.point);
+        
+        isWebbing = false;
+        
     }
 }
