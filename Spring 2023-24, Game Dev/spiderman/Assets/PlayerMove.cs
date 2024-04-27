@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using Unity.VisualScripting;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
@@ -8,12 +9,15 @@ public class PlayerMove : MonoBehaviour
 {
     
     public float speed = 5.0f;
-    [SerializeField] private bool isWebbing = false;
-    public GameObject web;
+    public LineRenderer lr;
     
     // Start is called before the first frame update
     void Start()
     {
+        lr.startColor = Color.white;
+        lr.endColor = Color.white;
+        lr.startWidth = 0.1f;
+        lr.endWidth = 0.1f;
     }
 
     // Update is called once per frame
@@ -25,16 +29,14 @@ public class PlayerMove : MonoBehaviour
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
         Debug.DrawRay(transform.position, mousePos - transform.position, Color.red);
         
-        if (isWebbing) {
-            
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            FireRay();
+            lr.enabled = true;
         }
         else
         {
-            if (Input.GetKey(KeyCode.Mouse0))
-            {
-                isWebbing = true;
-                FireRay();
-            }   
+            lr.enabled = false;
             
             // Move with WASD
             if (Input.GetKey(KeyCode.W)) {
@@ -83,22 +85,19 @@ public class PlayerMove : MonoBehaviour
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
         var ray = new Ray(transform.position, mousePos - transform.position);
         
-        
         RaycastHit hitData;
         // Debug.DrawRay(ray.origin, ray.direction * 100, color:UnityEngine.Color.red);
 
-        Physics.Raycast(ray, out hitData);
-        Debug.Log(hitData.transform.gameObject.name);
+        if (Physics.Raycast(ray, out hitData, 100))
+        {
+            // Debug.Log(hitData.transform.gameObject.name);
+            lr.SetPosition(0, new Vector3(transform.position.x, transform.position.y-1, transform.position.z));
+            lr.SetPosition(1, hitData.point);
+            // Debug.Log(hitData.point);
             
-        var res = web.TryGetComponent<LineRenderer>(out var lr);
-        // lr.transform.position = ray.origin;
-        // lr.startWidth = 0.1f;
-        // lr.endWidth = 0.1f;
-        lr.SetPosition(0, Vector3.zero);
-        lr.SetPosition(1, hitData.transform.position);
-        Debug.Log(hitData.point);
-        
-        isWebbing = false;
-        
+            var direction = hitData.point - transform.position;
+            direction.Normalize();
+            transform.position += direction*0.1f;
+        }
     }
 }
