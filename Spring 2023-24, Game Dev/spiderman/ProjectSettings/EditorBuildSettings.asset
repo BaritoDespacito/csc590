@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/CartoonLowPolyCityLite/Scenes/CartoonLowPolyCityLite_01.unity
+    guid: 1c9c83f564538dd49ac0614cb5d27d32
   m_configObjects: {}

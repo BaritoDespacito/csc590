@@ -97,7 +97,7 @@ public class PlayerMove : MonoBehaviour
             
             var direction = hitData.point - transform.position;
             direction.Normalize();
-            transform.position += direction*0.1f;
+            transform.position += direction*0.5f;
         }
     }
 }
