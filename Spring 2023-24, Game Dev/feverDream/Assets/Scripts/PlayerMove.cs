@@ -34,6 +34,16 @@ public class PlayerMove : MonoBehaviour
         yaw += speedH * Input.GetAxis("Mouse X");
         transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
         
-        
+        // Shoot with left mouse button
+        if (Input.GetKey(KeyCode.Mouse0)) {
+            Ray ray = Camera.main.ViewportPointToRay(new Vector3 (0.5f, 0.5f, 0));
+            Debug.DrawRay(ray.origin, ray.direction*10);
+            
+            if (Physics.Raycast(ray, out RaycastHit hit, 10)) {
+                if (hit.transform.gameObject.CompareTag("Enemy")) {
+                    Destroy(hit.transform.gameObject);
+                }
+            }
+        }
     }
 }
