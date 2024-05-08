@@ -733,8 +733,14 @@
     <Reference Include="Unity.TestTools.CodeCoverage.Editor.OpenCover.Model">
       <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.TestTools.CodeCoverage.Editor.OpenCover.Model.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.AI.Navigation">
+      <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.AI.Navigation.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.PlasticSCM.Editor">
       <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.PlasticSCM.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.AI.Navigation.Updater">
+      <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.AI.Navigation.Updater.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.State.Editor">
       <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.VisualScripting.State.Editor.dll</HintPath>
@@ -766,11 +772,17 @@
     <Reference Include="Unity.Rider.Editor">
       <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.AI.Navigation.Editor">
+      <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.AI.Navigation.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.VisualScripting.State">
       <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.VisualScripting.State.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
       <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.AI.Navigation.Editor.ConversionSystem">
+      <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.AI.Navigation.Editor.ConversionSystem.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Flow">
       <HintPath>/Users/varit/Desktop/GitHub/csc590/Spring 2023-24, Game Dev/feverDream/Library/ScriptAssemblies/Unity.VisualScripting.Flow.dll</HintPath>
