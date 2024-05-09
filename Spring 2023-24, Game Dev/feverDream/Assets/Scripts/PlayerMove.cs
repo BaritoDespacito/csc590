@@ -57,7 +57,7 @@ public class PlayerMove : MonoBehaviour
             
             if (Physics.Raycast(ray, out RaycastHit hit, 10)) {
                 if (hit.transform.gameObject.CompareTag("Enemy")) {
-                    Destroy(hit.transform.gameObject);
+                    Destroy(hit.transform.gameObject.transform.parent.gameObject);
                 }
             }
         }
