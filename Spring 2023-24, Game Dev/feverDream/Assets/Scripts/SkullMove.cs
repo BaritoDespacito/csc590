@@ -8,8 +8,8 @@ public class SkullMove : MonoBehaviour
     
     // public Transform Player;
     // int MoveSpeed = 4;
-    // int MaxDist = 10;
-    // int MinDist = 0;
+    private double AttackDist = 7.5;
+    private int MoveDist = 25;
     
     public NavMeshAgent agent;
     public GameObject player;
@@ -24,15 +24,19 @@ public class SkullMove : MonoBehaviour
     void Update()
     {
         // transform.LookAt(Player);
-        // if (Vector3.Distance(transform.position, Player.position) >= MinDist)
-        // {
-        //     transform.position += MoveSpeed * Time.deltaTime * transform.forward;
-        //     if (Vector3.Distance(transform.position, Player.position) <= MaxDist)
-        //     {
-        //         // Can call function to shoot or dash in or something
-        //     }
-        // }
+        if (Vector3.Distance(transform.position, player.transform.position) <= MoveDist)
+        {
+            agent.SetDestination(player.transform.position);
+            if (Vector3.Distance(transform.position, player.transform.position) <= AttackDist)
+            {
+                agent.speed = 7;
+            }
+            else
+            {
+                agent.speed = float.Parse("3.5");
+            }
+        }
 
-        agent.SetDestination(player.transform.position);
+        // agent.SetDestination(player.transform.position);
     }
 }
