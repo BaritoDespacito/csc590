@@ -673,6 +673,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   numClusters: 5
   numEnemies: 7
+  distFromPlayer: 35
   _enemyPrefab: {fileID: 2594777763697427953, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
   generateEnemies: 1
 --- !u!4 &1275811134
@@ -848,6 +849,10 @@ PrefabInstance:
     - target: {fileID: 3957440804790895958, guid: cf20ca7ddf7d84a608162a551f8a7ea7, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5136766297565220651, guid: cf20ca7ddf7d84a608162a551f8a7ea7, type: 3}
+      propertyPath: spread
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5540886637157785613, guid: cf20ca7ddf7d84a608162a551f8a7ea7, type: 3}
       propertyPath: _crosshair

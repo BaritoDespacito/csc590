@@ -414,7 +414,7 @@ MonoBehaviour:
   recoilForce: 0
   fpsCam: {fileID: 6809851929903998508}
   attackPoint: {fileID: 4573583121473840294}
-  muzzleFlash: {fileID: 0}
+  muzzleFlash: {fileID: 1743301284569550, guid: ad2ab49d0a2a17148bd51c93d977bdbc, type: 3}
   ammunitionDisplay: {fileID: 0}
   allowInvoke: 1
 --- !u!1 &4674213202149840538
