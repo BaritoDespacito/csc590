@@ -9,6 +9,10 @@ public class SkullMove : MonoBehaviour
     
     // public Transform Player;
     // int MoveSpeed = 4;
+
+    [SerializeField] private float normalSpeed = 3.5f;
+    [SerializeField] private float attackSpeed = 7f;
+    
     private double AttackDist = 7.5;
     private int MoveDist = 25;
     
@@ -30,11 +34,11 @@ public class SkullMove : MonoBehaviour
             agent.SetDestination(player.transform.position);
             if (Vector3.Distance(transform.position, player.transform.position) <= AttackDist)
             {
-                agent.speed = 7;
+                agent.speed = attackSpeed;
             }
             else
             {
-                agent.speed = float.Parse("3.5");
+                agent.speed = normalSpeed;
             }
         }
 
