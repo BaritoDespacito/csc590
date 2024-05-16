@@ -116,6 +116,7 @@ GameObject:
   - component: {fileID: 7232661327279414608}
   - component: {fileID: 8776164665453951607}
   - component: {fileID: 8507316798985626458}
+  - component: {fileID: 257653614498351684}
   - component: {fileID: 2924488250270587601}
   m_Layer: 9
   m_Name: Skull Enemy
@@ -176,8 +177,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08031d2f71c4a490e8c461673c00e405, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normalSpeed: 3.5
+  attackSpeed: 7
   agent: {fileID: 8776164665453951607}
   player: {fileID: 0}
+--- !u!114 &257653614498351684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2594777763697427953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a893ca8f41e34f93b0a92340ac7b2c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delay: -1
+  radius: 0.1
+  force: 5
+  explodeOnCollision: 1
+  effectsPrefab: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}
+  effectDisplayTime: 2
+  numOrbs: 10
+  orbPrefab: {fileID: 9166773729783374024, guid: 3fc7041cc141d4b2284c9ca472eaec8e, type: 3}
 --- !u!65 &2924488250270587601
 BoxCollider:
   m_ObjectHideFlags: 0

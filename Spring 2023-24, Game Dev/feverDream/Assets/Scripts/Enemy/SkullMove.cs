@@ -47,7 +47,7 @@ public class SkullMove : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("enemy hit");
+        // Debug.Log("enemy hit");
         if (other.gameObject.CompareTag("Bullet"))
         {
             Destroy(gameObject);
