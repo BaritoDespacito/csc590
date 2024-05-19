@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Explode : MonoBehaviour
 {
@@ -42,15 +44,14 @@ public class Explode : MonoBehaviour
     // Helper methods
     private void DoExplosion ()
     {
-        float change = 0.0f;
+        float xChange;
+        float zChange;
         for (int i = 0; i < numOrbs; i++)
         {
-            change += 0.1f;
-            if (change > 0.3f)
-            {
-                change = -0.3f;
-            }
-            Instantiate(orbPrefab, new Vector3(transform.position.x+change, transform.position.y, transform.position.z + change), Quaternion.identity);
+            xChange = 1f * (float) (Math.Sin(i*(2*Math.PI)/numOrbs));
+            zChange = 1f * (float) (Math.Cos(i*(2*Math.PI)/numOrbs));
+            // Debug.Log("xChange: " + xChange + " zChange: " + zChange);
+            Instantiate(orbPrefab, new Vector3(transform.position.x+xChange, transform.position.y, transform.position.z + zChange), Quaternion.identity);
         }
         HandleEffects();
         HandleDestruction();
@@ -67,11 +68,13 @@ public class Explode : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
 
         foreach (Collider collider in colliders) {
-            Rigidbody rigidbody;
-            if (collider.TryGetComponent<Rigidbody>(out rigidbody))
-            {
-                if (rigidbody != null) {
-                    rigidbody.AddExplosionForce(force+Random.value*forceModifier, transform.position, radius);
+            if (!collider.CompareTag("Player")) {
+                Rigidbody rigidbody;
+                if (collider.TryGetComponent<Rigidbody>(out rigidbody))
+                {
+                    if (rigidbody != null) {
+                        rigidbody.AddExplosionForce(force+Random.value*forceModifier, transform.position, radius, 3.0f);
+                    }
                 }
             }
         }
