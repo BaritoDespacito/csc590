@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5865109362197864476}
   - component: {fileID: 7251822125695317316}
   - component: {fileID: -4845890479608367166}
+  - component: {fileID: -3920953579438850934}
   m_Layer: 0
   m_Name: Point Orb
   m_TagString: PointOrb
@@ -133,3 +134,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &-3920953579438850934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9166773729783374024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c48a13c756a300498f0ddbfb6b012a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 0}
+  MoveSpeed: 4
+  MaxDist: 10
+  MinDist: 5

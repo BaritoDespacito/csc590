@@ -53,6 +53,7 @@
     <Compile Include="Assets\UnityTechnologies\ParticlePack\Shared\Scripts\SimpleCameraController.cs" />
     <Compile Include="Assets\UnityTechnologies\ParticlePack\Shared\Scripts\SimpleCharacterMotor.cs" />
     <Compile Include="Assets\Scripts\Enemy\SkullMove.cs" />
+    <Compile Include="Assets\Scripts\Misc\PointOrb.cs" />
     <Compile Include="Assets\Scripts\Misc\Explode.cs" />
     <Compile Include="Assets\UnityTechnologies\ParticlePack\Shared\Scripts\ProximityActivate.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerShoot.cs" />

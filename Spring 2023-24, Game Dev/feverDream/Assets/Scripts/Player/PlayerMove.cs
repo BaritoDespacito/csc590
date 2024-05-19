@@ -9,6 +9,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] TextMeshProUGUI _youDiedText;
     [SerializeField] private GameObject _crosshair;
     [SerializeField] private bool isDead;
+    [SerializeField] TextMeshProUGUI _scoreText;
     
     [SerializeField] private float fadeTime = 3;
     [SerializeField] private float alphaValue;
@@ -62,6 +63,8 @@ public class PlayerMove : MonoBehaviour
         //     }
         // }
     }
+
+    private int score = 0;
     
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.CompareTag("Enemy"))
@@ -71,6 +74,11 @@ public class PlayerMove : MonoBehaviour
             _crosshair.SetActive(false);
             _youDiedText.enabled = true;
             StartCoroutine(FadeInText());
+        } else if (collision.gameObject.CompareTag("PointOrb"))
+        {
+            score++;
+            _scoreText.text = "Score: " + score;
+            Destroy(collision.gameObject);
         }
     }
 

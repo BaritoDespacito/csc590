@@ -364,6 +364,7 @@
 "Assets/Scripts/GameControl.cs"
 "Assets/Scripts/Misc/Bullet.cs"
 "Assets/Scripts/Misc/Explode.cs"
+"Assets/Scripts/Misc/PointOrb.cs"
 "Assets/Scripts/Player/CameraMove.cs"
 "Assets/Scripts/Player/PlayerMove.cs"
 "Assets/Scripts/Player/PlayerShoot.cs"
