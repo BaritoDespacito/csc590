@@ -64,7 +64,7 @@ public class PlayerMove : MonoBehaviour
         // }
     }
 
-    private int score = 0;
+    public int score = 0;
     
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.CompareTag("Enemy"))
