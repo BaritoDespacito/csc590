@@ -24,7 +24,8 @@ namespace DefaultNamespace
     public float recoilForce;
 
     //bools
-    bool shooting, readyToShoot, reloading;
+    bool readyToShoot, reloading;
+    public bool shooting;
 
     //Reference
     public Camera fpsCam;

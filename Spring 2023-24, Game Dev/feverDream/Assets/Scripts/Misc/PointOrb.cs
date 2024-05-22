@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PointOrb : MonoBehaviour
 {
     
     public GameObject Player;
     [SerializeField] int MoveSpeed = 4;
-    [SerializeField] int MaxDist = 10;
-    [SerializeField] int MinDist = 5;
+    [SerializeField] int NotShootingDist = 5; 
+    [SerializeField] int ShootingDist = 1;
+    [SerializeField] bool isShooting;
     
     // Start is called before the first frame update
     void Start()
@@ -19,11 +22,26 @@ public class PointOrb : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Player.TryGetComponent<PlayerShoot>(out var playerShoot))
+        {
+            isShooting = playerShoot.shooting;
+        }
+        
         transform.LookAt(Player.transform);
 
-        if (Vector3.Distance(transform.position, Player.transform.position) < MinDist)
+        if (isShooting)
         {
-            transform.position += transform.forward * MoveSpeed * Time.deltaTime;
+            if (Vector3.Distance(transform.position, Player.transform.position) < ShootingDist)
+            {
+                transform.position += transform.forward * MoveSpeed * Time.deltaTime;
+            } 
+        }
+        else
+        {
+            if (Vector3.Distance(transform.position, Player.transform.position) < NotShootingDist)
+            {
+                transform.position += transform.forward * MoveSpeed * Time.deltaTime;
+            }
         }
     }
 }
