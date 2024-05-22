@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.049311362, g: 0.07494847, b: 0.11468945, a: 1}
+  m_IndirectSpecularColor: {r: 0.0493112, g: 0.07494812, b: 0.11468919, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -599,7 +599,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 50b58eacb1a4b47beba5fdaf9b89a532, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -916,7 +916,7 @@ MonoBehaviour:
   numEnemies: 7
   distFromPlayer: 35
   _enemyPrefab: {fileID: 2594777763697427953, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-  generateEnemies: 0
+  generateEnemies: 1
 --- !u!4 &1275811134
 Transform:
   m_ObjectHideFlags: 0
@@ -1138,63 +1138,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1624109980}
   m_CullTransparentMesh: 1
---- !u!1001 &1789892538
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2594777763697427953, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_Name
-      value: Skull Enemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 68.8385
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.17
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 38.155865
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7232661327279414608, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 01ba22d843c0b4cc098158894299f416, type: 3}
 --- !u!1 &2027788902
 GameObject:
   m_ObjectHideFlags: 0
@@ -1469,7 +1412,8 @@ PrefabInstance:
       propertyPath: _youDiedText
       value: 
       objectReference: {fileID: 1004815444}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2483537217527311617, guid: cf20ca7ddf7d84a608162a551f8a7ea7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1487,5 +1431,4 @@ SceneRoots:
   - {fileID: 2138095517}
   - {fileID: 471666890}
   - {fileID: 308997094}
-  - {fileID: 1789892538}
   - {fileID: 941915316}

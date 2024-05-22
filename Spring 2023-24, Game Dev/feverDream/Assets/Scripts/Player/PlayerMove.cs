@@ -49,7 +49,7 @@ public class PlayerMove : MonoBehaviour
         
         // Rotate with mouse
         yaw += speedH * Input.GetAxis("Mouse X");
-        transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, yaw, 0.0f);
         
         // Shoot with left mouse button
         // if (Input.GetKey(KeyCode.Mouse0) && Time.timeScale != 0) {
