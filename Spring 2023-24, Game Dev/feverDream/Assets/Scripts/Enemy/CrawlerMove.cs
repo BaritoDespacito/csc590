@@ -29,28 +29,13 @@ public class CrawlerMove : MonoBehaviour
         if (Vector3.Distance(transform.position, player.transform.position) <= MoveDist)
         {
             agent.SetDestination(player.transform.position);
-            Debug.Log(player.transform.position);
             if (Vector3.Distance(transform.position, player.transform.position) <= AttackDist)
             {
                 agent.speed = attackSpeed;
-                if (crawlerAnimator is not null)
-                {
-                    if (!crawlerAnimator.GetCurrentAnimatorStateInfo(0).IsName("pounce"))
-                    {
-                        crawlerAnimator.SetTrigger("isPouncing");   
-                    }
-                }
             }
             else
             {
                 agent.speed = normalSpeed;
-                if (crawlerAnimator is not null)
-                {
-                    if (!crawlerAnimator.GetCurrentAnimatorStateInfo(0).IsName("crawl") && !crawlerAnimator.GetCurrentAnimatorStateInfo(0).IsName("crawl_fast"))
-                    {
-                        crawlerAnimator.SetTrigger("isRunning");
-                    }
-                }
             }
         }
     }
