@@ -39,4 +39,13 @@ public class CrawlerMove : MonoBehaviour
             }
         }
     }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        // Debug.Log("enemy hit");
+        if (other.gameObject.CompareTag("Bullet"))
+        {
+            Destroy(gameObject);
+        }
+    }
 }

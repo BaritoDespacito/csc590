@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -13,7 +14,8 @@ public class GameControl : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _levelText;
     [SerializeField] TextMeshProUGUI _nextLevelScoreText;
     
-    [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private GameObject _skullEnemyPrefab;
+    [SerializeField] private GameObject _crawlerEnemyPrefab;
     public int numClusters = 5;
     public int numEnemies = 10;
     public double distFromPlayer = 25;
@@ -62,7 +64,14 @@ public class GameControl : MonoBehaviour
         {
             foreach (Vector3 enemy in cluster.GetEnemies())
             {
-                Instantiate(_enemyPrefab, enemy, Quaternion.identity);
+                if (Random.value > 0.5*((level-1)*0.1))
+                {
+                    Instantiate(_skullEnemyPrefab, enemy, Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(_crawlerEnemyPrefab, enemy, Quaternion.identity);
+                }
             }
         }
     }

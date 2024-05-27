@@ -1573,7 +1573,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1889215769306164702}
   - component: {fileID: 7394286832822407251}
-  - component: {fileID: 113928443885763873}
   - component: {fileID: 4893367742551435616}
   m_Layer: 9
   m_Name: crawler
@@ -1623,27 +1622,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!65 &113928443885763873
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6824407058304360514}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4893367742551435616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1798,6 +1776,8 @@ GameObject:
   - component: {fileID: 7070112703611034894}
   - component: {fileID: 8107107122873898262}
   - component: {fileID: 309877068414092327}
+  - component: {fileID: 732866103861685016}
+  - component: {fileID: 4732877313806148479}
   m_Layer: 9
   m_Name: crawlerEnemy
   m_TagString: Enemy
@@ -1859,6 +1839,48 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!65 &732866103861685016
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7385156484171757018}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 0.65, z: 1.2}
+  m_Center: {x: 0, y: 0.325, z: -0.4}
+--- !u!114 &4732877313806148479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7385156484171757018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a893ca8f41e34f93b0a92340ac7b2c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delay: -1
+  radius: 3
+  force: 5
+  forceModifier: 10
+  explodeOnCollision: 1
+  effectsPrefab: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}
+  effectDisplayTime: 2
+  numOrbs: 50
+  orbPrefab: {fileID: 9166773729783374024, guid: 3fc7041cc141d4b2284c9ca472eaec8e, type: 3}
 --- !u!1 &7454768719524699280
 GameObject:
   m_ObjectHideFlags: 0
