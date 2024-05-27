@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
+using Random = UnityEngine.Random;
 
 public class GameControl : MonoBehaviour
 {
@@ -64,7 +66,7 @@ public class GameControl : MonoBehaviour
         {
             foreach (Vector3 enemy in cluster.GetEnemies())
             {
-                if (Random.value > 0.5*((level-1)*0.1))
+                if (Random.value > 0.5*(Math.Log(level)/2))
                 {
                     Instantiate(_skullEnemyPrefab, enemy, Quaternion.identity);
                 }
