@@ -1813,8 +1813,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e59a61e6b95fb40c1a743269d85926a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSpeed: 3.5
-  attackSpeed: 7
+  normalSpeed: 7
+  attackSpeed: 10
   agent: {fileID: 309877068414092327}
   player: {fileID: 0}
 --- !u!195 &309877068414092327

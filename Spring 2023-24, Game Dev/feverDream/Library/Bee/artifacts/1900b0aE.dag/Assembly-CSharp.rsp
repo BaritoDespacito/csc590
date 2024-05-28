@@ -362,6 +362,7 @@
 "Assets/Scripts/Enemy/Cluster.cs"
 "Assets/Scripts/Enemy/CrawlerAnimate.cs"
 "Assets/Scripts/Enemy/CrawlerMove.cs"
+"Assets/Scripts/Enemy/DragonMove.cs"
 "Assets/Scripts/Enemy/SkullMove.cs"
 "Assets/Scripts/GameControl.cs"
 "Assets/Scripts/Misc/Bullet.cs"

@@ -46,7 +46,7 @@ public class GameControl : MonoBehaviour
             _nextLevelScoreText.text = "Next Level: " + nextLevelScore;
             level++;
             _levelText.text = "Level: " + level;
-            numClusters += 5;
+            numClusters += 2;
             numEnemies += 5;
             distFromPlayer -= 1;
             GenerateEnemies();

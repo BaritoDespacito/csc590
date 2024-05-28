@@ -5,8 +5,6 @@ using UnityEngine.AI;
 
 public class CrawlerMove : MonoBehaviour
 {
-    private Animator crawlerAnimator;
-    
     [SerializeField] private float normalSpeed = 3.5f;
     [SerializeField] private float attackSpeed = 7f;
     
@@ -19,7 +17,6 @@ public class CrawlerMove : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        crawlerAnimator = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
