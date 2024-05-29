@@ -5,7 +5,11 @@ ScriptsOnlyBuild:
     Assembly-CSharp.dll:
     - Bullet
     - CameraMove
+    - CrawlerAnimate
+    - CrawlerMove
     - DefaultNamespace.PlayerShoot
+    - DragonAnimate
+    - DragonMove
     - Explode
     - GameControl
     - PlayerMove
@@ -45,6 +49,12 @@ ScriptsOnlyBuild:
     - TMPro.TMP_SpriteAsset
     - TMPro.TMP_StyleSheet
     - TMPro.TextMeshProUGUI
+    UnityEditor.Graphs.dll:
+    - UnityEditor.Graphs.AnimationBlendTree.Graph
+    - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.Graph
+    - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
@@ -130,11 +140,19 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 72
       Script: {instanceID: 0}
+    - Class: 74
+      Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
     - Class: 84
       Script: {instanceID: 0}
     - Class: 89
+      Script: {instanceID: 0}
+    - Class: 90
+      Script: {instanceID: 0}
+    - Class: 91
+      Script: {instanceID: 0}
+    - Class: 95
       Script: {instanceID: 0}
     - Class: 104
       Script: {instanceID: 0}
@@ -143,53 +161,61 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 16678}
     - Class: 114
-      Script: {instanceID: 16680}
+      Script: {instanceID: 16744}
     - Class: 114
-      Script: {instanceID: 16746}
+      Script: {instanceID: 17356}
     - Class: 114
-      Script: {instanceID: 17358}
+      Script: {instanceID: 17486}
     - Class: 114
-      Script: {instanceID: 17488}
+      Script: {instanceID: 17564}
     - Class: 114
-      Script: {instanceID: 17566}
+      Script: {instanceID: 17796}
     - Class: 114
-      Script: {instanceID: 17798}
+      Script: {instanceID: 18004}
     - Class: 114
-      Script: {instanceID: 18006}
+      Script: {instanceID: 18758}
     - Class: 114
-      Script: {instanceID: 18760}
+      Script: {instanceID: 19334}
     - Class: 114
-      Script: {instanceID: 19336}
+      Script: {instanceID: 19592}
     - Class: 114
-      Script: {instanceID: 19594}
+      Script: {instanceID: 19868}
     - Class: 114
-      Script: {instanceID: 19870}
+      Script: {instanceID: 20014}
     - Class: 114
-      Script: {instanceID: 20016}
+      Script: {instanceID: 20310}
     - Class: 114
-      Script: {instanceID: 20312}
+      Script: {instanceID: 20498}
     - Class: 114
-      Script: {instanceID: 20500}
+      Script: {instanceID: 20896}
     - Class: 114
-      Script: {instanceID: 20898}
+      Script: {instanceID: 21048}
     - Class: 114
-      Script: {instanceID: 21050}
+      Script: {instanceID: 21370}
     - Class: 114
-      Script: {instanceID: 21372}
+      Script: {instanceID: 22422}
     - Class: 114
-      Script: {instanceID: 22424}
+      Script: {instanceID: 23566}
     - Class: 114
-      Script: {instanceID: 23558}
+      Script: {instanceID: 23570}
     - Class: 114
-      Script: {instanceID: 23562}
+      Script: {instanceID: 23578}
     - Class: 114
       Script: {instanceID: 23582}
     - Class: 114
-      Script: {instanceID: 23598}
+      Script: {instanceID: 23590}
     - Class: 114
-      Script: {instanceID: 23620}
+      Script: {instanceID: 23602}
     - Class: 114
-      Script: {instanceID: 23624}
+      Script: {instanceID: 23618}
+    - Class: 114
+      Script: {instanceID: 23626}
+    - Class: 114
+      Script: {instanceID: 23642}
+    - Class: 114
+      Script: {instanceID: 23646}
+    - Class: 114
+      Script: {instanceID: 23650}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -197,6 +223,8 @@ ScriptsOnlyBuild:
     - Class: 135
       Script: {instanceID: 0}
     - Class: 136
+      Script: {instanceID: 0}
+    - Class: 137
       Script: {instanceID: 0}
     - Class: 157
       Script: {instanceID: 0}
@@ -221,13 +249,7 @@ ScriptsOnlyBuild:
   scriptHashData:
   - hash:
       serializedVersion: 2
-      Hash: c90d66e9c99e6db3c926f135cd8a74d0
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: PointOrb
-  - hash:
-      serializedVersion: 2
-      Hash: d165ac5baf1fd04332f73dee76181adf
+      Hash: a72a619993a58dc6fadf6ee9f201b518
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: PlayerMove
@@ -1187,7 +1209,7 @@ ScriptsOnlyBuild:
     className: CameraMove
   - hash:
       serializedVersion: 2
-      Hash: e78d64d07fa39900e8411a2c2f57c3a3
+      Hash: 5ddb8d85882b13a546aaacabbb6482e1
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: GameControl
@@ -1199,10 +1221,28 @@ ScriptsOnlyBuild:
     className: SimpleCharacterMotor
   - hash:
       serializedVersion: 2
+      Hash: 2db28610c9ed1c333c238ad769b301e8
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: DragonMove
+  - hash:
+      serializedVersion: 2
+      Hash: 3183186fe4e5d6123a6bfbc0926362d6
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: CrawlerMove
+  - hash:
+      serializedVersion: 2
       Hash: f3aaa026ba9c507e73611f2071938398
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: RampAsset
+  - hash:
+      serializedVersion: 2
+      Hash: 374a0d38ce65cf632a1d6ae4e6edb143
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: DragonAnimate
   - hash:
       serializedVersion: 2
       Hash: 5e317a41c93ca4ddc106b26af9d9e6c0
@@ -1235,6 +1275,12 @@ ScriptsOnlyBuild:
     className: Explode
   - hash:
       serializedVersion: 2
+      Hash: 944109f622af43a3dae668a0f01d64f0
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: PointOrb
+  - hash:
+      serializedVersion: 2
       Hash: 8e867e9b6da8d6e002a3b7061e5f4ea2
     assemblyName: Assembly-CSharp
     namespaceName: 
@@ -1247,10 +1293,16 @@ ScriptsOnlyBuild:
     className: ProximityActivate
   - hash:
       serializedVersion: 2
-      Hash: ace99d6a292d26b13f3db4e2aee65f94
+      Hash: bd443424d553c898254f1a02586e9e4d
     assemblyName: Assembly-CSharp
     namespaceName: DefaultNamespace
     className: PlayerShoot
+  - hash:
+      serializedVersion: 2
+      Hash: 17af8a492bb31dffc78af40329af2a2c
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: CrawlerAnimate
   - hash:
       serializedVersion: 2
       Hash: 8f8551ddd43b985cc60005cd09fd5510

@@ -19,21 +19,21 @@ public class LauncherUI : MonoBehaviour {
             // Launch Game!
             string path = Application.dataPath + "/../Builds/feverDreamTestBuild.app";
             process = Process.Start(path);
-            ShowProcessLaunchedMessage("Launching Top Down Shooter...");
+            ShowProcessLaunchedMessage("Launching Shooter Game...");
         };
 
         transform.Find("minesweeperBtn").GetComponent<Button_UI>().ClickFunc = () => {
             // Launch Game!
-            string path = Application.dataPath + "/../Builds/Minesweeper/Minesweeper.exe";
+            string path = Application.dataPath + "/../Builds/prisonersDilemma.app";
             process = Process.Start(path);
-            ShowProcessLaunchedMessage("Launching Minesweeper...");
+            ShowProcessLaunchedMessage("Launching Prisoners' Dilemma...");
         };
 
         transform.Find("washYourHandsBtn").GetComponent<Button_UI>().ClickFunc = () => {
             // Launch Game!
-            string path = Application.dataPath + "/../Builds/WashYourHands/Wash Your Hands.exe";
+            string path = Application.dataPath + "/../Builds/CarGame.app";
             process = Process.Start(path);
-            ShowProcessLaunchedMessage("Launching Wash Your Hands...");
+            ShowProcessLaunchedMessage("Launching Car Game...");
         };
 
         messageTransform = transform.Find("message");
