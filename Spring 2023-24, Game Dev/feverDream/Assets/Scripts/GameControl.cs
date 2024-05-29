@@ -18,6 +18,7 @@ public class GameControl : MonoBehaviour
     
     [SerializeField] private GameObject _skullEnemyPrefab;
     [SerializeField] private GameObject _crawlerEnemyPrefab;
+    [SerializeField] private GameObject _dragonEnemyPrefab;
     public int numClusters = 5;
     public int numEnemies = 10;
     public double distFromPlayer = 25;
@@ -66,13 +67,17 @@ public class GameControl : MonoBehaviour
         {
             foreach (Vector3 enemy in cluster.GetEnemies())
             {
-                if (Random.value > 0.5*(Math.Log(level)/2))
+                if (Random.value > 0.4*(Math.Log(level)/2))
                 {
                     Instantiate(_skullEnemyPrefab, enemy, Quaternion.identity);
                 }
-                else
+                else if (Random.value > 0.9*(Math.Log(level)/2))
                 {
                     Instantiate(_crawlerEnemyPrefab, enemy, Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(_dragonEnemyPrefab, enemy, Quaternion.identity);
                 }
             }
         }

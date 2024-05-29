@@ -59,6 +59,7 @@
     <Compile Include="Assets\Scripts\Misc\Explode.cs" />
     <Compile Include="Assets\Scripts\Enemy\CrawlerAnimate.cs" />
     <Compile Include="Assets\UnityTechnologies\ParticlePack\Shared\Scripts\ProximityActivate.cs" />
+    <Compile Include="Assets\Scripts\Enemy\DragonAnimate.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerShoot.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerMove.cs" />
     <Compile Include="Assets\UnityTechnologies\ParticlePack\TutorialInfo\Scripts\Readme.cs" />

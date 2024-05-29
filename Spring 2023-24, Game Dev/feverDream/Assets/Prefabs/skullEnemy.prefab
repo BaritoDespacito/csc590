@@ -195,7 +195,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delay: -1
   radius: 2
-  force: 5
+  force: 250
   forceModifier: 10
   explodeOnCollision: 1
   effectsPrefab: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}

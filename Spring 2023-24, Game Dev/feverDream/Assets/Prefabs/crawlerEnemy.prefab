@@ -1874,12 +1874,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delay: -1
   radius: 3
-  force: 5
+  force: 500
   forceModifier: 10
   explodeOnCollision: 1
   effectsPrefab: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}
   effectDisplayTime: 2
-  numOrbs: 50
+  numOrbs: 100
   orbPrefab: {fileID: 9166773729783374024, guid: 3fc7041cc141d4b2284c9ca472eaec8e, type: 3}
 --- !u!1 &7454768719524699280
 GameObject:
