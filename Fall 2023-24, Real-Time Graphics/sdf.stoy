@@ -1,0 +1,3 @@
+float circleSdf(vec2 center, float r, vec2 uv) {
+    return length(uv - center) - r;
+}

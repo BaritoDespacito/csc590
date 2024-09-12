@@ -1,0 +1,8 @@
+float circle(vec2 center, float radius, vec2 uv) {
+    float dist = length(uv - center);
+    return step(dist, radius);
+}
+
+float rect(vec2 bl, vec2 tr, vec2 uv) {
+    return step(bl.x, uv.x) * step(bl.y, uv.y) * step(uv.x, tr.x) * step(uv.y, tr.y);
+}
