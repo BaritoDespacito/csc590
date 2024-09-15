@@ -1,5 +1,6 @@
 float circleSdf(vec2 center, float r, vec2 uv) {
-    return length(uv - center) - r;
+    float color = length(uv - center) - r;
+    return step(color, 0.0);
 }
 
 float rectSdf(vec2 bl, vec2 tr, vec2 uv){

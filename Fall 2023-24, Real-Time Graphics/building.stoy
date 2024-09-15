@@ -1,0 +1,19 @@
+#include "sdf.stoy"
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = fragCoord / iResolution.xy;
+    uv -= 0.5;
+    uv.x *= iResolution.x / iResolution.y;
+
+    vec3 backgroundSky = vec3(0.0, 0.8, 1.0);
+
+    float rect1 = rectSdf(vec2(0.1, 0.1), vec2(0.3, 0.2), uv);
+    float circle1 = circleSdf(vec2(0.2, 0.2), 0.1, uv);
+    float building = max(rect1, circle1);
+
+    // vec3 c = 
+
+    vec3 color = mix(backgroundSky, vec3(1.0, 0.0, 0.0), building);
+    fragColor = vec4(color, 1.0);
+
+}
