@@ -5,15 +5,26 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     uv -= 0.5;
     uv.x *= iResolution.x / iResolution.y;
 
-    vec3 backgroundSky = vec3(0.0, 0.8, 1.0);
+    // making the background
+    vec3 backgroundSky = vec3(0.0, 0.3, 0.7);
+    vec3 backgroundGround = vec3(0.0, 0.5, 0.0);
+    vec3 background = mix(backgroundSky, backgroundGround, circleSdf(vec2(0.0, -1.0), 0.75, uv));
 
-    float rect1 = rectSdf(vec2(0.1, 0.1), vec2(0.3, 0.2), uv);
-    float circle1 = circleSdf(vec2(0.2, 0.2), 0.1, uv);
-    float building = max(rect1, circle1);
+    // making clouds
+    float cloud1a = cutDiskSdf(vec2(uv.x-0.2, uv.y-0.25), 0.1, 0.1*0.2);
+    float cloud1b = cutDiskSdf(vec2(uv.x-0.1, uv.y-0.25), 0.12, 0.1*0.2);
+    float cloud1c = cutDiskSdf(vec2(uv.x-0.16, uv.y-0.30), 0.1, 0.1*0.2);
+    float cloud1 = max(cloud1a, max(cloud1b, cloud1c));
+    vec3 backgroundWithClouds = mix(background, vec3(0.9, 0.9, 0.9), cloud1);
 
-    // vec3 c = 
+    // making the building
+    float rect1 = rectSdf(vec2(-0.1, -0.4), vec2(0.1, 0.35), uv);
+    float rect2 = rectSdf(vec2(0.085, 0.35), vec2(0.09, 0.40), uv);
+    float building = max(rect1, rect2);
 
-    vec3 color = mix(backgroundSky, vec3(1.0, 0.0, 0.0), building);
+    // mixing the background and the building
+    vec3 color = mix(backgroundWithClouds, vec3(0.5, 0.4, 0.5), building);
+    // vec3 color = backgroundWithClouds;
     fragColor = vec4(color, 1.0);
 
 }
