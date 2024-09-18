@@ -7,11 +7,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     uv.x *= iResolution.x / iResolution.y;
 
     // NOTE:
-    // union = min(a, b)
-    // intersection = max(a, b)
+    // union = max(a, b)
+    // intersection = min(a, b)
     // difference = max(a, -b) or max(-a, b)
 
-    float c = rectSdf(vec2(0.1, 0.1), vec2(0.3, 0.2), uv);
+    float rect1 = rectSdf(vec2(-0.1, 0.1), vec2(0.2, 0.2), uv);
+    float circle1 = circleSdf(vec2(0.0, 0.0), 0.15, uv);
+    float c = max(rect1, circle1);
 
     vec3 color = vec3(c);
     fragColor = vec4(color, 1.0);

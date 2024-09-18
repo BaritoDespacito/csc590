@@ -1,0 +1,21 @@
+#include "sdf.stoy"
+#define PI 3.14159265359
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = fragCoord / iResolution.xy;
+    uv -= 0.5;
+    uv.x *= iResolution.x / iResolution.y;
+
+    mat2 scale = mat2(1.0, 0.0, 0.0, 1.0);
+    uv *= scale;
+
+    float theta = PI/4.0;
+    mat2 rotate = mat2(cos(theta), -sin(theta), sin(theta), cos(theta));
+    uv *= rotate;
+
+    float rect1 = rectSdf((vec2(-0.1, -0.1)), (vec2(0.1, 0.1)), uv);
+    
+    vec3 color = vec3(rect1);
+    fragColor = vec4(color, 1.0);
+
+}

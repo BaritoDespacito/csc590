@@ -1,6 +1,21 @@
 #include "sdf.stoy"
 
+float smin( float a, float b, float k )
+{
+    k *= 2.0;
+    float x = b-a;
+    return 0.5*( a+b-sqrt(x*x+k*k) );
+}
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    
+    /*
+    At least 4 different SDFs DONE
+    At least 1 use of a smooth minimum function
+    Color, including one non-solid color WHAT IS A NON SOLID COLOR?
+    At least 1 animated element DONE
+    */
+
     vec2 uv = fragCoord / iResolution.xy;
     uv -= 0.5;
     uv.x *= iResolution.x / iResolution.y;
@@ -11,20 +26,46 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 background = mix(backgroundSky, backgroundGround, circleSdf(vec2(0.0, -1.0), 0.75, uv));
 
     // making clouds
-    float cloud1a = cutDiskSdf(vec2(uv.x-0.2, uv.y-0.25), 0.1, 0.1*0.2);
-    float cloud1b = cutDiskSdf(vec2(uv.x-0.1, uv.y-0.25), 0.12, 0.1*0.2);
-    float cloud1c = cutDiskSdf(vec2(uv.x-0.16, uv.y-0.30), 0.1, 0.1*0.2);
+    float cloud1a = cutDiskSdf(vec2(uv.x-0.27, uv.y-0.29+0.01*cos(iTime)), 0.1, 0.1*0.2);
+    float cloud1b = cutDiskSdf(vec2(uv.x-0.17, uv.y-0.29+0.01*cos(iTime)), 0.12, 0.1*0.2);
+    float cloud1c = cutDiskSdf(vec2(uv.x-0.23, uv.y-0.34+0.01*cos(iTime)), 0.1, 0.1*0.2);
     float cloud1 = max(cloud1a, max(cloud1b, cloud1c));
-    vec3 backgroundWithClouds = mix(background, vec3(0.9, 0.9, 0.9), cloud1);
+    float cloud2a = cutDiskSdf(vec2(uv.x+0.27, uv.y-0.22+0.01*cos(iTime)), 0.1, 0.1*0.2);
+    float cloud2b = cutDiskSdf(vec2(uv.x+0.17, uv.y-0.22+0.01*cos(iTime)), 0.12, 0.1*0.2);
+    float cloud2c = cutDiskSdf(vec2(uv.x+0.23, uv.y-0.27+0.01*cos(iTime)), 0.1, 0.1*0.2);
+    float cloud2 = max(cloud2a, max(cloud2b, cloud2c));
+    vec3 backgroundWithClouds = mix(background, vec3(0.9, 0.9, 0.9), max(cloud1, cloud2));
 
     // making the building
-    float rect1 = rectSdf(vec2(-0.1, -0.4), vec2(0.1, 0.35), uv);
-    float rect2 = rectSdf(vec2(0.085, 0.35), vec2(0.09, 0.40), uv);
-    float building = max(rect1, rect2);
+    float rect1 = rectSdfNoStep(vec2(-0.1, -0.4), vec2(0.1, 0.35), uv);
+    float circle1 = circleSdfNoStep(vec2(-0.1, 0.35), 0.05, uv);
+    float circle2 = circleSdfNoStep(vec2(0.1, 0.35), 0.05, uv);
+    float circle3 = circleSdfNoStep(vec2(0.0, 0.35), 0.1, uv);
+    float building = smin(rect1, circle1, 0.01);
+    building = smin(building, circle2, 0.01);
+    building = smin(building, circle3, 0.01);   
+    // float buildingWithTop = max(building, circle1);
+    float buildingWithTop = step(building, 0.0);
+    // float rect2 = rectSdfNoStep(vec2(0.085, 0.35), vec2(0.09, 0.40), uv);
+    // float building = max(rect1, rect2);
+
+    // making windows
+    float buildingWithWindows;
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 18; j++) {
+            float window = rectSdf(vec2(-0.09 + 0.04*float(i), -0.36 + 0.04*float(j)), vec2(-0.07 + 0.04*float(i), -0.34 + 0.04*float(j)), uv);
+            buildingWithWindows += window;
+        }
+    }
+    // adding a door
+    buildingWithWindows += rectSdf(vec2(-0.01, -0.40), vec2(0.01, -0.37), uv);
 
     // mixing the background and the building
-    vec3 color = mix(backgroundWithClouds, vec3(0.5, 0.4, 0.5), building);
-    // vec3 color = backgroundWithClouds;
+    vec3 buildingAndBackground = mix(backgroundWithClouds, vec3(0.5, 0.4, 0.5), buildingWithTop);
+    // adding windows
+    vec3 color = mix(buildingAndBackground, vec3(0.2, 0.1, 0.2), buildingWithWindows);
+    
+    // vec3 color = vec3(buildingWithTop);
     fragColor = vec4(color, 1.0);
 
 }
