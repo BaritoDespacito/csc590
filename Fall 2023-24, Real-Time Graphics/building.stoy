@@ -8,13 +8,24 @@ float smin( float a, float b, float k )
     return 0.5*( a+b-sqrt(x*x+k*k) );
 }
 
+float clockArm(vec2 uv, float theta) {
+
+    mat2 rotate = mat2(cos(theta), -sin(theta), sin(theta), cos(theta));
+    uv *= rotate;
+
+    float arm1 = rectSdf(vec2(-0.0025, 0.0), vec2(0.0025, 0.075), uv);
+    float hand1 = equiTriangleSdf(vec2(uv.x-0.0, uv.y-0.075), 0.01);
+    float arm = max(arm1, hand1);
+    return arm;
+}
+
 float clock(vec2 uv) {
 
     vec2 newUV = uv - vec2(0.0, 0.35);
 
     float theta = 1.0*PI/2.0*iTime;
     mat2 rotate = mat2(cos(theta), -sin(theta), sin(theta), cos(theta));
-    newUV *= rotate;
+    // newUV *= rotate;
 
     float theta2 = 1.0*PI/2.0;
     mat2 rotate2 = mat2(cos(theta2), -sin(theta2), sin(theta2), cos(theta2));
@@ -22,15 +33,11 @@ float clock(vec2 uv) {
 
     // making clock hands
     float hinge = circleSdf(vec2(0.0, 0.0), 0.005, newUV);
-    float arm1 = rectSdf(vec2(-0.0025, 0.0), vec2(0.0025, 0.075), newUV);
-    float arm2 = rectSdf(vec2(0.0, -0.0025), vec2(0.075, 0.0025), newUV);
-    float hand1 = equiTriangleSdf(vec2(newUV.x-0.0, newUV.y-0.075), 0.01);
-    float hand2 = equiTriangleSdf(vec2(hand2uv.x-0.0, hand2uv.y-0.0), 0.01);
-    // float hand2 = triangleSdf(vec2(newUV.x, newUV.y), vec2(0.075, 0.3525), vec2(0.075, 0.3475), vec2(0.01, 0.3525));
+    float arm1 = clockArm(newUV, 2.0*PI*iTime/60.0);
+    float arm2 = clockArm(newUV, 2.0*PI*iTime/3600.0);
+    float arm3 = clockArm(newUV, 2.0*PI*iTime/43200.0);
 
-    float clock = max(hinge, max(arm1, max(arm2, max(hand1, hand2))));
-
-    // float clock = rectSdf(vec2(-0.0025, 0.0), vec2(0.0025, 0.1), newUV);
+    float clock = max(hinge, max(arm1, max(arm2, arm3)));
 
     return clock;
 }
@@ -38,8 +45,8 @@ float clock(vec2 uv) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     
     /*
-    At least 4 different SDFs NEED TRIANGLE
-    At least 1 use of a smooth minimum function
+    At least 4 different SDFs DONE
+    At least 1 use of a smooth minimum function DONE
     Color, including one non-solid color WHAT IS A NON SOLID COLOR?
     At least 1 animated element DONE
     */
