@@ -1,4 +1,5 @@
 #include "sdf.stoy"
+#define PI 3.14159265359
 
 float smin( float a, float b, float k )
 {
@@ -7,10 +8,37 @@ float smin( float a, float b, float k )
     return 0.5*( a+b-sqrt(x*x+k*k) );
 }
 
+float clock(vec2 uv) {
+
+    vec2 newUV = uv - vec2(0.0, 0.35);
+
+    float theta = 1.0*PI/2.0*iTime;
+    mat2 rotate = mat2(cos(theta), -sin(theta), sin(theta), cos(theta));
+    newUV *= rotate;
+
+    float theta2 = 1.0*PI/2.0;
+    mat2 rotate2 = mat2(cos(theta2), -sin(theta2), sin(theta2), cos(theta2));
+    vec2 hand2uv = (newUV - vec2(0.075, 0.0))*rotate2;
+
+    // making clock hands
+    float hinge = circleSdf(vec2(0.0, 0.0), 0.005, newUV);
+    float arm1 = rectSdf(vec2(-0.0025, 0.0), vec2(0.0025, 0.075), newUV);
+    float arm2 = rectSdf(vec2(0.0, -0.0025), vec2(0.075, 0.0025), newUV);
+    float hand1 = equiTriangleSdf(vec2(newUV.x-0.0, newUV.y-0.075), 0.01);
+    float hand2 = equiTriangleSdf(vec2(hand2uv.x-0.0, hand2uv.y-0.0), 0.01);
+    // float hand2 = triangleSdf(vec2(newUV.x, newUV.y), vec2(0.075, 0.3525), vec2(0.075, 0.3475), vec2(0.01, 0.3525));
+
+    float clock = max(hinge, max(arm1, max(arm2, max(hand1, hand2))));
+
+    // float clock = rectSdf(vec2(-0.0025, 0.0), vec2(0.0025, 0.1), newUV);
+
+    return clock;
+}
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     
     /*
-    At least 4 different SDFs DONE
+    At least 4 different SDFs NEED TRIANGLE
     At least 1 use of a smooth minimum function
     Color, including one non-solid color WHAT IS A NON SOLID COLOR?
     At least 1 animated element DONE
@@ -37,35 +65,35 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 backgroundWithClouds = mix(background, vec3(0.9, 0.9, 0.9), max(cloud1, cloud2));
 
     // making the building
-    float rect1 = rectSdfNoStep(vec2(-0.1, -0.4), vec2(0.1, 0.35), uv);
-    float circle1 = circleSdfNoStep(vec2(-0.1, 0.35), 0.05, uv);
-    float circle2 = circleSdfNoStep(vec2(0.1, 0.35), 0.05, uv);
-    float circle3 = circleSdfNoStep(vec2(0.0, 0.35), 0.1, uv);
-    float building = smin(rect1, circle1, 0.01);
-    building = smin(building, circle2, 0.01);
-    building = smin(building, circle3, 0.01);   
-    // float buildingWithTop = max(building, circle1);
+    float body = rectSdfNoStep(vec2(-0.1, -0.4), vec2(0.1, 0.35), uv);
+    float top = circleSdfNoStep(vec2(0.0, 0.375), 0.1, uv);
+    float building = smin(body, top, 0.05);
     float buildingWithTop = step(building, 0.0);
-    // float rect2 = rectSdfNoStep(vec2(0.085, 0.35), vec2(0.09, 0.40), uv);
-    // float building = max(rect1, rect2);
+
+    // making clock face
+    float clockFace = circleSdf(vec2(0.0, 0.35), 0.1, uv);
 
     // making windows
     float buildingWithWindows;
     for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 18; j++) {
+        for (int j = 0; j < 15; j++) {
             float window = rectSdf(vec2(-0.09 + 0.04*float(i), -0.36 + 0.04*float(j)), vec2(-0.07 + 0.04*float(i), -0.34 + 0.04*float(j)), uv);
             buildingWithWindows += window;
         }
     }
     // adding a door
-    buildingWithWindows += rectSdf(vec2(-0.01, -0.40), vec2(0.01, -0.37), uv);
+    buildingWithWindows += rectSdf(vec2(-0.01, -0.404), vec2(0.01, -0.37), uv);
 
     // mixing the background and the building
-    vec3 buildingAndBackground = mix(backgroundWithClouds, vec3(0.5, 0.4, 0.5), buildingWithTop);
+    vec3 finalBuilding = mix(backgroundWithClouds, vec3(0.5, 0.4, 0.5), buildingWithTop);
     // adding windows
-    vec3 color = mix(buildingAndBackground, vec3(0.2, 0.1, 0.2), buildingWithWindows);
+    finalBuilding = mix(finalBuilding, vec3(0.2, 0.1, 0.2), buildingWithWindows);
+    // adding clock
+    finalBuilding = mix(finalBuilding, vec3(0.75, 0.75, 0.75), clockFace);
+    // adding clock hands
+    finalBuilding = mix(finalBuilding, vec3(0.0, 0.0, 0.0), clock(uv));
     
     // vec3 color = vec3(buildingWithTop);
-    fragColor = vec4(color, 1.0);
+    fragColor = vec4(finalBuilding, 1.0);
 
 }
