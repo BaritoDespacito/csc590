@@ -45,10 +45,11 @@ float clock(vec2 uv) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     
     /*
-    At least 4 different SDFs DONE
+    At least 4 different SDFs RECT, CIRCLE, TRIANGLE, DISK
     At least 1 use of a smooth minimum function DONE
-    Color, including one non-solid color WHAT IS A NON SOLID COLOR?
+    Color, including one non-solid color MIX FUNCTION USED
     At least 1 animated element DONE
+    WOW factor CLOCK HANDS TELL TIME SINCE START
     */
 
     vec2 uv = fragCoord / iResolution.xy;
