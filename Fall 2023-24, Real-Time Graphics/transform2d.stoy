@@ -1,0 +1,31 @@
+mat3 moveMat(vec2 offset) {
+    mat3 M = mat3(1.0, 0.0, 0.0,
+                0.0, 1.0, 0.0,
+                offset.x, offset.y, 1.0);
+    return M;
+}
+
+mat3 scaleMat(vec2 scale) {
+    mat3 M = mat3(scale.x, 0.0, 0.0,
+                0.0, scale.y, 0.0,
+                0.0, 0.0, 1.0);
+    return M;
+}
+
+mat3 scaleMat(float scale) {
+    mat3 M = mat3(scale, 0.0, 0.0,
+                0.0, scale, 0.0,
+                0.0, 0.0, 1.0);
+    return M;
+}
+
+mat3 rotateMat(float theta) {
+    mat3 M = mat3(cos(theta), -sin(theta), 0.0,
+                sin(theta), cos(theta), 0.0,
+                0.0, 0.0, 1.0);
+    return M;
+}
+
+mat3 rotateMat(float theta, vec2 pivot) {
+    return moveMat(pivot) * rotateMat(theta) * moveMat(-pivot);
+}
