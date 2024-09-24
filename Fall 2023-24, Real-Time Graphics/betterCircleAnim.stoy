@@ -1,0 +1,63 @@
+#include "sdf.stoy"
+#include "transform2d.stoy"
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+
+    vec2 uv = fragCoord / iResolution.xy;
+    uv -= 0.5;
+    uv.x *= iResolution.x / iResolution.y;
+
+    float direction = floor(mod(iTime, 3.0));
+
+    // create right circle
+    float circle1a = circleSdfNoStep(vec2(0.1, -0.1), 0.2, uv);
+    float rightCircle = step(circle1a, 0.0);
+
+    // create rotate for right circle
+    vec3 tempUV = rotateMat(iTime * (direction==0.0 ? 1.0 : 0.0) * 3.0, vec2(0.1, -0.1)) * vec3(uv.x, uv.y, 1.0);
+    float circle1b = circleSdfNoStep(vec2(-0.1, -0.1), 0.2, tempUV.xy);
+    float leftCircle1 = step(circle1b, 0.0);
+    float circle1c = circleSdfNoStep(vec2(0.0, 0.1), 0.2, tempUV.xy);
+    float topCircle1 = step(circle1c, 0.0);
+
+    // remove rotating circles
+    vec3 coloredRight = vec3(0.0, 0.0, 1.0) * rightCircle + vec3(0.0, 1.0, 0.0) * leftCircle1 + vec3(1.0, 0.0, 0.0) * topCircle1;
+    vec3 newColorRight = mix(vec3(0.0), coloredRight, rightCircle);
+
+
+
+    // create left circle
+    float circle2a = circleSdfNoStep(vec2(-0.1, -0.1), 0.2, uv);
+    float leftCircle = step(circle2a, 0.0);
+
+    // create rotate for right circle
+    tempUV = rotateMat(iTime * (direction==1.0 ? 1.0 : 0.0) * 3.0, vec2(-0.1, -0.1)) * vec3(uv.x, uv.y, 1.0);
+    float circle2b = circleSdfNoStep(vec2(0.1, -0.1), 0.2, tempUV.xy);
+    float rightCircle2 = step(circle2b, 0.0);
+    float circle2c = circleSdfNoStep(vec2(0.0, 0.1), 0.2, tempUV.xy);
+    float topCircle2 = step(circle2c, 0.0);
+
+    // remove rotating circles
+    vec3 coloredLeft = vec3(0.0, 0.0, 1.0) * rightCircle2 + vec3(0.0, 1.0, 0.0) * leftCircle + vec3(1.0, 0.0, 0.0) * topCircle2;
+    vec3 newColorLeft = mix(vec3(0.0), coloredLeft, leftCircle);
+
+
+
+    // create left circle
+    float circle3a = circleSdfNoStep(vec2(0.0, 0.1), 0.2, uv);
+    float topCircle = step(circle3a, 0.0);
+
+    // create rotate for right circle
+    tempUV = rotateMat(iTime * (direction==2.0 ? 1.0 : 0.0) * 3.0, vec2(0.0, 0.1)) * vec3(uv.x, uv.y, 1.0);
+    float circle3b = circleSdfNoStep(vec2(0.1, -0.1), 0.2, tempUV.xy);
+    float rightCircle3 = step(circle3b, 0.0);
+    float circle3c = circleSdfNoStep(vec2(-0.1, -0.1), 0.2, tempUV.xy);
+    float leftCircle3 = step(circle3c, 0.0);
+
+    // remove rotating circles
+    vec3 coloredTop = vec3(0.0, 0.0, 1.0) * rightCircle3 + vec3(0.0, 1.0, 0.0) * leftCircle3 + vec3(1.0, 0.0, 0.0) * topCircle;
+    vec3 newColorTop = mix(vec3(0.0), coloredTop, topCircle);
+
+    vec3 newColor = newColorRight + newColorLeft + newColorTop;
+    fragColor = vec4(newColor, 1.0);
+}
