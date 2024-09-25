@@ -2,7 +2,7 @@
 #include "transform2d.stoy"
 #include "easing.stoy"
 #define PI 3.14159265359
-#define PERIOD 2.0
+#define PERIOD 4.0
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
@@ -14,13 +14,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 
     float insideR = step(length(uv.xy - vec2(0.0, 0.1598)), 0.3);
-    uv = rotateMat(easeInOutQuad(mod(iTime / PERIOD, 1.0)) * insideR * ( phase == 0.0 ? 1.0 : 0.0 ) * 4.0 * PI / PERIOD, vec2(0.0, 0.1598)) * uv;
+    uv = rotateMat(easeInOutQuad(mod(iTime / PERIOD, 1.0)) * insideR * ( phase == 0.0 ? 1.0 : 0.0 ) * 2.0 * PI, vec2(0.0, 0.1598)) * uv;
 
     float insideG = step(length(uv.xy - vec2(-0.15, -0.1)), 0.3);
-    uv = rotateMat(easeInOutQuad(mod(iTime / PERIOD, 1.0)) * insideG * ( phase == 1.0 ? 1.0 : 0.0 ) * 4.0 * PI / PERIOD, vec2(-0.15, -0.1)) * uv;
+    uv = rotateMat(easeInOutQuad(mod(iTime / PERIOD, 1.0)) * insideG * ( phase == 1.0 ? 1.0 : 0.0 ) * 2.0 * PI, vec2(-0.15, -0.1)) * uv;
 
     float insideB = step(length(uv.xy - vec2(0.15, -0.1)), 0.3);
-    uv = rotateMat(easeInOutQuad(mod(iTime / PERIOD, 1.0)) * insideB * ( phase == 2.0 ? 1.0 : 0.0 ) * 4.0 * PI / PERIOD, vec2(0.15, -0.1)) * uv;
+    uv = rotateMat(easeInOutQuad(mod(iTime / PERIOD, 1.0)) * insideB * ( phase == 2.0 ? 1.0 : 0.0 ) * 2.0 * PI, vec2(0.15, -0.1)) * uv;
 
     float cR = circleSdfNoStep(vec2(0.0, 0.1598), 0.3, uv.xy);
     float cG = circleSdfNoStep(vec2(-0.15, -0.1), 0.3, uv.xy);
