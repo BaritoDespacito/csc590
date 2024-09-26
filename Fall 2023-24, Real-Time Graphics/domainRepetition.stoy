@@ -1,24 +1,38 @@
 #include "sdf.stoy"
+#define PERIOD 2.0
+#define PI 3.14159265359
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
+    // boilerplate
     vec2 uv = vec2(fragCoord / iResolution.xy);
-    uv.xy -= 0.5;
     uv.x *= iResolution.x / iResolution.y;
 
-    float columns = 7.0;
-    float rows = 5.0;
-
+    // define rows
+    float columns = 10.0;
+    float rows = 10.0;
     uv *= vec2(columns, rows);
 
-    uv.x += 0.5*mod(floor(uv.y), 2.0);
-    // uv.x += 0.5*step(mod(uv.y, 2.0), 1.0);
+    // define phases
+    float phase = step(sin(iTime / PERIOD * PI), 0.0);
 
+    // make stuff move
+    uv.x += phase * iTime / PERIOD * mod(floor(uv.y), 2.0);
+    uv.x -= phase * iTime / PERIOD * (1.0-mod(floor(uv.y), 2.0));
+
+    uv.y += (1.0 - phase) * iTime / PERIOD * mod(floor(uv.x), 2.0);
+    uv.y -= (1.0 - phase) * iTime / PERIOD * (1.0-mod(floor(uv.x), 2.0));
+    
+    // define colors
+    vec3 color1 = vec3((abs(mod(floor(uv.x), 2.0)-mod(floor(uv.y), 2.0))), 0.0, (1.0-abs(mod(floor(uv.x), 2.0)-mod(floor(uv.y), 2.0))));
+
+    // domain repetition
     uv = fract(uv);
 
-    float rect1 = rectSdf(vec2(0.5, 0.5), vec2(0.2, 0.2), uv);
+    // create rect
+    float rect1 = rectSdf(vec2(0.0, 0.0), vec2(0.9, 0.9), uv);
 
-    vec3 color = mix(vec3(0.0), vec3(1.0), rect1);
+    vec3 color = mix(vec3(0.0), color1, rect1);
 
     fragColor = vec4(color, 1.0);
 }
