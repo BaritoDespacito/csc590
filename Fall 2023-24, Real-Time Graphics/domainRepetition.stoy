@@ -1,6 +1,6 @@
 #include "sdf.stoy"
 #include "easing.stoy"
-#define PERIOD 1.0
+#define PERIOD 0.5
 #define PI 3.14159265359
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -13,8 +13,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // float iTime = easeInOutQuad(mod(iTime, 1.0));
 
     // define rows
-    float columns = 10.0;
-    float rows = 10.0;
+    float columns = 15.0;
+    float rows = 15.0;
     uv *= vec2(columns, rows);
 
     // define phases
@@ -40,7 +40,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // create rect
     float rect1 = rectSdf(vec2(0.0, 0.0), vec2(0.9, 0.9), uv);
 
-    vec3 color = mix(vec3(0.0), color1, rect1);
-
+    // color
+    vec3 color = color1 * rect1;
     fragColor = vec4(color, 1.0);
 }
