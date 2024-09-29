@@ -1,0 +1,21 @@
+#include "easing.stoy"
+#include "sdf.stoy"
+#include "transform2d.stoy"
+
+#define PI 3.14159265359
+#define PERIOD 2.0
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+
+    vec3 uv = vec3(fragCoord / iResolution.xy, 1.0);
+    uv.xy -= 0.5;
+    uv.x *= iResolution.x / iResolution.y;
+
+    float phase = floor(mod(iTime / PERIOD, 3.0));
+
+    float pent1 = abs(pentagonSdfNoStep(vec3(uv*rotateMat(PI + 2.0 * PI * easeInOutQuad(fract(iTime / PERIOD)))).xy, 0.2))-0.05;
+
+    vec3 color = step(pent1, 0.0)*vec3(1.0, 0.0, 0.0);
+
+    fragColor = vec4(color, 1.0);
+}
