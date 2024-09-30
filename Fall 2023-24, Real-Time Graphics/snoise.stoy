@@ -1,0 +1,29 @@
+#include "lygia/generative/snoise.glsl"
+#include "sdf.stoy"
+
+#define PI 3.14159265359
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = fragCoord / iResolution.xy;
+    uv -= 0.5;
+    uv.x *= iResolution.x / iResolution.y;
+
+    uv.x = abs(uv.x);
+
+    // convert to polar
+    vec2 polarUV = vec2(atan(uv.y / uv.x) / (2.0 * PI), length(uv));
+
+    // create noise and add to radius
+    float noise = snoise(vec3(uv * 10.0, iTime / 1.0));
+    polarUV.y += noise * 0.15;
+
+    // convert back to cartesian
+    vec2 newUV = vec2(cos(polarUV.x * 2.0 * PI) * polarUV.y, sin(polarUV.x * 2.0 * PI) * polarUV.y);
+
+    // create a circle
+    float circle1 = circleSdf(vec2(0.0, 0.0), 0.2, newUV);
+
+    // make color
+    vec3 color = circle1 * vec3(1.0);
+    fragColor = vec4(1.0-color, 1.0);
+}
