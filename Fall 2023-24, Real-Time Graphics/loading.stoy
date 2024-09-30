@@ -7,18 +7,21 @@
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
-    vec3 uv = vec3(fragCoord / iResolution.xy, 1.0);
-    uv.xy -= 0.5;
+    vec2 uv = vec2(fragCoord / iResolution.xy);
+    uv -= 0.5;
     uv.x *= iResolution.x / iResolution.y;
 
     float phase = floor(mod(iTime / PERIOD, 3.0));
 
-    float pent1 = abs(pentagonSdfNoStep(vec3(uv*rotateMat(PI + 10.0 * PI * easeInOutQuad(fract(iTime / PERIOD / 3.0)))).xy, 0.2))-0.05;
+    float eyeFade = easeInOutQuad(mod(iTime / PERIOD, 1.0));
+    float eye1 = circleSdf(vec2(-0.1, 0.2), 0.05, uv);
+    float eye2 = circleSdf(vec2(0.1, 0.2), 0.05, uv);
 
-    // float phase1 = step(pent1, 0.0) * ( phase == 0.0 ? 1.0 : 0.0 );
-    float phase1 = step(pent1, 0.0);
+    float mouth = arcSdf(vec2(uv.x+0.0, uv.y+0.0), vec2(sin(PI/2.0), cos(PI/2.0)), 0.4, 0.05);
 
-    vec3 color = phase1 * vec3(1.0, 0.0, 0.0);
+    vec3 eyes = ( phase == 1.0 ? eyeFade : 1.0 ) * max(eye1, eye2) * vec3(1.0, 1.0, 1.0);
+
+    vec3 color = eyes + mouth * vec3(1.0, 1.0, 1.0);
 
     fragColor = vec4(color, 1.0);
 }

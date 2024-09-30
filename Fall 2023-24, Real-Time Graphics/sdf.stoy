@@ -120,3 +120,11 @@ float pentagonSdfNoStep( in vec2 p, in float r )
     p -= vec2(clamp(p.x,-r*k.z,r*k.z),r);    
     return length(p)*sign(p.y);
 }
+
+float arcSdf( in vec2 p, in vec2 sc, in float ra, float rb )
+{
+    // sc is the sin/cos of the arc's aperture
+    p.x = abs(p.x);
+    return step((((sc.y*p.x>sc.x*p.y) ? length(p-sc*ra) : 
+                                  abs(length(p)-ra)) - rb), 0.0);
+}
