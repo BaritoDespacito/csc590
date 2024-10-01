@@ -3,25 +3,39 @@
 #include "transform2d.stoy"
 
 #define PI 3.14159265359
-#define PERIOD 2.0
+#define PERIOD 1.0
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
-    vec2 uv = vec2(fragCoord / iResolution.xy);
-    uv -= 0.5;
+    /*
+    Must be a seamless loop - that is, it should at some point return to a state at which it has already been, and I shouldn't be able to tell where the seam is.
+    Must use transformation matrices
+    Must include both translational and rotational motion ROTATIONAL DONE TRANSLATINAL WORKING
+    Must be meaningfully distinct from the work we've done before YES
+    */
+
+
+    vec3 uv = vec3(fragCoord / iResolution.xy, 1.0);
+    uv.xy -= 0.5;
     uv.x *= iResolution.x / iResolution.y;
 
-    float phase = floor(mod(iTime / PERIOD, 3.0));
+    float phase = step(sin(iTime / PERIOD * PI), 0.0);
 
-    float eyeFade = easeInOutQuad(mod(iTime / PERIOD, 1.0));
-    float eye1 = circleSdf(vec2(-0.1, 0.2), 0.05, uv);
-    float eye2 = circleSdf(vec2(0.1, 0.2), 0.05, uv);
+    // move environment
+    uv.x += phase * fract(iTime / PERIOD) * 0.1;
 
-    float mouth = arcSdf(vec2(uv.x+0.0, uv.y+0.0), vec2(sin(PI/2.0), cos(PI/2.0)), 0.4, 0.05);
+    // create rotating square
+    vec3 newUV = vec3(uv.x+0.25, uv.y+0.2, 1.0) * rotateMat(phase * mod(iTime / PERIOD, 1.0) * 0.5 * PI);
+    float square1 = rectSdf(vec2(-0.1, 0.0), vec2(0.0, 0.1), newUV.xy);
 
-    vec3 eyes = ( phase == 1.0 ? eyeFade : 1.0 ) * max(eye1, eye2) * vec3(1.0, 1.0, 1.0);
+    // create trees
+    float tree1 = rectSdf(vec2(0.4 - mod(iTime / PERIOD, 5.0) * 0.1, -0.2), vec2(0.5 - mod(iTime / PERIOD, 5.0) * 0.1, 0.0), uv.xy);
 
-    vec3 color = eyes + mouth * vec3(1.0, 1.0, 1.0);
+    // create ground
+    float ground = rectSdf(vec2(-1.0, -0.5), vec2(1.0, -0.2), uv.xy);
+    // TODO: Add noise to ground
 
-    fragColor = vec4(color, 1.0);
+    vec3 color = square1 * vec3(1.0) + ground * vec3(1.0, 0.78, 0.49) + tree1 * vec3(0.0, 0.5, 0.0);
+
+    fragColor = vec4(color, 1.0); 
 }
