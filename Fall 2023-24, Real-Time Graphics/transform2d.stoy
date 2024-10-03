@@ -1,18 +1,8 @@
-<<<<<<< Updated upstream
-
-
-
-mat3 moveMat(vec2 offset) {
-    mat3 M = mat3(1.0, 0.0, 0.0,
-                0.0, 1.0, 0.0,
-                offset.x, offset.y, 1.0);
-=======
 mat3 translateMat(vec2 offset) {
     mat3 M;
     M[0] = vec3(1.0, 0.0, 0.0);
     M[1] = vec3(0.0, 1.0, 0.0);
-    M[2] = vec3(offset, 1.0);
->>>>>>> Stashed changes
+    M[2] = vec3(offset.x, offset.y, 1.0);
     return M;
 }
 
