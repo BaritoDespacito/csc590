@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 
 
 
@@ -5,6 +6,13 @@ mat3 moveMat(vec2 offset) {
     mat3 M = mat3(1.0, 0.0, 0.0,
                 0.0, 1.0, 0.0,
                 offset.x, offset.y, 1.0);
+=======
+mat3 translateMat(vec2 offset) {
+    mat3 M;
+    M[0] = vec3(1.0, 0.0, 0.0);
+    M[1] = vec3(0.0, 1.0, 0.0);
+    M[2] = vec3(offset, 1.0);
+>>>>>>> Stashed changes
     return M;
 }
 
@@ -30,5 +38,5 @@ mat3 rotateMat(float theta) {
 }
 
 mat3 rotateMat(float theta, vec2 pivot) {
-    return moveMat(pivot) * rotateMat(theta) * moveMat(-pivot);
+    return translateMat(pivot) * rotateMat(theta) * translateMat(-pivot);
 }

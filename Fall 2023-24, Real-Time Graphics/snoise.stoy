@@ -1,5 +1,6 @@
 #include "lygia/generative/snoise.glsl"
 #include "sdf.stoy"
+#include "transform2d.stoy"
 
 #define PI 3.14159265359
 
@@ -8,22 +9,55 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     uv -= 0.5;
     uv.x *= iResolution.x / iResolution.y;
 
-    uv.x = abs(uv.x);
+    // uv.x = abs(uv.x);
 
     // convert to polar
-    vec2 polarUV = vec2(atan(uv.y / uv.x) / (2.0 * PI), length(uv));
+    vec2 polarUV = vec2(atan(uv.y , uv.x), length(uv));
+    float radius = polarUV.y;
+    float angle = polarUV.x;
+    vec2 point = vec2(cos(iTime), sin(iTime));
+    float scalar = angle - mod(iTime, 2.0*PI);
+    scalar *= 0.08;
+
+    float angleChooser1 = sin(angle+iTime) > 0. ? sin(angle+iTime): 0.;
 
     // create noise and add to radius
-    float noise = snoise(vec3(uv * 10.0, iTime / 1.0));
-    polarUV.y += noise * 0.15;
+    float noise1 = snoise(vec3(2.0*cos(angle), 2.0*sin(angle), iTime / 1.0));
+    polarUV.y += angleChooser1 * noise1 * 0.1;
 
     // convert back to cartesian
-    vec2 newUV = vec2(cos(polarUV.x * 2.0 * PI) * polarUV.y, sin(polarUV.x * 2.0 * PI) * polarUV.y);
+    vec3 newUV1 = vec3(cos(polarUV.x * 2.0 * PI) * polarUV.y, sin(polarUV.x * 2.0 * PI) * polarUV.y,1.);
+
+    float angleChooser2 = sin(angle+iTime) > 0. ? sin(angle+iTime): 0.;
+
+    // create noise and add to radius
+    float noise2 = snoise(vec3(2.0*cos(angle), 2.0*sin(angle), iTime / 1.0));
+    polarUV.y += angleChooser2 * noise2 * 0.1;
+
+    // convert back to cartesian
+    vec3 newUV2 = vec3(cos(polarUV.x * 2.0 * PI) * polarUV.y, sin(polarUV.x * 2.0 * PI) * polarUV.y,1.);
+
+     float noise3 = snoise(vec3(2.0*cos(angle), 2.0*sin(angle), iTime / 1.0));
+    polarUV.y += angleChooser2 * noise2 * 0.1;
+
+    // convert back to cartesian
+    vec3 newUV3 = vec3(cos(polarUV.x * 2.0 * PI) * polarUV.y, sin(polarUV.x * 2.0 * PI) * polarUV.y,1.);
+
+    mat3 rotation = rotateMat(iTime);
 
     // create a circle
-    float circle1 = circleSdf(vec2(0.0, 0.0), 0.2, newUV);
+    float circle11 = circleSdf(vec2(0.0, 0.0), 0.2, newUV1.xy);
+    float circle21 = circleSdf(vec2(0.0, 0.0), 0.18, newUV1.xy);
 
+    float circle12 = circleSdf(vec2(0.0, 0.0), 0.2, newUV2.xy);
+    float circle22 = circleSdf(vec2(0.0, 0.0), 0.18, newUV2.xy);
+
+    float circle13 = circleSdf(vec2(0.0, 0.0), 0.2, newUV3.xy);
+    float circle23 = circleSdf(vec2(0.0, 0.0), 0.18, newUV3.xy);
     // make color
-    vec3 color = circle1 * vec3(1.0);
-    fragColor = vec4(1.0-color, 1.0);
+    vec3 color1 = (circle11-circle21) * vec3(1.0,0.,0.);
+    vec3 color2 = (circle12-circle22) * vec3(0.0,1.,0.);
+    vec3 color3 = (circle13-circle23) * vec3(0.0,0.,1.);
+    vec3 finalColor = color1 + color2 + color3;
+    fragColor = vec4(finalColor, 1.0);
 }
