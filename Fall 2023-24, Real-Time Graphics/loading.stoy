@@ -15,7 +15,7 @@ float smin( float a, float b, float k )
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     /*
-    Must be a seamless loop
+    Must be a seamless loop DONE
     Must use transformation matrices DONE
     Must include both translational and rotational motion DONE
     Must be meaningfully distinct from the work we've done before DONE
@@ -49,8 +49,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 ballUV = uv * vec3(columns, rows, 1.0);
 
     // make ball move
-    ballUV.y += (1.0-mod(floor(uv.x), 2.0)) * cos((iTime) * PI / PERIOD) * 0.7; // right ball
-    ballUV.y += (mod(floor(uv.x), 2.0)) * cos((iTime + PERIOD) * PI / PERIOD) * 0.7; // left ball
+    ballUV = translateMat(vec2(0.0, (1.0-mod(floor(uv.x), 2.0)) * cos((iTime) * PI / PERIOD) * 0.7)) * ballUV; // right ball
+    ballUV = translateMat(vec2(0.0, (mod(floor(uv.x), 2.0)) * cos((iTime + PERIOD) * PI / PERIOD) * 0.7)) * ballUV; // left ball
 
     // get ball radius
     float radius = 0.045;
@@ -63,11 +63,21 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // create ball
     float ball = circleSdf(vec2(0.5, -0.5), radius, ballUV.xy);
 
+    // create particles
+    float particle1 = trapezoidSdf(vec2(ballUV.x-0.5, ballUV.y+0.43), 0.01, 0.0, 0.03);
+    float particle2 = trapezoidSdf(vec2(ballUV.x-0.5, ballUV.y+0.43), 0.01, 0.0, 0.03);
+    float particle3 = trapezoidSdf(vec2(ballUV.x-0.5, ballUV.y+0.43), 0.01, 0.0, 0.03);
+    float particle4 = trapezoidSdf(vec2(ballUV.x-0.5, ballUV.y+0.43), 0.01, 0.0, 0.03);
+
+    // create ball shadow
+    // TODO
+
     // mix everything
     vec3 color = step(paddle2, 0.0) * vec3(0.7, 0.54, 0.34)
          + step(handle1, 0.0) * vec3(0.65, 0.49, 0.29)
          + step(head, 0.0) * vec3(0.0, 0.27, 0.46);
     color = mix(color, vec3(1.0), ball);
+    color = mix(color, vec3(1.0), particle1);
 
     fragColor = vec4(color, 1.0); 
 }
