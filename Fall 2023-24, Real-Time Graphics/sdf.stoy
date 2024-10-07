@@ -152,3 +152,14 @@ float trapezoidSdfNoStep( in vec2 p, in float r1, float r2, float he )
     float s = (cb.x<0.0 && ca.y<0.0) ? -1.0 : 1.0;
     return s*sqrt( min(dot2(ca),dot2(cb)));
 }
+
+float sphereSdf( in vec3 p, in float r, in vec3 center )
+{
+    return length(p-center)-r;
+}
+
+float boxSdf( vec3 p, vec3 b )
+{
+  vec3 q = abs(p) - b;
+  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
