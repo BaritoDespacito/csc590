@@ -37,22 +37,21 @@ float rayMarchShadow(vec3 rayOrigin, vec3 rayHeading) {
     return 1.0; // if no points are close enough, return 1.0 to keep light the same
 }
 
-
-vec3 lighting(vec3 p) {
-    vec3 source = vec3(-1.0 + 2.0 * sin(iTime), 1.0 + 1.0 * sin(iTime), 1.0 + sin(iTime)); // define source
+vec3 lighting(vec3 p, vec3 col, vec3 source) {
+    // vec3 source = vec3(-1.0 + 2.0 * sin(iTime), 1.0 + 1.0 * sin(iTime), 1.0 + sin(iTime)); // define source
     vec3 lightDirection = normalize(source - p); // vector from point to light source
     vec3 normal = calcNormal(p); // surface normal at point
     float diff = dot(normal, lightDirection); // dot product to find light, clamp to 0
-    return vec3(diff) * rayMarchShadow(p, lightDirection); // return the light value
+    return diff * col * rayMarchShadow(p, lightDirection); // return the light value
 }
 
-vec3 rayMarch(vec3 rayOrigin, vec3 rayHeading) {
+vec3 rayMarch(vec3 rayOrigin, vec3 rayHeading, vec3 col, vec3 source) {
     float d = 0.0; // sdf distance to the sphere from eyeball
     for (int i = 0; i < MAX_STEPS; i++) { // repeat until max steps
         vec3 p = rayOrigin + d * rayHeading; // move p to a new point on the closest point
         float dist = scene(p); // get the distance to the closest point from p
         if (dist < MIN_DIST) {
-            return lighting(p);
+            return lighting(p, col, source);
         }
         d += dist; // add the distance to the min distance, then repeat to move p
         if (d > MAX_DIST) { // if min distance is greater than limit break
@@ -68,10 +67,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     uv.x *= iResolution.x / iResolution.y;
 
     vec3 camera = vec3(0.0, 0.0, -1.0);
-    vec3 light = rayMarch(camera, normalize(vec3(uv, 1.0) - camera));
-    // float shadow = rayMarchShadow(vec3(uv, 0.0), normalize(camera - vec3(uv, 1.0)));
+    vec3 lightRed = rayMarch(camera, normalize(vec3(uv, 1.0) - camera), vec3(1.0, 0.0, 0.0), vec3(-1.0 + 2.0 * sin(iTime), 1.0 + 1.0 * sin(iTime), 1.0 + sin(iTime)));
+    vec3 lightBlue = rayMarch(camera, normalize(vec3(uv, 1.0) - camera), vec3(0.0, 0.0, 1.0), vec3(1.0 + 2.0 * sin(iTime), 1.0 + 1.0 * sin(iTime), 1.0 + sin(iTime)));
 
-    vec3 color = light;
+    vec3 color = lightRed + lightBlue;
 
     fragColor = vec4(color, 1.0);
 }
