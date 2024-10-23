@@ -94,9 +94,21 @@ vec3 rayMarch(vec3 rayOrigin, vec3 rayHeading) {
         vec3 p = rayOrigin+d*rayHeading;
         vec4 sd = scene(p);
         vec3 objectColor = sd.yzw;
-        // vec3 objectColor = vec3(1.0, 0.0, 0.0);
         if(sd.x<THRESHOLD) {
-            return objectColor*lighting(p);
+            // diffuse
+            float k_d = 0.5;
+            float dotLN = clamp(dot(lightDirection, normal), 0., 1.);
+            vec3 i_d = vec3(0.7, 0.5, 0);
+            vec3 diffuse = k_d * dotLN * i_d;
+
+            // specular
+            float k_s = 0.6;
+            float dotRV = clamp(dot(reflect(lightDirection, normal), -rd), 0., 1.);
+            vec3 i_s = vec3(1, 1, 1);
+            float alpha = 10.;
+            vec3 specular = k_s * pow(dotRV, alpha) * i_s;
+
+            return (objectColor*lighting(p)) + diffuse + specular;
         }
         d += sd.x;
         if(d>MAX_DIST) {
