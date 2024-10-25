@@ -7,6 +7,8 @@
 #include "lygia/generative/snoise.glsl"
 #include "lygia/math/rotate3dX.glsl" 
 #include "lygia/math/rotate3dY.glsl"
+#include "lygia/math/rotate3dZ.glsl"
+#include "lygia/sdf/opUnion.glsl"
 #define ROWS 15
 #define COLS 15
  
@@ -14,18 +16,45 @@ struct Light {
     vec3 pos;
     vec3 color;
 };
- 
-vec4 scene(vec3 p) {
-    vec4 base = vec4(boxSDF(p, vec3(1.0, 8.0, 1.0)), vec3(0.92, 0.71, 0.46));
-    vec4 pyramid1 = vec4(pyramidSDF(vec3(p.x/2.0, p.y-8.0, p.z/2.0), 10.0), vec3(0.08, 0.30, 0.47));
-    vec4 attic = vec4(boxSDF(vec3(p.x, p.y-10.0, p.z), vec3(1.0, 1.0, 1.0)), vec3(0.92, 0.71, 0.46));
-    return (min(base, min(pyramid1, attic)));
+
+struct Surface {
+    float sd; // signed distance value
+    vec3 col; // color
+};
+
+Surface boxSDF(vec3 p, vec3 size, vec3 color) {
+    return Surface(boxSDF(p, size), color);
+}
+
+Surface pyramidSDF(vec3 p, float size, vec3 color) {
+    return Surface(pyramidSDF(p, size), color);
+}
+
+Surface minWithColor(Surface obj1, Surface obj2) {
+  if (obj2.sd < obj1.sd) return obj2; // The sd component of the struct holds the "signed distance" value
+  return obj1;
+}
+
+Surface maxWithColor(Surface obj1, Surface obj2) {
+  if (obj2.sd > obj1.sd) return obj2;
+  return obj1;
+}
+
+Surface scene(vec3 p) {
+    Surface base = boxSDF(p, vec3(1.0, 8.0, 1.0), vec3(0.92, 0.71, 0.46));
+    Surface pyramid1 = pyramidSDF(vec3(p.x/2.0, p.y-8.0, p.z/2.0), 10.0, vec3(0.08, 0.30, 0.30));
+    Surface attic = boxSDF(vec3(p.x, p.y-11.0, p.z), vec3(0.8, 0.7, 0.8), vec3(0.92, 0.71, 0.46));
+    Surface pyramid2 = pyramidSDF(vec3(p.x/1.25, p.y-11.8, p.z/1.25), 1.0, vec3(0.08, 0.30, 0.30));
+
+    Surface slant1 = maxWithColor(pyramid1, attic);
+
+    return minWithColor(base, minWithColor(pyramid1, minWithColor(attic, pyramid2)));
 }
  
 vec3 calcNormal(vec3 p) {
     const float h = 0.00001; // replace by an appropriate value
     const vec2 k = vec2(1,-1);
-    return normalize(k.xyy*scene(p+k.xyy*h).x+k.yyx*scene(p+k.yyx*h).x+k.yxy*scene(p+k.yxy*h).x+k.xxx*scene(p+k.xxx*h).x);
+    return normalize(k.xyy*scene(p+k.xyy*h).sd+k.yyx*scene(p+k.yyx*h).sd+k.yxy*scene(p+k.yxy*h).sd+k.xxx*scene(p+k.xxx*h).sd);
 }
  
 float shadows(vec3 rayOrigin, vec3 light) {
@@ -34,16 +63,16 @@ float shadows(vec3 rayOrigin, vec3 light) {
     float val = 1.0;
     for(int i = 0; i<MAX_STEPS; i++) {
         vec3 p = rayOrigin+d*rayHeading;
-        vec4 sd = scene(p);
-        if(sd.x<THRESHOLD) {
+        Surface sd = scene(p);
+        if(sd.sd<THRESHOLD) {
             return 0.0;
         }
-        val = min(val, 8.0*sd.x/d);
+        val = min(val, 8.0*sd.sd/d);
         float distToLight = length(light-p);
         if(distToLight<THRESHOLD) {
             return val;
         }
-        d += min(sd.x, distToLight);
+        d += min(sd.sd, distToLight);
         if(d>MAX_DIST) {
             break;
         }
@@ -71,12 +100,12 @@ vec3 rayMarch(vec3 rayOrigin, vec3 rayHeading) {
     float d = 0.0;
     for(int i = 0; i<MAX_STEPS; i++) {
         vec3 p = rayOrigin+d*rayHeading;
-        vec4 sd = scene(p);
-        vec3 objectColor = sd.yzw;
-        if(sd.x<THRESHOLD) {
+        Surface sd = scene(p);
+        vec3 objectColor = sd.col;
+        if(sd.sd<THRESHOLD) {
             return (objectColor*lighting(p));
         }
-        d += sd.x;
+        d += sd.sd;
         if(d>MAX_DIST) {
             break;
         }
