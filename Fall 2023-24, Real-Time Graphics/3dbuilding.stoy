@@ -12,6 +12,7 @@
 #include "lygia/sdf/opSubtraction.glsl"
 #define ROWS 15
 #define COLS 15
+#define PI 3.14159265359
  
 struct Light {
     vec3 pos;
@@ -31,6 +32,21 @@ Surface pyramidSDF(vec3 p, float size, vec3 color) {
     return Surface(pyramidSDF(p, size), color);
 }
 
+Surface handSDF(vec3 p, vec3 size, float theta, vec3 color) {
+
+    vec3 newP = vec3(p.x, p.y-size.y, p.z);
+    newP *= rotate3dZ(theta);
+    newP += vec3(0.0, -size.y, 0.0);
+    float box = boxSDF(newP, size);
+    return Surface(box, color);
+}
+
+float smin( float a, float b, float k ) {
+    k *= 2.0;
+    float x = b-a;
+    return 0.5*( a+b-sqrt(x*x+k*k) );
+}
+
 Surface minWithColor(Surface obj1, Surface obj2) {
   if (obj2.sd < obj1.sd) return obj2; // The sd component of the struct holds the "signed distance" value
   return obj1;
@@ -42,7 +58,10 @@ Surface maxWithColor(Surface obj1, Surface obj2) {
 }
 
 Surface scene(vec3 p) {
-    Surface base = boxSDF(p, vec3(1.0, 8.0, 1.0), vec3(0.92, 0.71, 0.46));
+
+    // create main structure
+    float baseNoColor = boxSDF(p, vec3(1.0, 8.0, 1.0));
+    Surface base = Surface(baseNoColor, vec3(0.92, 0.71, 0.46));
 
     float pyramid1 = pyramidSDF(vec3(p.x/2.0, p.y-8.0, p.z/2.0), 10.0);
     float pyramidSubtractor1 = boxSDF(vec3(p.x, p.y-11.0, p.z), vec3(0.8, 7.0, 0.8));
@@ -56,7 +75,19 @@ Surface scene(vec3 p) {
 
     Surface mainStructure = minWithColor(base, minWithColor(slant1, minWithColor(attic, slant2)));
 
-    return mainStructure;
+    // create clock face
+    float clockFace = boxSDF(vec3(p.x, p.y-6.5, p.z), vec3(1.1, 1.1, 1.1));
+    Surface clockFaceSmooth = Surface(smin(clockFace, baseNoColor, 0.15), vec3(0.92, 0.71, 0.46));
+
+    Surface hourHand = handSDF(vec3(p.x, p.y-6.0, p.z-1.28), vec3(0.05, 0.3, 0.05), 2.0*PI*iTime/43200.0, vec3(0.08, 0.15, 0.2));
+    Surface minuteHand = handSDF(vec3(p.x, p.y-6.0, p.z-1.28), vec3(0.03, 0.4, 0.03), 2.0*PI*iTime/3600.0, vec3(0.08, 0.15, 0.2));
+    Surface secondHand = handSDF(vec3(p.x, p.y-6.0, p.z-1.28), vec3(0.01, 0.5, 0.01), 2.0*PI*iTime/60.0, vec3(0.08, 0.15, 0.2));
+    Surface clockHands = minWithColor(hourHand, minWithColor(minuteHand, secondHand));
+
+    Surface clockFaceWithHands = minWithColor(clockFaceSmooth, clockHands);
+
+    // return clockHands;
+    return minWithColor(mainStructure, clockFaceWithHands);
 }
  
 vec3 calcNormal(vec3 p) {
@@ -127,11 +158,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     uv.x *= iResolution.x/iResolution.y;
  
     vec3 rd = normalize(vec3(uv,-1.0));
-    rd = rotate3dX(0.375)*rd; // rotate the camera up
-    rd = rotate3dY(-0.25)*rd; // rotate the camera right
+    vec3 ro = vec3(1.0);
 
-    vec3 ro = vec3(-7.0, -7.0, 25.0);
-    // vec3 ro = vec3(0.0, 12.0, 15.0);
+    // ground view camera
+    // rd = rotate3dX(0.375)*rd; // rotate the camera up
+    // rd = rotate3dY(-0.25)*rd; // rotate the camera right
+    // ro = vec3(-7.0, -7.0, 25.0);
+
+    // side camera
+    // rd = rotate3dY(-PI/2.0)*rd;
+    // ro = vec3(-10.0, 5.0, 1.0);
+
+    // front camera
+    ro = vec3(0.0, 5.0, 10.0);
  
     vec3 color = rayMarch(ro, rd);
  
