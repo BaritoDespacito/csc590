@@ -1,15 +1,24 @@
 #define MAX_DIST 128.0
 #define MAX_STEPS 128
 #define THRESHOLD 0.01
+
 #include "lygia/sdf/sphereSDF.glsl"
 #include "lygia/sdf/boxSDF.glsl"
 #include "lygia/sdf/pyramidSDF.glsl"
+#include "lygia/sdf/cylinderSDF.glsl"
+
 #include "lygia/generative/snoise.glsl"
+
 #include "lygia/math/rotate3dX.glsl" 
 #include "lygia/math/rotate3dY.glsl"
 #include "lygia/math/rotate3dZ.glsl"
+#include "lygia/math/rotate4dZ.glsl"
+#include "lygia/math/translate4d.glsl"
+#include "lygia/math/toMat3.glsl"
+
 #include "lygia/sdf/opUnion.glsl"
 #include "lygia/sdf/opSubtraction.glsl"
+
 #define ROWS 15
 #define COLS 15
 #define PI 3.14159265359
@@ -32,12 +41,17 @@ Surface pyramidSDF(vec3 p, float size, vec3 color) {
     return Surface(pyramidSDF(p, size), color);
 }
 
+Surface cylinderSDF(vec3 p, vec3 a, vec3 b, float r, vec3 color) {
+    return Surface(cylinderSDF(p, a, b, r), color);
+}
+
 Surface handSDF(vec3 p, vec3 size, float theta, vec3 color) {
 
-    vec3 newP = vec3(p.x, p.y-size.y, p.z);
-    newP *= rotate3dZ(theta);
-    newP += vec3(0.0, -size.y, 0.0);
-    float box = boxSDF(newP, size);
+    vec4 newP = vec4(p, 1.0);
+    newP = translate4d(vec3(0.0, -size.y, 0.0))*newP;
+    newP *= rotate4dZ(theta);
+    newP = translate4d(vec3(0.0, -size.y, 0.0))*newP;
+    float box = boxSDF(newP.xyz, size);
     return Surface(box, color);
 }
 
@@ -78,13 +92,14 @@ Surface scene(vec3 p) {
     // create clock face
     float clockFace = boxSDF(vec3(p.x, p.y-6.5, p.z), vec3(1.1, 1.1, 1.1));
     Surface clockFaceSmooth = Surface(smin(clockFace, baseNoColor, 0.15), vec3(0.92, 0.71, 0.46));
+    Surface clockBackground = cylinderSDF(p, vec3(0.0, 6.5, 1.28), vec3(0.0, 6.5, -1.28), 0.9, vec3(1.0));
+    Surface clockFaceBackground = minWithColor(clockFaceSmooth, clockBackground);
 
-    Surface hourHand = handSDF(vec3(p.x, p.y-6.0, p.z-1.28), vec3(0.05, 0.3, 0.05), 2.0*PI*iTime/43200.0, vec3(0.08, 0.15, 0.2));
-    Surface minuteHand = handSDF(vec3(p.x, p.y-6.0, p.z-1.28), vec3(0.03, 0.4, 0.03), 2.0*PI*iTime/3600.0, vec3(0.08, 0.15, 0.2));
-    Surface secondHand = handSDF(vec3(p.x, p.y-6.0, p.z-1.28), vec3(0.01, 0.5, 0.01), 2.0*PI*iTime/60.0, vec3(0.08, 0.15, 0.2));
-    Surface clockHands = minWithColor(hourHand, minWithColor(minuteHand, secondHand));
+    Surface hourHand = handSDF(vec3(p.x, p.y-6.3, p.z-1.28), vec3(0.03, 0.2, 0.03), -2.0*PI*iTime/43200.0, vec3(0.08, 0.15, 0.2));
+    Surface minuteHand = handSDF(vec3(p.x, p.y-6.1, p.z-1.28), vec3(0.03, 0.4, 0.03), -2.0*PI*iTime/3600.0, vec3(0.08, 0.15, 0.2));
+    Surface clockHands = minWithColor(hourHand, minuteHand);
 
-    Surface clockFaceWithHands = minWithColor(clockFaceSmooth, clockHands);
+    Surface clockFaceWithHands = minWithColor(clockFaceBackground, clockHands);
 
     // return clockHands;
     return minWithColor(mainStructure, clockFaceWithHands);
@@ -161,16 +176,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 ro = vec3(1.0);
 
     // ground view camera
-    // rd = rotate3dX(0.375)*rd; // rotate the camera up
-    // rd = rotate3dY(-0.25)*rd; // rotate the camera right
-    // ro = vec3(-7.0, -7.0, 25.0);
+    rd = rotate3dX(0.375)*rd; // rotate the camera up
+    rd = rotate3dY(-0.25)*rd; // rotate the camera right
+    ro = vec3(-7.0, -7.0, 25.0);
 
     // side camera
     // rd = rotate3dY(-PI/2.0)*rd;
     // ro = vec3(-10.0, 5.0, 1.0);
 
     // front camera
-    ro = vec3(0.0, 5.0, 10.0);
+    // ro = vec3(0.0, 5.0, 10.0);
  
     vec3 color = rayMarch(ro, rd);
  
