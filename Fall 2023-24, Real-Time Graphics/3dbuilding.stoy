@@ -55,6 +55,10 @@ Surface handSDF(vec3 p, vec3 size, float theta, vec3 color) {
     return Surface(box, color);
 }
 
+Surface planeSDF(vec3 p, vec3 n, float h, vec3 color) {
+    return Surface(dot(p, n)-h, color);
+}
+
 float smin( float a, float b, float k ) {
     k *= 2.0;
     float x = b-a;
@@ -89,6 +93,8 @@ Surface clock(vec3 p) {
 }
 
 Surface scene(vec3 p) {
+    // create ground
+    Surface ground = planeSDF(p, vec3(0.0, 1.0, 0.0), -8.0, vec3(0.08, 0.15, 0.2));
 
     // create main structure
     float baseNoColor = boxSDF(p, vec3(1.0, 8.0, 1.0));
@@ -106,11 +112,21 @@ Surface scene(vec3 p) {
 
     Surface mainStructure = minWithColor(base, minWithColor(slant1, minWithColor(attic, slant2)));
 
+    // create clcok domain repetition
+    vec3 pClock = p;
+    pClock.x = mod(p.x, 2.0);
+    pClock.z = mod(p.z, 2.0);
+
     // create clock face
-    Surface clock = clock(p);
+    Surface clock = clock(pClock);
+
+    // domain repeat
+    
 
     // return clockHands;
-    return minWithColor(mainStructure, clock);
+    Surface tower = minWithColor(mainStructure, clock);
+
+    return minWithColor(ground, tower);
 }
  
 vec3 calcNormal(vec3 p) {
