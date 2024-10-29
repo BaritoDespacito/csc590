@@ -1,0 +1,101 @@
+#define MAX_DIST 64.0
+#define MAX_STEPS 128
+#define THRESHOLD 0.01
+#include "lygia/math/rotate3dX.glsl"
+#include "lygia/generative/snoise.glsl"
+
+struct Light {
+    vec3 pos;
+    vec3 color;
+};
+
+float sdPlane(vec3 p, vec3 n, float h) {
+  // n must be normalized
+    return dot(p, n)+h;
+}
+
+vec2 scene(vec3 p) {
+    p.y += 2.0*snoise(p.xz/20.0);
+    p.y += p.z/5.0;
+    float d = sdPlane(p, vec3(0.0, 1.0, 0.0), 2.0);
+    return vec2(d, 0.0);
+}
+
+vec3 calcNormal(vec3 p) {
+    const float h = 0.00001; // replace by an appropriate value
+    const vec2 k = vec2(1,-1);
+    return normalize(k.xyy*scene(p+k.xyy*h).x+k.yyx*scene(p+k.yyx*h).x+k.yxy*scene(p+k.yxy*h).x+k.xxx*scene(p+k.xxx*h).x);
+}
+
+float shadows(vec3 rayOrigin, vec3 light) {
+    float d = 100.0*THRESHOLD;
+    vec3 rayHeading = normalize(light-rayOrigin);
+    float val = 1.0;
+    for(int i = 0; i<MAX_STEPS; i++) {
+        vec3 p = rayOrigin+d*rayHeading;
+        float sd = scene(p).x;
+        if(sd<THRESHOLD) {
+            return 0.0;
+        }
+        val = min(val, 8.0*sd/d);
+        float distToLight = length(light-p);
+        if(distToLight<THRESHOLD) {
+            return val;
+        }
+        d += min(sd, distToLight);
+        if(d>MAX_DIST) {
+            break;
+        }
+    }
+    return 1.0;
+}
+
+vec3 lighting(vec3 p) {
+    Light lights[1] = Light[1]( //
+    Light(vec3(-10., 8., 5.), vec3(1.0)));
+    vec3 color = vec3(0.0);
+    vec3 norm = calcNormal(p);
+    for(int i = 0; i<lights.length(); i++) {
+        vec3 toLight = normalize(lights[i].pos-p);
+        color += shadows(p, lights[i].pos)* //
+            clamp(dot(toLight, norm), 0., 1.)* //
+            lights[i].color;
+    }
+    return color;
+}
+
+vec3 terrainColor(vec3 p) {
+    return vec3(1.0);
+}
+
+vec3 rayMarch(vec3 rayOrigin, vec3 rayHeading) {
+    float d = 0.0;
+    for(int i = 0; i<MAX_STEPS; i++) {
+        vec3 p = rayOrigin+d*rayHeading;
+        vec2 march = scene(p);
+        float sd = march.x;
+        vec3 color = terrainColor(p);
+        if(sd<THRESHOLD) {
+            return color*lighting(p);
+        }
+        d += sd;
+        if(d>MAX_DIST) {
+            break;
+        }
+    }
+    return vec3(0.04, 0.41, 0.62);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = fragCoord/iResolution.xy;
+    uv -= 0.5;
+    uv.x *= iResolution.x/iResolution.y;
+
+    vec3 rd = normalize(vec3(uv,-1.0));
+    rd = rotate3dX(-0.2)*rd;
+    vec3 ro = vec3(1.0, 10.0, 0.0);
+
+    vec3 col = rayMarch(ro, rd);
+
+    fragColor = vec4(col, 1.0);
+}
