@@ -71,6 +71,23 @@ Surface maxWithColor(Surface obj1, Surface obj2) {
   return obj1;
 }
 
+Surface clock(vec3 p) {
+    float baseNoColor = boxSDF(p, vec3(1.0, 8.0, 1.0));
+
+    float clockFace = boxSDF(vec3(p.x, p.y-6.5, p.z), vec3(1.1, 1.1, 1.1));
+    Surface clockFaceSmooth = Surface(smin(clockFace, baseNoColor, 0.15), vec3(0.92, 0.71, 0.46));
+    Surface clockBackground = cylinderSDF(p, vec3(0.0, 6.5, 1.28), vec3(0.0, 6.5, -1.28), 0.9, vec3(1.0));
+    Surface clockFaceBackground = minWithColor(clockFaceSmooth, clockBackground);
+
+    Surface hourHand = handSDF(vec3(p.x, p.y-6.3, p.z-1.28), vec3(0.03, 0.2, 0.03), -2.0*PI*iTime/43200.0, vec3(0.08, 0.15, 0.2));
+    Surface minuteHand = handSDF(vec3(p.x, p.y-6.1, p.z-1.28), vec3(0.03, 0.4, 0.03), -2.0*PI*iTime/3600.0, vec3(0.08, 0.15, 0.2));
+    Surface clockHands = minWithColor(hourHand, minuteHand);
+
+    Surface clockFaceWithHands = minWithColor(clockFaceBackground, clockHands);
+
+    return clockFaceWithHands;
+}
+
 Surface scene(vec3 p) {
 
     // create main structure
@@ -90,19 +107,10 @@ Surface scene(vec3 p) {
     Surface mainStructure = minWithColor(base, minWithColor(slant1, minWithColor(attic, slant2)));
 
     // create clock face
-    float clockFace = boxSDF(vec3(p.x, p.y-6.5, p.z), vec3(1.1, 1.1, 1.1));
-    Surface clockFaceSmooth = Surface(smin(clockFace, baseNoColor, 0.15), vec3(0.92, 0.71, 0.46));
-    Surface clockBackground = cylinderSDF(p, vec3(0.0, 6.5, 1.28), vec3(0.0, 6.5, -1.28), 0.9, vec3(1.0));
-    Surface clockFaceBackground = minWithColor(clockFaceSmooth, clockBackground);
-
-    Surface hourHand = handSDF(vec3(p.x, p.y-6.3, p.z-1.28), vec3(0.03, 0.2, 0.03), -2.0*PI*iTime/43200.0, vec3(0.08, 0.15, 0.2));
-    Surface minuteHand = handSDF(vec3(p.x, p.y-6.1, p.z-1.28), vec3(0.03, 0.4, 0.03), -2.0*PI*iTime/3600.0, vec3(0.08, 0.15, 0.2));
-    Surface clockHands = minWithColor(hourHand, minuteHand);
-
-    Surface clockFaceWithHands = minWithColor(clockFaceBackground, clockHands);
+    Surface clock = clock(p);
 
     // return clockHands;
-    return minWithColor(mainStructure, clockFaceWithHands);
+    return minWithColor(mainStructure, clock);
 }
  
 vec3 calcNormal(vec3 p) {
