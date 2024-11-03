@@ -101,32 +101,32 @@ Surface clock(vec3 p) {
     return clockFaceWithHands;
 }
 
-float detail(vec3 p) {
-    float horizontal1 = boxSDF(vec3(p.x, p.y-3.0, p.z-1.025), vec3(1.0, 0.025, 0.05));
-    float horizontal2 = boxSDF(vec3(p.x, p.y-3.2, p.z-1.025), vec3(1.0, 0.025, 0.05));
-    float window1 = roundedBoxSDF(vec3(p.x+0.5, p.y-4.2, p.z-0.95), vec3(0.0001, 0.7, 0.05), 0.05);
-    float window2 = roundedBoxSDF(vec3(p.x-0.5, p.y-4.2, p.z-0.95), vec3(0.0001, 0.7, 0.05), 0.05);
-    float window3 = roundedBoxSDF(vec3(p.x, p.y-4.2, p.z-0.95), vec3(0.0001, 0.7, 0.05), 0.05);
+Surface detail(vec3 p) {
+    Surface horizontal1 = boxSDF(vec3(p.x, p.y-3.0, p.z-1.025), vec3(1.0, 0.025, 0.05), vec3(0.92, 0.71, 0.46));
+    Surface horizontal2 = boxSDF(vec3(p.x, p.y-3.2, p.z-1.025), vec3(1.0, 0.025, 0.05), vec3(0.92, 0.71, 0.46));
+    Surface window1 = Surface(roundedBoxSDF(vec3(p.x+0.5, p.y-4.2, p.z-0.95), vec3(0.0001, 0.7, 0.05), 0.05), vec3(0.08, 0.15, 0.2));
+    Surface window2 = Surface(roundedBoxSDF(vec3(p.x-0.5, p.y-4.2, p.z-0.95), vec3(0.0001, 0.7, 0.05), 0.05), vec3(0.08, 0.15, 0.2));
+    Surface window3 = Surface(roundedBoxSDF(vec3(p.x, p.y-4.2, p.z-0.95), vec3(0.0001, 0.7, 0.05), 0.05), vec3(0.08, 0.15, 0.2));
 
-    return min(horizontal1, min(horizontal2, min(window1, min(window2, window3))));
+    return minWithColor(horizontal1, minWithColor(horizontal2, minWithColor(window1, minWithColor(window2, window3))));
 }
 
 Surface repeatedDetail(vec3 p, vec3 size, vec3 spacing) {
     vec3 id = round(p/spacing);
  
-    float d = 1e20;
+    Surface d = Surface(1e20, vec3(0.0));
     for(int i = -1; i<2; i++) {
         for(int j = -1; j<2; j++) {
             for(int k = -1; k<2; k++) {
                 vec3 rid = id+vec3(i, j, k);
                 rid = mod(rid, size) - 0.5 * size;
                 vec3 r = p-spacing*rid;
-                d = min(d, detail(r));
+                d = minWithColor(d, detail(r));
             }
         }
     }
 
-    return Surface(d, vec3(1.0));
+    return d;
 
 }
 
@@ -155,7 +155,7 @@ Surface scene(vec3 p) {
     Surface mainStructure = minWithColor(base, minWithColor(slant1, minWithColor(attic, slant2)));
 
     // create detail
-    Surface detail = repeatedDetail(vec3(p.x, p.y+3.5, p.z), vec3(0, 4, 0), vec3(0.0, 3.0, 0.0));
+    Surface detail = repeatedDetail(vec3(p.x, p.y+4.0, p.z), vec3(0, 5, 0), vec3(0.0, 2.5, 0.0));
     Surface detailedStructure = minWithColor(mainStructure, detail);
     // Surface detailedStructure = mainStructure;
 
