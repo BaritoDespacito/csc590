@@ -7,6 +7,7 @@
 #include "lygia/sdf/pyramidSDF.glsl"
 #include "lygia/sdf/cylinderSDF.glsl"
 #include "lygia/sdf/sphereSDF.glsl"
+#include "lygia/sdf/triPrismSDF.glsl"
 
 #include "lygia/generative/snoise.glsl"
 
@@ -28,7 +29,7 @@
 A prominent building with interesting details/shapes/forms (feel free to get weird with it) DONE
 Some use of domain repetition of 3d elements in the scene (can be part of the hero building or some background element) DONE
 Must contain multiple different colored surfaces DONE
-Must contain some extra element that pushes beyond what we've done in class and furthers the artistic vision of the piece DOMAIN REPETITION USING ROTATION
+Must contain some extra element that pushes beyond what we've done in class and furthers the artistic vision of the piece DIFFERENT TYPES OF DOMAIN REPETITION (ROTATIONAL, TRANSLATIONAL)
 */
 
 struct Light {
@@ -130,13 +131,22 @@ Surface detail(vec3 p) {
     return minWithColor(horizontal1, minWithColor(horizontal2, minWithColor(window1, minWithColor(window2, minWithColor(window3, window4)))));
 }
 
-Surface repeatedDetail(vec3 p, vec3 size, vec3 spacing) {
+Surface window(vec3 p) {
+    Surface windowFrame = boxSDF(vec3(p.x, p.y-13.6, p.z-0.55), vec3(0.05, 0.1, 0.5), vec3(0.92, 0.71, 0.46));
+    Surface window = boxSDF(vec3(p.x, p.y-13.6, p.z-0.55), vec3(0.03, 0.08, 0.5), vec3(0.08, 0.15, 0.2)); 
+    float windowRoof = triPrismSDF(vec3(p.x, p.y-13.75, p.z-0.55), vec2(0.1, 0.51));
+    window = minWithColor(window, minWithColor(windowFrame, Surface(windowRoof, vec3(0.92, 0.71, 0.46))));
+
+    return window;
+}
+
+Surface repeatedDetail(vec3 p, vec3 size, vec3 spacing, vec3 windowSize, vec3 windowSpacing) {
     vec3 id = round(p/spacing);
  
     Surface d = Surface(1e20, vec3(0.0));
-    for(int i = -1; i<2; i++) {
-        for(int j = -1; j<2; j++) {
-            for(int k = -1; k<2; k++) {
+    for (int i = -1; i<2; i++) {
+        for (int j = -1; j<2; j++) {
+            for (int k = -1; k<2; k++) {
                 vec3 rid = id+vec3(i, j, k);
                 rid = mod(rid, size) - 0.5 * size;
                 vec3 r = p-spacing*rid;
@@ -145,19 +155,58 @@ Surface repeatedDetail(vec3 p, vec3 size, vec3 spacing) {
         }
     }
 
+    for (int i = -1; i<2; i++) {
+        for (int j = -1; j<2; j++) {
+            for (int k = -1; k<2; k++) {
+                vec3 rid = id+vec3(i, j, k);
+                rid = mod(rid, windowSize) - 0.5 * windowSize;
+                vec3 r = p-windowSpacing*rid;
+                r.z += rid.y*0.1;
+                d = minWithColor(d, window(r));
+            }
+        }
+    }
+
     return d;
 
 }
 
-Surface rotatedDetail(vec3 p, vec3 size, vec3 spacing) {
+Surface rotatedDetail(vec3 p, vec3 size, vec3 spacing, vec3 windowSize, vec3 windowSpacing) {
     Surface d = Surface(1e20, vec3(0.0));
     for (int i = 0; i < 4; i++) {
         float angle = float(i) * PI / 2.0;
         vec3 rotatedP = (rotate3dY(angle) * p);
-        d = minWithColor(d, repeatedDetail(rotatedP, size, spacing));
+        d = minWithColor(d, repeatedDetail(rotatedP, size, spacing, windowSize, windowSpacing));
     }
     return d;
 }
+
+float repeatedCylinder(vec3 p, vec3 size, vec3 spacing) {
+    vec3 id = round(p/spacing);
+ 
+    float d = 1e20;
+    for (int i = -1; i<2; i++) {
+        for (int j = -1; j<2; j++) {
+            for (int k = -1; k<2; k++) {
+                vec3 rid = id+vec3(i, j, k);
+                rid = mod(rid, size) - 0.5 * size;
+                vec3 r = p-spacing*rid;
+                d = min(d, cylinderSDF(r, 1.0, 2.0));
+            }
+        }
+    }
+    return d;
+}
+
+// Surface bridge(vec3 p) {
+//     float bridge = boxSDF(vec3(p.x-4.0, p.y+7.5, p.z), vec3(2.0, 2.0, 100.0));
+//     float bridgeRemover = repeatedCylinder(vec3(p.x-4.0, p.y+7.5, p.z), vec3(0, 0, 10), vec3(0.0, 0.0, 5.0));
+//     // Surface bridgeRemoved = Surface(opSubtraction(bridge, bridgeRemover), vec3(0.8, 0.67, 0.47));
+//     Surface bridgeRemoved = Surface(bridgeRemover, vec3(0.8, 0.67, 0.47));
+//     return bridgeRemoved;
+
+//     // vec3(0.8, 0.67, 0.47)
+// }
 
 Surface scene(vec3 p) {
 
@@ -184,7 +233,9 @@ Surface scene(vec3 p) {
     Surface mainStructure = minWithColor(base, minWithColor(slant1, minWithColor(attic, slant2)));
 
     // create detail
-    Surface detail = rotatedDetail(vec3(p.x, p.y+4.0, p.z), vec3(0, 5, 0), vec3(0.0, 2.5, 0.0));
+    Surface detail = rotatedDetail(vec3(p.x, p.y+4.0, p.z), vec3(0, 5, 0), vec3(0.0, 2.5, 0.0), vec3(1, 2, 0), vec3(0.0, 1.1, 0.0));
+    // Surface detail = repeatedDetail(vec3(p.x, p.y+4.0, p.z), vec3(0, 5, 0), vec3(0.0, 2.5, 0.0), vec3(1, 2, 0), vec3(0.0, 1.1, 0.0));
+
     Surface detailedStructure = minWithColor(mainStructure, detail);
     // Surface detailedStructure = mainStructure;
 
@@ -268,17 +319,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 rd = normalize(vec3(uv,-1.0));
     vec3 ro = vec3(1.0);
 
-    // ground view camera
+    // main camera
     rd = rotate3dX(0.375)*rd; // rotate the camera up
     rd = rotate3dY(-0.25)*rd; // rotate the camera right
-    ro = vec3(-7.0, -7.0, 25.0);
+    ro = vec3(-6.0, -7.0, 25.0);
 
     // side camera
     // rd = rotate3dY(-PI/2.0)*rd;
-    // ro = vec3(-20.0, 2.0, 1.0);
+    // ro = vec3(-10.0, 10.0, 1.0);
 
     // front camera
-    // ro = vec3(0.0, 3.0, 30.0);
+    // ro = vec3(0.0, 10.0, 10.0);
  
     vec3 color = rayMarch(ro, rd);
  
